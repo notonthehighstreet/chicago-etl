@@ -1,6 +1,8 @@
 = chicago-etl
 
-Description goes here.
+HIGHLY EXPERIMENTAL. If you use this, you'll find that things will vanish without warning and you'll be terrified.
+
+An ETL pipeline for use with Chicago Warehouse.
 
 == Contributing to chicago-etl
  
@@ -14,6 +16,6 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2012 Roland Swingler. See LICENSE.txt for
+Copyright (c) 2012 notonthehighstreet.com. See LICENSE.txt for
 further details.
 

@@ -1,3 +1,7 @@
+Gemfile.lock
+spec/db_connections.yml
+spec/tmp
+
 # rcov generated
 coverage
 coverage.data

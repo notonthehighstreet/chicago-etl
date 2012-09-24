@@ -15,10 +15,10 @@ require 'jeweler'
 Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "chicago-etl"
-  gem.homepage = "http://github.com/knaveofdiamonds/chicago-etl"
+  gem.homepage = "http://github.com/notonthehighstreet/chicago-etl"
   gem.license = "MIT"
-  gem.summary = %Q{Chicago ETL}
-  gem.description = %Q{ETL tools for Chicago}
+  gem.summary = "Chicago ETL"
+  gem.description = "ETL tools for Chicago"
   gem.email = "roland.swingler@gmail.com"
   gem.authors = ["Roland Swingler"]
   # dependencies defined in Gemfile
