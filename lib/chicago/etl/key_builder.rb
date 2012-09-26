@@ -1,21 +1,29 @@
 require 'thread'
 require 'digest/md5'
+require 'chicago/etl/buffering_insert_writer'
 
 module Chicago
   module ETL
     # Builds a surrogate key for a dimension record, without relying
     # on the database's AUTO_INCREMENT functionality.
+    #
+    # We avoid AUTO_INCREMENT because we need to be able to get the
+    # key mappings without having anything to do with the database -
+    # this allows us to use bulk load.
+    #
+    # @api public
     class KeyBuilder
-      # The name of the key table.
       attr_reader :key_table
-      
-      def initialize(dimension, db)
+
+      # @api private
+      def initialize(dimension, db, key_sink=nil)
         @mutex = Mutex.new
         @cache_loaded = false
         @db = db
         @dimension = dimension
         @key_table = dimension.key_table_name
-        @new_keys = []
+        @new_keys = BufferingInsertWriter.new(@db[dimension.key_table_name],
+                                              [:original_id, :dimension_id])
       end
 
       # Returns an appropriate key builder for the dimension, using
@@ -41,8 +49,10 @@ module Chicago
           new_key
         else
           new_key = increment_key
-          @new_keys << {:original_id => key_for_insert(row_id), :dimension_id => new_key}
-          flush if reached_new_key_buffer_limit?
+          @new_keys << {
+            :original_id => key_for_insert(row_id), 
+            :dimension_id => new_key
+          }
           @key_mapping[row_id] = new_key
         end
       end
@@ -55,16 +65,11 @@ module Chicago
 
       # Flushes any newly created keys to the key table.
       def flush
-        @db[key_table].insert_replace.multi_insert(@new_keys)
-        @new_keys.clear
+        @new_keys.flush
       end
       
       protected
       
-      def reached_new_key_buffer_limit?
-        @new_keys.size >= 10_000
-      end
-
       def increment_key
         @mutex.synchronize do
           @i += 1
@@ -87,6 +92,8 @@ module Chicago
     #
     # This should not be instantiated directly, use
     # KeyBuilder.for_dimension.
+    #
+    # @api private
     class IdentifiableDimensionKeyBuilder < KeyBuilder
       def key(row)
         raise KeyError.new("Row does not have an original_id field") unless row.has_key?(:original_id)
@@ -111,6 +118,8 @@ module Chicago
     #
     # This should not be instantiated directly, use
     # KeyBuilder.for_dimension.
+    #
+    # @api private
     class HashingKeyBuilder < KeyBuilder
       def original_key(row)
         columns = if @dimension.natural_key.nil?

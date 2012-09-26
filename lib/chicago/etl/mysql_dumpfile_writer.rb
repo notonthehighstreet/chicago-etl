@@ -1,59 +1,32 @@
-require 'set'
+require 'chicago/etl/sink'
 
 module Chicago
   module ETL
     # Wrapper around FasterCSV's output object, to convert values to a
     # format required by MySQL's LOAD DATA INFILE command.
-    class MysqlDumpfileWriter
+    #
+    # @api public
+    class MysqlDumpfileWriter < Sink
       # Creates a new writer.
       #
       # @param csv a FasterCSV output object
       # @param [Symbol] column_names columns to be output
       # @param key an optional key to ensure rows are written only once.
       def initialize(csv, column_names, key=nil)
-        @csv = csv
-        @column_names = column_names
-        @written_rows = Set.new
-        @key = key
+        super(column_names, key)
+        @output = csv
+        @transformer = MysqlLoadFileValueTransformer.new
       end
 
-      # Writes a row to the output csv stream.
+      protected
+
+      # Writes a row to the output.
       #
       # @param Hash row Only keys in column_names will be output.
-      def <<(row)
-        unless written?(row)
-          @csv << @column_names.map {|name| transform_value(row[name]) }
-          @written_rows << row[@key]
-        end
-      end
-
-      # Returns true if this row has previously been written to the
-      # dumpfile.
-      #
-      # Always returns false if no key to determine row uniqueness has
-      # been provided.
-      def written?(row)
-        return false if @key.nil?
-        @written_rows.include?(row[@key])
-      end
-
-      private
-
-      def transform_value(value)
-        case value
-        when nil
-          "\\N"
-        when true
-          "1"
-        when false
-          "0"
-        when Time, DateTime
-          value.strftime("%Y-%m-%d %H:%M:%S")
-        when Date
-          value.strftime("%Y-%m-%d")
-        else
-          value
-        end
+      def write(row)
+        @output << @column_names.map {|name| 
+          @transformer.transform(row[name]) 
+        }
       end
     end
   end
