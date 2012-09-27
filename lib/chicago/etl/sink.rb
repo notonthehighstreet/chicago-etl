@@ -8,7 +8,8 @@ module Chicago
     # @api public
     class Sink
       # @abstract
-      def initialize(column_names, unique_row_key=nil)
+      def initialize(output, column_names, unique_row_key=nil)
+        @output = output
         @column_names = column_names
         @written_rows = Set.new
         @unique_row_key = unique_row_key
@@ -45,6 +46,8 @@ module Chicago
       end
 
       protected
+
+      attr_reader :output
 
       # @abstract
       def write(row)

@@ -13,8 +13,7 @@ module Chicago
       # @param [Symbol] column_names columns to be output
       # @param key an optional key to ensure rows are written only once.
       def initialize(csv, column_names, key=nil)
-        super(column_names, key)
-        @output = csv
+        super(csv, column_names, key)
         @transformer = MysqlLoadFileValueTransformer.new
       end
 
@@ -24,7 +23,7 @@ module Chicago
       #
       # @param Hash row Only keys in column_names will be output.
       def write(row)
-        @output << @column_names.map {|name| 
+        output << @column_names.map {|name| 
           @transformer.transform(row[name]) 
         }
       end
