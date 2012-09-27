@@ -6,6 +6,7 @@ require 'chicago/etl/mysql_load_file_value_transformer'
 require 'chicago/etl/buffering_insert_writer'
 require 'chicago/etl/mysql_dumpfile_writer'
 require 'chicago/etl/dependant_tables'
+require 'chicago/etl/load_data_infile'
 
 module Chicago
   module ETL
