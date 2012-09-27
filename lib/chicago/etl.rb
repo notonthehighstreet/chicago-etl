@@ -5,6 +5,7 @@ require 'chicago/etl/sink'
 require 'chicago/etl/mysql_load_file_value_transformer'
 require 'chicago/etl/buffering_insert_writer'
 require 'chicago/etl/mysql_dumpfile_writer'
+require 'chicago/etl/dependant_tables'
 
 module Chicago
   module ETL
