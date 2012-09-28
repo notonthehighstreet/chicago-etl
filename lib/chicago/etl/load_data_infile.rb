@@ -3,6 +3,7 @@ require 'sequel'
 module Chicago
   module SequelExtensions
     module LoadDataInfile
+      # Loads the CSV data columns in filepath into this dataset's table.
       def load_csv_infile(filepath, columns)
         execute_dui(load_data_infile_sql(filepath, columns))
       end

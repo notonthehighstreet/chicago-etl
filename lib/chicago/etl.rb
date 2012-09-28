@@ -7,6 +7,10 @@ require 'chicago/etl/buffering_insert_writer'
 require 'chicago/etl/mysql_dumpfile_writer'
 require 'chicago/etl/dependant_tables'
 require 'chicago/etl/load_data_infile'
+require 'chicago/etl/batched_dataset_filter'
+require 'chicago/etl/load_dataset_builder'
+
+require 'chicago/etl/transformations/standard_transformations'
 
 module Chicago
   module ETL
