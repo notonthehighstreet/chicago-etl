@@ -11,7 +11,7 @@ describe Chicago::ETL::LoadDatasetBuilder do
     db[:original_users].stub(:columns).
       and_return([:id, :name, :email])
     db[:original_preferences].stub(:columns).
-      and_return([:id, :name, :email])
+      and_return([:id, :spam])
   end
 
   it "selects from the specified table" do
@@ -20,21 +20,29 @@ describe Chicago::ETL::LoadDatasetBuilder do
   end
 
   it "selects the columns from the table" do
-    subject.configure do
-      table(:original_users)
-    end
+    subject.configure { table(:original_users) }
 
-    subject.build(db, [:id, :name]).opts[:select].should == [:id, :name]
+    subject.build(db, [:id, :name]).opts[:select].should == [:id.qualify(:original_users), :name.qualify(:original_users)]
   end
 
   it "can handle column renaming" do
     subject.configure do
       table :original_users
-      rename :id, :original_id
+      provide :original_id, :id
     end
 
     subject.build(db, [:original_id, :name]).opts[:select].
-      should == [:id.as(:original_id), :name]
+      should == [:id.qualify(:original_users).as(:original_id), :name.qualify(:original_users)]
+  end
+
+  it "can provide constructed columns" do
+    subject.configure do
+      table :original_users
+      provide :original_id, :foo.qualify(:bar)
+    end
+
+    subject.build(db, [:original_id, :name]).opts[:select].
+      should == [:foo.qualify(:bar).as(:original_id), :name.qualify(:original_users)]
   end
 
   it "left outer joins a denormalized table" do
@@ -53,10 +61,26 @@ describe Chicago::ETL::LoadDatasetBuilder do
     end
 
     subject.build(db, [:id, :name, :spam]).opts[:select].
-      should include(:spam.qualify(:original_preferences))
+      should == [:id.qualify(:original_users),
+                 :name.qualify(:original_users),
+                 :spam.qualify(:original_preferences)]
   end
 
-  def columns(*syms)
-    syms.map {|sym| [sym, {}] }
+  it "takes renames columns from denormalized tables" do
+    subject.configure do
+      table :original_users
+      denormalize :original_preferences, :id => :id
+      provide :email_allowed, :spam
+    end
+
+    subject.build(db, [:id, :name, :email_allowed]).opts[:select].
+      should include(:spam.qualify(:original_preferences).as(:email_allowed))
+  end
+
+  it "automatically renames ids of denormalized tables" do
+    subject.configure do
+      table :original_users
+      denormalize :original_preferences, :id => :id
+    end
   end
 end
