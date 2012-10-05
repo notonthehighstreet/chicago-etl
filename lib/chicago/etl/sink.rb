@@ -7,6 +7,10 @@ module Chicago
     # @abstract
     # @api public
     class Sink
+      # Returns the column names expected to be written to this sink.
+      # @api public
+      attr_reader :column_names
+
       # @abstract
       def initialize(output, column_names, unique_row_key=nil)
         @output = output
