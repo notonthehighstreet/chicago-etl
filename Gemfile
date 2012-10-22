@@ -11,4 +11,5 @@ group :development do
   gem "flog"
   gem "jeweler"
   gem "rcov"
+  gem "ZenTest"
 end
