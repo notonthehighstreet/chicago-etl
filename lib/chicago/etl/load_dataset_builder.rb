@@ -34,7 +34,7 @@ module Chicago
           ds.join_table(*join)
         }
 
-        available_columns = available_columns_index(dataset)
+        available_columns = available_columns_index(db, dataset)
 
         select_columns = columns.map {|name|
           if @constructed_columns[name].kind_of?(Symbol)
@@ -51,7 +51,7 @@ module Chicago
       
       private
 
-      def available_columns_index(dataset)
+      def available_columns_index(db, dataset)
         dataset.dependant_tables.inject({}) do |hsh, table|
           db[table].columns.each do |column|
             (hsh[column] ||= Set.new) << table
