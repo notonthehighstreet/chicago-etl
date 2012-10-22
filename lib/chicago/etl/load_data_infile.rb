@@ -9,7 +9,7 @@ module Chicago
       end
 
       def load_csv_infile_sql(filepath, columns)
-        "LOAD DATA INFILE '#{filepath}' REPLACE INTO TABLE `#{opts[:from]}` CHARACTER SET 'utf8' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' (`#{columns.join('`,`')}`);"
+        "LOAD DATA INFILE '#{filepath}' REPLACE INTO TABLE `#{opts[:from]}` CHARACTER SET 'utf8' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' (`#{columns.join('`,`')}`);"
       end
     end
   end
