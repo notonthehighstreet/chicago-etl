@@ -21,9 +21,13 @@ module Chicago
         define
       end
 
-      desc "Creates the etl tables"
-      task :create_etl_tables do
-        Chicago::ETL::TableBuilder.build(@db)
+      def define
+        namespace :db do
+          desc "Creates the etl tables"
+          task :create_etl_tables do
+            Chicago::ETL::TableBuilder.build(@db)
+          end
+        end
       end
     end
   end
