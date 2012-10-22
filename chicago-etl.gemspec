@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{chicago-etl}
-  s.version = "0.0.1"
+  s.version = "0.0.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Roland Swingler}]
-  s.date = %q{2012-09-26}
+  s.date = %q{2012-10-22}
   s.description = %q{ETL tools for Chicago}
   s.email = %q{roland.swingler@gmail.com}
   s.extra_rdoc_files = [
@@ -29,18 +29,34 @@ Gem::Specification.new do |s|
     "lib/chicago/etl.rb",
     "lib/chicago/etl/batch.rb",
     "lib/chicago/etl/batched_dataset_filter.rb",
+    "lib/chicago/etl/buffering_insert_writer.rb",
+    "lib/chicago/etl/dependant_tables.rb",
     "lib/chicago/etl/key_builder.rb",
+    "lib/chicago/etl/load_data_infile.rb",
+    "lib/chicago/etl/load_dataset_builder.rb",
+    "lib/chicago/etl/load_source.rb",
     "lib/chicago/etl/mysql_dumpfile_writer.rb",
+    "lib/chicago/etl/mysql_load_file_value_transformer.rb",
+    "lib/chicago/etl/pipeline.rb",
+    "lib/chicago/etl/sink.rb",
     "lib/chicago/etl/table_builder.rb",
     "lib/chicago/etl/task_invocation.rb",
     "lib/chicago/etl/tasks.rb",
+    "lib/chicago/etl/transformations/standard_transformations.rb",
     "spec/db_connections.yml.dist",
     "spec/etl/batch_spec.rb",
     "spec/etl/batched_dataset_filter_spec.rb",
+    "spec/etl/dependant_tables_spec.rb",
+    "spec/etl/etl_batch_id_dataset_filter.rb",
     "spec/etl/key_builder_spec.rb",
+    "spec/etl/load_data_infile_spec.rb",
+    "spec/etl/load_dataset_builder_spec.rb",
     "spec/etl/mysql_dumpfile_writer_spec.rb",
+    "spec/etl/mysql_load_file_value_transformer_spec.rb",
+    "spec/etl/sink_spec.rb",
     "spec/etl/table_builder_spec.rb",
     "spec/etl/task_spec.rb",
+    "spec/etl/transformations/add_batch_id_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = %q{http://github.com/notonthehighstreet/chicago-etl}
@@ -60,6 +76,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<flog>, [">= 0"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
       s.add_development_dependency(%q<rcov>, [">= 0"])
+      s.add_development_dependency(%q<ZenTest>, [">= 0"])
     else
       s.add_dependency(%q<chicagowarehouse>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2"])
@@ -68,6 +85,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<flog>, [">= 0"])
       s.add_dependency(%q<jeweler>, [">= 0"])
       s.add_dependency(%q<rcov>, [">= 0"])
+      s.add_dependency(%q<ZenTest>, [">= 0"])
     end
   else
     s.add_dependency(%q<chicagowarehouse>, [">= 0"])
@@ -77,6 +95,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<flog>, [">= 0"])
     s.add_dependency(%q<jeweler>, [">= 0"])
     s.add_dependency(%q<rcov>, [">= 0"])
+    s.add_dependency(%q<ZenTest>, [">= 0"])
   end
 end
 
