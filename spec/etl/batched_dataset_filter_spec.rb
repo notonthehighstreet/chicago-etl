@@ -2,23 +2,23 @@ require 'spec_helper'
 require 'chicago/etl'
 
 describe Chicago::ETL::BatchedDatasetFilter do
-  it "should be filterable if the table has an etl_batch_id column" do
-    db = stub(:db)
-    db.stub(:schema).with(:foo).and_return([[:id, {}], [:etl_batch_id, {}]])
-    db.stub(:schema).with(:bar).and_return([[:id, {}]])
-
-    described_class.new(db).filterable?(:foo).should be_true
-    described_class.new(db).filterable?(:bar).should be_false
+  before :each do
+    @db = stub(:db)
+    @db.stub(:schema).with(:foo).and_return([[:id, {}], [:etl_batch_id, {}]])
+    @db.stub(:schema).with(:bar).and_return([[:id, {}], [:etl_batch_id, {}]])
+    @db.stub(:schema).with(:baz).and_return([[:id, {}]])
   end
 
-  it "creates an array of conditions" do
-    db = stub(:db)
-    db.stub(:schema).with(:foo).and_return([[:id, {}], [:etl_batch_id, {}]])
-    db.stub(:schema).with(:bar).and_return([[:id, {}]])
-    
-    etl_batch = stub(:etl_batch, :id => 42)
+  it "should be filterable if the table has an etl_batch_id column" do
+    described_class.new(@db).should be_filterable(:foo)
+    described_class.new(@db).should_not be_filterable(:baz)
+  end
 
-    described_class.new(db).conditions([:foo, :bar], etl_batch).
-      should == [{:etl_batch_id.qualify(:foo) => 42}]
+  it "filters a dataset by etl batch ids" do
+    dataset = TEST_DB[:foo].join(:bar, :id => :id).join(:baz, :id => :id)
+    
+    described_class.new(@db).filter(dataset, 42).opts[:where].
+      should == ({:etl_batch_id.qualify(:foo) => 42} |
+                 {:etl_batch_id.qualify(:bar) => 42})
   end
 end
