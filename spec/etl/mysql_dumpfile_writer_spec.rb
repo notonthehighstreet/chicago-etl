@@ -12,6 +12,17 @@ describe Chicago::ETL::MysqlDumpfileWriter do
     dumpfile << {:foo => "1", :bar => "2", :baz => "not output"}
   end
 
+  it "transforms values with a MysqlLoadFileValueTransformer" do
+    transformer = mock(:transformer)
+    Chicago::ETL::MysqlLoadFileValueTransformer.stub(:new).and_return(transformer)
+
+    transformer.should_receive(:transform).with("bar").and_return("baz")
+    @csv.should_receive(:<<).with(["baz"])
+
+    dumpfile = described_class.new(@csv, [:foo])
+    dumpfile << {:foo => "bar"}
+  end
+
   it "will write a row only once with the same key" do
     dumpfile = described_class.new(@csv, [:foo], :id)
     @csv.should_receive(:<<).with(["bar"])
