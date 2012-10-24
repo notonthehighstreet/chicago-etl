@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::ETL::MysqlDumpfileWriter do
+describe Chicago::ETL::MysqlDumpfile do
   before :each do
     @csv = mock(:csv)
   end
