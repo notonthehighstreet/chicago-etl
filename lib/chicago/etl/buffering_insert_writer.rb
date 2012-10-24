@@ -15,7 +15,7 @@ module Chicago
       end
       
       def flush
-        @dataset.insert_replace.multi_insert(output)
+        @dataset.insert_replace.import(column_names, output)
         output.clear
       end
 
