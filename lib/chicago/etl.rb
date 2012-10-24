@@ -8,9 +8,15 @@ require 'chicago/etl/dependant_tables'
 require 'chicago/etl/load_data_infile'
 require 'chicago/etl/batched_dataset_filter'
 require 'chicago/etl/load_dataset_builder'
-require 'chicago/etl/column_attribute_screen'
 
-require 'chicago/etl/transformations/standard_transformations'
+# Screens
+require 'chicago/etl/screens/column_screen'
+require 'chicago/etl/screens/composite_screen'
+require 'chicago/etl/screens/missing_value'
+require 'chicago/etl/screens/invalid_element'
+require 'chicago/etl/screens/out_of_bounds'
+
+require 'chicago/etl/transformations/add_etl_batch_id'
 
 module Chicago
   module ETL
