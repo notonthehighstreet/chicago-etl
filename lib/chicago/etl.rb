@@ -1,5 +1,4 @@
 require 'chicago/etl/key_builder'
-require 'chicago/etl/mysql_dumpfile_writer'
 require 'chicago/etl/batched_dataset_filter'
 require 'chicago/etl/sink'
 require 'chicago/etl/mysql_load_file_value_transformer'
@@ -9,6 +8,7 @@ require 'chicago/etl/dependant_tables'
 require 'chicago/etl/load_data_infile'
 require 'chicago/etl/batched_dataset_filter'
 require 'chicago/etl/load_dataset_builder'
+require 'chicago/etl/column_attribute_screen'
 
 require 'chicago/etl/transformations/standard_transformations'
 
