@@ -1,15 +1,17 @@
 module Chicago
   module ETL
     module Transformations
-      class AddBatchId
+      class AddEtlBatchId
         def initialize(etl_batch_id)
           @etl_batch_id = etl_batch_id
         end
 
-        def call(errors, row)
-          [errors, [row.merge(:etl_batch_id => @etl_batch_id)]]
+        def call(row, errors=[])
+          row[:etl_batch_id] = @etl_batch_id
+          [row, errors]
         end
       end
     end
   end
 end
+
