@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::SequelExtensions::LoadDataInfile do
+describe Chicago::ETL::SequelExtensions::LoadDataInfile do
   before :each do
     @sql = TEST_DB[:foo].load_csv_infile_sql("bar.csv", [:bar, :baz])
   end

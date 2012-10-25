@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::SequelExtensions::DependantTables do
+describe Chicago::ETL::SequelExtensions::DependantTables do
   it "returns the table in the from clause" do
     TEST_DB[:foo].dependant_tables.should == [:foo]
   end
