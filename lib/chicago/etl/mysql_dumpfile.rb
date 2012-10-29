@@ -6,7 +6,7 @@ module Chicago
     # format required by MySQL's LOAD DATA INFILE command.
     #
     # @api public
-    class MysqlDumpfileWriter < Sink
+    class MysqlDumpfile < Sink
       # Creates a new writer.
       #
       # @param csv a FasterCSV output object
