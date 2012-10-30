@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{chicago-etl}
-  s.version = "0.0.6"
+  s.version = "0.0.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Roland Swingler}]
@@ -45,7 +45,7 @@ Gem::Specification.new do |s|
     "lib/chicago/etl/table_builder.rb",
     "lib/chicago/etl/task_invocation.rb",
     "lib/chicago/etl/tasks.rb",
-    "lib/chicago/etl/transformations/add_etl_batch_id.rb",
+    "lib/chicago/etl/transformations/add_insert_timestamp.rb",
     "lib/chicago/etl/transformations/uk_post_code.rb",
     "spec/db_connections.yml.dist",
     "spec/etl/batch_spec.rb",
@@ -64,7 +64,7 @@ Gem::Specification.new do |s|
     "spec/etl/sink_spec.rb",
     "spec/etl/table_builder_spec.rb",
     "spec/etl/task_spec.rb",
-    "spec/etl/transformations/add_batch_id_spec.rb",
+    "spec/etl/transformations/add_insert_timestamp_spec.rb",
     "spec/etl/transformations/uk_post_code_spec.rb",
     "spec/spec_helper.rb"
   ]
