@@ -21,6 +21,11 @@ describe Chicago::ETL::KeyBuilder do
         string :foo
       end
     end
+
+    @schema.define_fact(:addresses) do
+      dimensions :user, :address
+      natural_key :user, :address
+    end
   end
   
   before :each do
@@ -36,19 +41,19 @@ describe Chicago::ETL::KeyBuilder do
     end
 
     it "returns an incrementing key, given a row" do
-      builder = described_class.for_dimension(@dimension, @db)
+      builder = described_class.for_table(@dimension, @db)
       builder.key(:original_id => 2).should == 1
       builder.key(:original_id => 3).should == 2
     end
 
     it "returns the same key for the same record" do
-      builder = described_class.for_dimension(@dimension, @db)
+      builder = described_class.for_table(@dimension, @db)
       builder.key(:original_id => 2).should == 1
       builder.key(:original_id => 2).should == 1
     end
 
     it "updates keys in a thread-safe fashion" do
-      builder = described_class.for_dimension(@dimension, @db)
+      builder = described_class.for_table(@dimension, @db)
       builder.stub(:flush)
       # These seem to need to be a fairly large number of times to see
       # errors
@@ -61,7 +66,7 @@ describe Chicago::ETL::KeyBuilder do
 
     it "takes into account the current maximum key in the database" do
       @db.stub(:[]).with(:keys_dimension_user).and_return(stub(:max => 2, :select_hash => {}))
-      builder = described_class.for_dimension(@dimension, @db)
+      builder = described_class.for_table(@dimension, @db)
       builder.key(:original_id => 1).should == 3
     end
 
@@ -69,13 +74,13 @@ describe Chicago::ETL::KeyBuilder do
       dataset = stub(:dataset, :max => 1, :select_hash => {40 => 1})
       @db.stub(:[]).with(:keys_dimension_user).and_return(dataset)
 
-      builder = described_class.for_dimension(@dimension, @db)
+      builder = described_class.for_table(@dimension, @db)
       builder.key(:original_id => 30).should == 2
       builder.key(:original_id => 40).should == 1
     end
 
     it "raises an error when original_id isn't present in the row" do
-      builder = described_class.for_dimension(@dimension, @db)
+      builder = described_class.for_table(@dimension, @db)
       expect { builder.key(:foo => :bar) }.to raise_error(Chicago::ETL::KeyError)
     end
 
@@ -88,7 +93,7 @@ describe Chicago::ETL::KeyBuilder do
       dataset.should_receive(:multi_insert).
         with([{:original_id => 30, :dimension_id => 2}])
                                               
-      builder = described_class.for_dimension(@dimension, @db)
+      builder = described_class.for_table(@dimension, @db)
       builder.key(:original_id => 30)
       builder.key(:original_id => 40)
       builder.flush
@@ -104,7 +109,7 @@ describe Chicago::ETL::KeyBuilder do
         with([{:original_id => 30, :dimension_id => 2}])
       dataset.should_receive(:multi_insert).with([])
                                               
-      builder = described_class.for_dimension(@dimension, @db)
+      builder = described_class.for_table(@dimension, @db)
       builder.key(:original_id => 30)
       builder.key(:original_id => 40)
       builder.flush
@@ -117,27 +122,27 @@ describe Chicago::ETL::KeyBuilder do
       @db.stub(:[]).with(:keys_dimension_user).and_return(dataset)
 
       dataset.should_receive(:insert_replace).and_return(dataset)
-      described_class.for_dimension(@dimension, @db).flush
+      described_class.for_table(@dimension, @db).flush
     end
   end
 
   describe "for non-identifiable dimensions with natural keys" do
     before :each do
-      @dimension = @schema.dimension(:address)
+      @builder = described_class.for_table(@schema.dimension(:address), @db)
     end
 
     it "returns an incrementing key, given a row" do
-      builder = described_class.for_dimension(@dimension, @db)
-      builder.key(:line1 => "some street", :post_code => "TW3 X45").should == 1
-      builder.key(:line1 => "some road", :post_code => "TW3 X45").should == 2
+      @builder.key(:line1 => "some street", :post_code => "TW3 X45").
+        should == 1
+      @builder.key(:line1 => "some road", :post_code => "TW3 X45").
+        should == 2
     end
 
     it "inserts the hash as a binary literal" do
-      builder = described_class.for_dimension(@dimension, @db)
       # Yuck. Don't like the implementation test, but mock
       # expectations fail here for some reason, maybe because of the
       # Sequel::LiteralString?
-      builder.key_for_insert(builder.original_key(:line1 => "some street", :post_code => "TW3 X45")).should == "0x817860F2417EB83D81FEA9D82E6B213A".lit
+      @builder.key_for_insert(@builder.original_key(:line1 => "some street", :post_code => "TW3 X45")).should == "0x817860F2417EB83D81FEA9D82E6B213A".lit
     end
 
     it "selects the Hex version of the binary column for the cache" do
@@ -146,15 +151,34 @@ describe Chicago::ETL::KeyBuilder do
 
       dataset.should_receive(:select_hash).with(:hex.sql_function(:original_id).as(:original_id), :dimension_id).and_return({})
       
-      described_class.for_dimension(@dimension, @db).key(:line1 => "foo")
+      @builder.key(:line1 => "foo")
     end
 
     it "uses all columns as the natural key if one isn't defined" do
-      @dimension = @schema.dimension(:random)
       described_class.
-        for_dimension(@dimension, @db).
+        for_table(@schema.dimension(:random), @db).
         original_key(:foo => "bar").
         should == "3D75EEC709B70A350E143492192A1736"
+    end
+  end
+
+  describe "for facts" do
+    before :each do 
+      @builder = described_class.for_table(@schema.fact(:addresses), @db)
+    end
+
+    it "increments the id, regardless of row equality" do
+      @builder.key({}).should == 1
+      @builder.key({}).should == 2
+    end
+
+    it "increments from the last id stored id in the fact table" do
+      @db.stub(:[]).with(:facts_addresses).and_return(stub(:max => 100, :select_hash => {}))
+      @builder.key({}).should == 101
+    end
+
+    it "supports the flush interface as a no-op" do
+      lambda { @builder.flush }.should_not raise_error
     end
   end
 end
