@@ -11,13 +11,13 @@ describe Chicago::ETL::SequelExtensions::FilterToEtlBatch do
   it "filters a table with an ETL batch id column" do
     TEST_DB.should_receive(:schema).with(:foo).and_return([[:etl_batch_id, {}]])
     TEST_DB[:foo].filter_to_etl_batch(batch).sql.
-      should include("`foo`.`etl_batch_id` = 42")
+      should include("\(`foo`.`etl_batch_id` = 42\)")
   end
 
   it "filters an aliased table with an ETL batch id column" do
     TEST_DB.should_receive(:schema).with(:foo).and_return([[:etl_batch_id, {}]])
     TEST_DB[:foo.as(:bar)].filter_to_etl_batch(batch).sql.
-      should include("`bar`.`etl_batch_id` = 42")
+      should include("\(`bar`.`etl_batch_id` = 42\)")
   end
 
   it "doesn't attempt to look for etl columns in nested queries" do
@@ -30,8 +30,8 @@ describe Chicago::ETL::SequelExtensions::FilterToEtlBatch do
     TEST_DB.should_receive(:schema).with(:bar).and_return([])
     TEST_DB.should_receive(:schema).with(:foo).and_return([])
 
-    TEST_DB[:foo].join(:bar).join(:baz).filter_to_etl_batch(batch).sql.
-      should include("`baz`.`etl_batch_id` = 42")
+    sql = TEST_DB[:foo].join_table(:left_outer, :bar, :id => :id).join(:baz).filter_to_etl_batch(batch).sql
+    sql.should include("\(`baz`.`etl_batch_id` = 42\)")
   end
 
   it "filters based on joined aliases" do
@@ -39,7 +39,7 @@ describe Chicago::ETL::SequelExtensions::FilterToEtlBatch do
     TEST_DB.should_receive(:schema).with(:foo).and_return([])
 
     TEST_DB[:foo].join(:bar.as(:baz)).filter_to_etl_batch(batch).sql.
-      should include("`baz`.`etl_batch_id` = 42")
+      should include("\(`baz`.`etl_batch_id` = 42\)")
   end
 
   it "applies filters to each unioned dataset" do
@@ -48,7 +48,7 @@ describe Chicago::ETL::SequelExtensions::FilterToEtlBatch do
 
     sql = TEST_DB[:foo].union(TEST_DB[:bar], :from_self => false).filter_to_etl_batch(batch).sql
 
-    sql.should include("`foo`.`etl_batch_id` = 42")
-    sql.should include("`bar`.`etl_batch_id` = 42")
+    sql.should include("\(`foo`.`etl_batch_id` = 42\)")
+    sql.should include("\(`bar`.`etl_batch_id` = 42\)")
   end
 end

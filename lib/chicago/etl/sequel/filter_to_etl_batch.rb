@@ -20,7 +20,16 @@ module Chicago
 
         private
 
-        def make_etl_batch_filter(table, etl_batch)
+        def make_etl_batch_filter(expression, etl_batch)
+          table = case expression
+                  when Sequel::SQL::AliasedExpression
+                    expression.aliaz
+                  when Sequel::SQL::JoinClause
+                    expression.table_alias || expression.table
+                  else
+                    expression
+                  end
+
           {:etl_batch_id.qualify(table) => etl_batch.id}
         end
 
@@ -40,4 +49,5 @@ module Chicago
     end
   end
 end
+
 Sequel::Dataset.send :include, Chicago::ETL::SequelExtensions::FilterToEtlBatch
