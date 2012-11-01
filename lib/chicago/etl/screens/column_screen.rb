@@ -16,7 +16,7 @@ module Chicago
         end
 
         def call(row, errors=[])
-          value = row[column.name]
+          value = row[column.database_name]
 
           if applies?(value)
             overwrite_value(row)
@@ -33,7 +33,7 @@ module Chicago
         private
 
         def overwrite_value(row)
-          row[column.name] = column.default_value
+          row[column.database_name] = column.default_value
         end
 
         def log_error(value, errors)
@@ -45,7 +45,7 @@ module Chicago
             :process_name => "StandardTransformations",
             :process_version => 2,
             :table => table_name.to_s,
-            :column => column.name.to_s,
+            :column => column.database_name.to_s,
             :severity => severity,
             :error => @error_name
           }
