@@ -29,28 +29,9 @@ module Chicago
         def call(row, errors=[])
           return [row, errors] if @filter_block && !@filter_block.call(row)
 
-          clean_post_code = row[@column_name].
-            strip.
-            upcase.
-            tr('!"$%^&*()', '124567890').
-            gsub("£", "3").
-            sub(/^0([XL])/, 'O\1').
-            sub(/^([PSCY])0/, '\1O')
-
-          row[@column_name] = reformat(clean_post_code)
+          row[@column_name] = UkPostCodeField.new.call(row[@column_name])[:post_code]
 
           [row, errors]
-        end
-
-        private
-
-        def reformat(post_code)
-          unless post_code[0..3] == "BFPO"
-            post_code.gsub!(/[^A-Z0-9]/, '')
-            post_code = "#{post_code[0..(post_code.size - 4)]} #{post_code[(post_code.size - 3)..-1]}" if post_code.size > 4
-          end
-
-          post_code
         end
       end
     end
