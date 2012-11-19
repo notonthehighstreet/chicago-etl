@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{chicago-etl}
-  s.version = "0.0.7"
+  s.version = "0.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = [%q{Roland Swingler}]
-  s.date = %q{2012-10-30}
+  s.date = %q{2012-11-19}
   s.description = %q{ETL tools for Chicago}
   s.email = %q{roland.swingler@gmail.com}
   s.extra_rdoc_files = [
@@ -47,6 +47,7 @@ Gem::Specification.new do |s|
     "lib/chicago/etl/tasks.rb",
     "lib/chicago/etl/transformations/add_insert_timestamp.rb",
     "lib/chicago/etl/transformations/uk_post_code.rb",
+    "lib/chicago/etl/transformations/uk_post_code_field.rb",
     "spec/db_connections.yml.dist",
     "spec/etl/batch_spec.rb",
     "spec/etl/etl_batch_id_dataset_filter.rb",
@@ -65,6 +66,7 @@ Gem::Specification.new do |s|
     "spec/etl/table_builder_spec.rb",
     "spec/etl/task_spec.rb",
     "spec/etl/transformations/add_insert_timestamp_spec.rb",
+    "spec/etl/transformations/uk_post_code_field_spec.rb",
     "spec/etl/transformations/uk_post_code_spec.rb",
     "spec/spec_helper.rb"
   ]
@@ -78,7 +80,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<chicagowarehouse>, [">= 0"])
+      s.add_runtime_dependency(%q<chicagowarehouse>, ["~> 0.4"])
       s.add_development_dependency(%q<rspec>, ["~> 2"])
       s.add_development_dependency(%q<timecop>, [">= 0"])
       s.add_development_dependency(%q<yard>, [">= 0"])
@@ -87,7 +89,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_development_dependency(%q<ZenTest>, [">= 0"])
     else
-      s.add_dependency(%q<chicagowarehouse>, [">= 0"])
+      s.add_dependency(%q<chicagowarehouse>, ["~> 0.4"])
       s.add_dependency(%q<rspec>, ["~> 2"])
       s.add_dependency(%q<timecop>, [">= 0"])
       s.add_dependency(%q<yard>, [">= 0"])
@@ -97,7 +99,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<ZenTest>, [">= 0"])
     end
   else
-    s.add_dependency(%q<chicagowarehouse>, [">= 0"])
+    s.add_dependency(%q<chicagowarehouse>, ["~> 0.4"])
     s.add_dependency(%q<rspec>, ["~> 2"])
     s.add_dependency(%q<timecop>, [">= 0"])
     s.add_dependency(%q<yard>, [">= 0"])
