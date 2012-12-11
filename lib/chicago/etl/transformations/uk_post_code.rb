@@ -29,7 +29,8 @@ module Chicago
         def call(row, errors=[])
           return [row, errors] if @filter_block && !@filter_block.call(row)
 
-          row[@column_name] = UkPostCodeField.new.call(row[@column_name])[:post_code]
+          row[@column_name] = UkPostCodeField.new.
+            normalize(row[@column_name])[:post_code]
 
           [row, errors]
         end
