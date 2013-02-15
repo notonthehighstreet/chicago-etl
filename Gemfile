@@ -10,6 +10,7 @@ group :development do
   gem "yard"
   gem "flog"
   gem "jeweler"
-  gem "rcov"
+  gem "rcov", :platforms => :mri_18
+  gem "simplecov", :platforms => :mri_19
   gem "ZenTest"
 end
