@@ -112,13 +112,7 @@ module Chicago
     # @api private
     class HashingKeyBuilder < KeyBuilder
       def original_key(row)
-        columns = if @dimension.natural_key.nil?
-                    @dimension.columns.map(&:name)
-                  else
-                    @dimension.natural_key
-                  end
-
-        str = columns.map {|column| row[column].to_s.upcase }.join
+        str = columns.map {|column| prepare_for_hashing(row[column]) }.join
         Digest::MD5.hexdigest(str).upcase
       end
 
@@ -128,6 +122,20 @@ module Chicago
 
       def original_key_select_fragment
         :hex.sql_function(:original_id).as(:original_id)
+      end
+
+      protected
+
+      def columns
+        if @dimension.natural_key.nil?
+          @dimension.columns.map(&:name)
+        else
+          @dimension.natural_key
+        end
+      end
+
+      def prepare_for_hashing(column)
+        column.to_s.upcase
       end
     end
 
