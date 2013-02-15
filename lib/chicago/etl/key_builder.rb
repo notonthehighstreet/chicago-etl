@@ -12,30 +12,60 @@ module Chicago
     #
     # @api public
     class KeyBuilder
-      attr_reader :key_table
-
       # @api private
-      def initialize(dimension, db)
-        @db = db
-        @dimension = dimension
-        @key_table = dimension.key_table_name
-        @new_keys = BufferingInsertWriter.new(@db[dimension.key_table_name],
-                                              [:original_id, :dimension_id])
-        @counter = Counter.new { @db[key_table].max(:dimension_id) }
+      class Factory
+        attr_reader :table, :staging_db
+
+        def initialize(table, staging_db)
+          @table = table
+          @staging_db = staging_db
+        end
+
+        def make
+          if dimension?
+            key_table = staging_db[table.key_table_name]
+            key_sink = BufferingInsertWriter.new(key_table,
+                                                 [:original_id, :dimension_id])
+            
+            if table.identifiable?
+              IdentifiableDimensionKeyBuilder.new(key_table, key_sink)
+            else
+              HashingKeyBuilder.new(key_table, key_sink, columns_to_hash)
+            end
+          elsif fact?
+            FactKeyBuilder.new(staging_db[table.table_name])
+          end
+        end
+
+        private
+
+        def dimension?
+          table.kind_of?(Chicago::Schema::Dimension)
+        end
+
+        def fact?
+          table.kind_of?(Chicago::Schema::Fact)
+        end
+
+        def columns_to_hash
+          if table.natural_key.nil?
+            table.columns.map(&:name)
+          else
+            table.natural_key
+          end
+        end
       end
 
       # Returns an appropriate key builder for a schema table, using
       # the staging database for key management where necessary.
       def self.for_table(table, staging_db)
-        if table.kind_of?(Chicago::Schema::Dimension)
-          if table.identifiable?
-            IdentifiableDimensionKeyBuilder.new(table, staging_db)
-          else
-            HashingKeyBuilder.new(table, staging_db)
-          end
-        elsif table.kind_of?(Chicago::Schema::Fact)
-          FactKeyBuilder.new(table, staging_db)
-        end
+        Factory.new(table, staging_db).make
+      end
+
+      def initialize(key_table, key_sink)
+        @key_table = key_table
+        @new_keys = key_sink
+        @counter = Counter.new { key_table.max(:dimension_id) }
       end
 
       # Returns a surrogate key, given a record row.
@@ -72,8 +102,10 @@ module Chicago
       
       protected
 
+      attr_reader :key_table
+
       def fetch_cache
-        @key_mapping = @db[key_table].
+        @key_mapping = key_table.
           select_hash(original_key_select_fragment, :dimension_id)
       end
     end
@@ -111,6 +143,11 @@ module Chicago
     #
     # @api private
     class HashingKeyBuilder < KeyBuilder
+      def initialize(key_table, key_sink, columns)
+        super(key_table, key_sink)
+        @columns = columns
+      end
+
       def original_key(row)
         str = columns.map {|column| prepare_for_hashing(row[column]) }.join
         Digest::MD5.hexdigest(str).upcase
@@ -126,13 +163,7 @@ module Chicago
 
       protected
 
-      def columns
-        if @dimension.natural_key.nil?
-          @dimension.columns.map(&:name)
-        else
-          @dimension.natural_key
-        end
-      end
+      attr_reader :columns
 
       def prepare_for_hashing(column)
         column.to_s.upcase
@@ -152,10 +183,9 @@ module Chicago
     #
     # In addition, the same row passed twice will get a different id. 
     class FactKeyBuilder
-      def initialize(table, db)
-        @db = db
-        @table_name = table.table_name
-        @counter = Counter.new { @db[@table_name].max(:id) }
+      def initialize(db_table)
+        @db_table = db_table
+        @counter = Counter.new { @db_table.max(:id) }
       end
 
       # Returns an id given a row - the row actually has no bearing on

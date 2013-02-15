@@ -136,6 +136,7 @@ describe Chicago::ETL::KeyBuilder do
     it "selects the Hex version of the binary column for the cache" do
       dataset = stub(:dataset, :max => 1).as_null_object
       @db.stub(:[]).with(:keys_dimension_address).and_return(dataset)
+      @builder = described_class.for_table(@schema.dimension(:address), @db)
 
       dataset.should_receive(:select_hash).with(:hex.sql_function(:original_id).as(:original_id), :dimension_id).and_return({})
       
@@ -162,6 +163,7 @@ describe Chicago::ETL::KeyBuilder do
 
     it "increments from the last id stored id in the fact table" do
       @db.stub(:[]).with(:facts_addresses).and_return(stub(:max => 100, :select_hash => {}))
+      @builder = described_class.for_table(@schema.fact(:addresses), @db)
       @builder.key({}).should == 101
     end
 
