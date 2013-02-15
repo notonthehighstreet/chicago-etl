@@ -52,18 +52,6 @@ describe Chicago::ETL::KeyBuilder do
       builder.key(:original_id => 2).should == 1
     end
 
-    it "updates keys in a thread-safe fashion" do
-      builder = described_class.for_table(@dimension, @db)
-      builder.stub(:flush)
-      # These seem to need to be a fairly large number of times to see
-      # errors
-      t1 = Thread.new { 100000.times {|i| builder.key({:original_id => i}) } }
-      t2 = Thread.new { 100000.times {|i| builder.key({:original_id => i + 100_000}) } }
-      t1.join
-      t2.join
-      builder.key(:original_id => 200_003).should == 200001
-    end
-
     it "takes into account the current maximum key in the database" do
       @db.stub(:[]).with(:keys_dimension_user).and_return(stub(:max => 2, :select_hash => {}))
       builder = described_class.for_table(@dimension, @db)

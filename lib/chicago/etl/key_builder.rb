@@ -1,4 +1,3 @@
-require 'thread'
 require 'digest/md5'
 require 'chicago/etl/buffering_insert_writer'
 
@@ -17,13 +16,12 @@ module Chicago
 
       # @api private
       def initialize(dimension, db, key_sink=nil)
-        @mutex = Mutex.new
-        @cache_loaded = false
         @db = db
         @dimension = dimension
         @key_table = dimension.key_table_name
         @new_keys = BufferingInsertWriter.new(@db[dimension.key_table_name],
                                               [:original_id, :dimension_id])
+        @counter = Counter.new { @db[key_table].max(:dimension_id) }
       end
 
       # Returns an appropriate key builder for a schema table, using
@@ -45,14 +43,14 @@ module Chicago
       # @raises Chicago::ETL::KeyError if the surrogate key cannot be
       #   determined from the row data.
       def key(row)
-        fetch_cache unless cache_loaded?
+        fetch_cache unless @key_mapping
         row_id = original_key(row)
         new_key = @key_mapping[row_id]
         
         if new_key
           new_key
         else
-          new_key = increment_key
+          new_key = @counter.next
           @new_keys << {
             :original_id => key_for_insert(row_id), 
             :dimension_id => new_key
@@ -73,22 +71,10 @@ module Chicago
       end
       
       protected
-      
-      def increment_key
-        @mutex.synchronize do
-          @i += 1
-        end
-      end
 
       def fetch_cache
         @key_mapping = @db[key_table].
           select_hash(original_key_select_fragment, :dimension_id)
-        @i = @db[key_table].max(:dimension_id) || 0
-        @cache_loaded = true
-      end
-
-      def cache_loaded?
-        @cache_loaded
       end
     end
 
@@ -159,29 +145,19 @@ module Chicago
     # In addition, the same row passed twice will get a different id. 
     class FactKeyBuilder
       def initialize(table, db)
-        @mutex = Mutex.new
-        @i = nil
         @db = db
         @table_name = table.table_name
+        @counter = Counter.new { @db[@table_name].max(:id) }
       end
 
       # Returns an id given a row - the row actually has no bearing on
       # the id returned.
       def key(row)
-        fetch_max_id unless @i
-        @mutex.synchronize do
-          @i += 1
-        end
+        @counter.next
       end
 
       # No-op, provided for interface compatability.
       def flush
-      end
-
-      private
-
-      def fetch_max_id
-        @i = @db[@table_name].max(:id) || 0
       end
     end
   end

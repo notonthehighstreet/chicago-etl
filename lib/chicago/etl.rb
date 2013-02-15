@@ -1,5 +1,6 @@
 require 'sequel'
 
+require 'chicago/etl/counter'
 require 'chicago/etl/key_builder'
 require 'chicago/etl/sink'
 require 'chicago/etl/mysql_load_file_value_transformer'
