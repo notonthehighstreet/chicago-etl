@@ -15,7 +15,7 @@ module Chicago
       attr_reader :key_table
 
       # @api private
-      def initialize(dimension, db, key_sink=nil)
+      def initialize(dimension, db)
         @db = db
         @dimension = dimension
         @key_table = dimension.key_table_name
