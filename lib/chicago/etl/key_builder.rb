@@ -183,7 +183,7 @@ module Chicago
     #
     # In addition, the same row passed twice will get a different id. 
     class FactKeyBuilder
-      def initialize(db_table)
+      def initialize(db_table, key_sink=nil)
         @db_table = db_table
         @counter = Counter.new { @db_table.max(:id) }
       end
