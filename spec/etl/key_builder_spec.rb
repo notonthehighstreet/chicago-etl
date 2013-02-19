@@ -126,6 +126,22 @@ describe Chicago::ETL::KeyBuilder do
         should == 2
     end
 
+    it "returns the same incrementing key, ignoring case" do
+      @builder.key(:line1 => "some street", :post_code => "TW3 X45").
+        should == 1
+      @builder.key(:line1 => "some STREET", :post_code => "TW3 X45").
+        should == 1
+    end
+
+    it "can override default hash preparation" do
+      @builder.hash_preparation = lambda {|c| c }
+
+      @builder.key(:line1 => "some street", :post_code => "TW3 X45").
+        should == 1
+      @builder.key(:line1 => "some STREET", :post_code => "TW3 X45").
+        should == 2
+    end
+
     it "inserts the hash as a binary literal" do
       # Yuck. Don't like the implementation test, but mock
       # expectations fail here for some reason, maybe because of the

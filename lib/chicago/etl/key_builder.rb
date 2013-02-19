@@ -143,13 +143,17 @@ module Chicago
     #
     # @api private
     class HashingKeyBuilder < KeyBuilder
+      attr_reader   :columns
+      attr_accessor :hash_preparation
+
       def initialize(key_table, key_sink, columns)
         super(key_table, key_sink)
         @columns = columns
+        @hash_preparation = lambda {|column| column.to_s.upcase }
       end
 
       def original_key(row)
-        str = columns.map {|column| prepare_for_hashing(row[column]) }.join
+        str = columns.map {|column| hash_preparation.call(row[column]) }.join
         Digest::MD5.hexdigest(str).upcase
       end
 
@@ -159,14 +163,6 @@ module Chicago
 
       def original_key_select_fragment
         :hex.sql_function(:original_id).as(:original_id)
-      end
-
-      protected
-
-      attr_reader :columns
-
-      def prepare_for_hashing(column)
-        column.to_s.upcase
       end
     end
 
