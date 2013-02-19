@@ -28,4 +28,10 @@ describe Chicago::ETL::SequelExtensions::LoadDataInfile do
   it "loads into the columns specified" do
     @sql.should include("(`bar`,`baz`);")
   end
+
+  it "can ignore instead of replacing rows" do
+    @sql = TEST_DB[:foo].insert_ignore.
+      load_csv_infile_sql("bar.csv", [:bar, :baz])
+    @sql.should include("IGNORE INTO TABLE `foo`")
+  end
 end

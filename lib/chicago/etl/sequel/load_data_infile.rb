@@ -8,7 +8,8 @@ module Chicago
         end
         
         def load_csv_infile_sql(filepath, columns)
-          "LOAD DATA INFILE '#{filepath}' REPLACE INTO TABLE `#{opts[:from].first}` CHARACTER SET 'utf8' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' (`#{columns.join('`,`')}`);"
+          replacement = opts[:insert_ignore] ? "IGNORE" : "REPLACE"
+          "LOAD DATA INFILE '#{filepath}' #{replacement} INTO TABLE `#{opts[:from].first}` CHARACTER SET 'utf8' FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\"' ESCAPED BY '\"' (`#{columns.join('`,`')}`);"
         end
       end
     end
