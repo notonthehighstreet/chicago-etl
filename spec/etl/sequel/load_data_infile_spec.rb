@@ -26,7 +26,7 @@ describe Chicago::ETL::SequelExtensions::LoadDataInfile do
   end
 
   it "loads into the columns specified" do
-    @sql.should include("(`bar`,`baz`);")
+    @sql.should include("(`bar`,`baz`)")
   end
 
   it "can ignore instead of replacing rows" do
