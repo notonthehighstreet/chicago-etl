@@ -109,7 +109,7 @@ module Chicago
         # :character_set - the character set of the file, UTF8 default
         # :format - either nil or :csv
         def load_infile(path, columns, options={})
-          execute_dui(load_infile_sql(filepath, columns, options))
+          execute_dui(load_infile_sql(path, columns, options))
         end
 
         def load_infile_sql(path, columns, options={})
@@ -127,7 +127,7 @@ module Chicago
         #
         # See load_infile for more options.
         def load_csv_infile(path, columns, options={})
-          execute_dui(load_csv_infile_sql(filepath, columns, options))
+          execute_dui(load_csv_infile_sql(path, columns, options))
         end
         
         def load_csv_infile_sql(path, columns, options={})
