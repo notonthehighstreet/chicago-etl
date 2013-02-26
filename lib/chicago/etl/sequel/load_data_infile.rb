@@ -89,7 +89,7 @@ module Chicago
         end
 
         def format_column(column)
-          column.to_s[0] == "@" ? column : "`#{column}`"
+          column.to_s[0..0] == "@" ? column : "`#{column}`"
         end
       end
 
