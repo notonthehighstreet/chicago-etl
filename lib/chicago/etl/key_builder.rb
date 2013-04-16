@@ -29,6 +29,8 @@ module Chicago
             
             if table.identifiable?
               IdentifiableDimensionKeyBuilder.new(key_table, key_sink)
+            elsif existing_hash_column?(table)
+              ExistingHashColumnKeyBuilder.new(key_table, key_sink)
             else
               HashingKeyBuilder.new(key_table, key_sink, columns_to_hash)
             end
@@ -38,6 +40,10 @@ module Chicago
         end
 
         private
+
+        def existing_hash_column?(table)
+          table.columns.any? {|c| c.binary? && c.name == :hash && c.unique? }
+        end
 
         def dimension?
           table.kind_of?(Chicago::Schema::Dimension)
@@ -132,6 +138,24 @@ module Chicago
 
       def original_key_select_fragment
         :original_id
+      end
+    end
+
+    # Key builder for dimensions with a single unique hash column
+    # already present.
+    #
+    # @api private
+    class ExistingHashColumnKeyBuilder < KeyBuilder
+      def original_key(row)
+        row[:hash].upcase
+      end
+
+      def key_for_insert(original_id)
+        ("0x" + original_id).lit
+      end
+
+      def original_key_select_fragment
+        :hex.sql_function(:original_id).as(:original_id)
       end
     end
 

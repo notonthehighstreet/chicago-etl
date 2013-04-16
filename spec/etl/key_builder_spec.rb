@@ -22,6 +22,14 @@ describe Chicago::ETL::KeyBuilder do
       end
     end
 
+    @schema.define_dimension(:with_hash) do
+      columns do
+        binary :hash, :unique => true
+      end
+
+      natural_key :hash
+    end
+
     @schema.define_fact(:addresses) do
       dimensions :user, :address
       natural_key :user, :address
@@ -111,6 +119,35 @@ describe Chicago::ETL::KeyBuilder do
 
       dataset.should_receive(:insert_replace).and_return(dataset)
       described_class.for_table(@dimension, @db).flush
+    end
+  end
+
+  describe "for non-identifiable dimensions with an existing hash" do
+    before :each do
+      @builder = described_class.
+        for_table(@schema.dimension(:with_hash), @db)
+    end
+
+    it "returns an incrementing key, given a row" do
+      @builder.key(:hash => "aaa").should == 1
+      @builder.key(:hash => "aab").should == 2
+    end
+
+    it "returns the same incrementing key" do
+      @builder.key(:hash => "aaa").should == 1
+      @builder.key(:hash => "aaa").should == 1
+    end
+
+    it "returns the same incrementing key, ignoring case" do
+      @builder.key(:hash => "aaa").should == 1
+      @builder.key(:hash => "AAA").should == 1
+    end
+
+    it "inserts the hash as a binary literal" do
+      # Yuck. Don't like the implementation test, but mock
+      # expectations fail here for some reason, maybe because of the
+      # Sequel::LiteralString?
+      @builder.key_for_insert(@builder.original_key(:hash => "aaa")).should == "0xAAA".lit
     end
   end
 
