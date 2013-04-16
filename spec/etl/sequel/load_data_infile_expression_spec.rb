@@ -48,9 +48,13 @@ describe Chicago::ETL::SequelExtensions::LoadDataInfileExpression do
   end
 
   it "can set column values" do
-    described_class.new("bar.csv", :foo, ['@bar', 'quux'], 
+    sql = described_class.new("bar.csv", :foo, ['@bar', 'quux'], 
                         :set => {:bar => :unhex.sql_function("@bar".lit),
                         :etl_batch_id => 3}).
-      to_sql(TEST_DB).should include("SET `bar` = unhex(@bar), `etl_batch_id` = 3")
+      to_sql(TEST_DB)
+
+    sql.should include("SET")
+    sql.should include("`etl_batch_id` = 3")
+    sql.should include("`bar` = unhex(@bar)")
   end
 end
