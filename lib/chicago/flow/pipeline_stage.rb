@@ -12,7 +12,7 @@ module Chicago
     class PipelineStage
       attr_reader :transformation_chain
       
-      def initialize(source, options)
+      def initialize(source, options={})
         @source = source
         @sinks  = options[:sinks] || {}
         @transformations = options[:transformations] || []
@@ -20,6 +20,11 @@ module Chicago
         @transformation_chain = TransformationChain.new(*@transformations)
       end
 
+      def register_sink(name, sink)
+        @sinks[name.to_sym] = sink
+        self
+      end
+      
       def validate_pipeline
         unless unregistered_sinks.empty?
           @error_handler.unregistered_sinks(unregistered_sinks)

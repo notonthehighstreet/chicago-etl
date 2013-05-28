@@ -27,15 +27,15 @@ describe PipelineStage do
   let(:source) { [{:a => 1}] }
 
   it "reads from source to sink" do
-    pipeline = described_class.new(source, :sinks => {:default => sink})
+    pipeline = described_class.new(source).register_sink(:default, sink)
     pipeline.execute
     sink.data.should == source
   end
 
   it "passes rows through transforms" do
-    pipeline = described_class.new(source,
-                                   :sinks => {:default => sink},
-                                   :transformations => [transform.new])
+    pipeline = described_class.new(source, :transformations => [transform.new]).
+      register_sink(:default, sink)
+                                   
     pipeline.execute
     sink.data.should == [{:a => 2}]
   end
@@ -43,9 +43,9 @@ describe PipelineStage do
   it "writes rows to the appropriate sink for their stream, and strips the stream tag" do
     error_sink = ArraySink.new
 
-    pipeline = described_class.new(source,
-                                   :sinks => {:default => sink, :error => error_sink},
-                                   :transformations => [add_error.new])
+    pipeline = described_class.new(source, :transformations => [add_error.new]).
+      register_sink(:default, sink).
+      register_sink(:error, error_sink)
 
     pipeline.execute
     sink.data.should == [{:a => 1}]
@@ -72,7 +72,7 @@ describe PipelineStage do
 
   it "opens sinks before writing and closes them afterwards" do
     sink = mock(:sink)
-    pipeline = described_class.new(source, :sinks => {:default => sink})
+    pipeline = described_class.new(source).register_sink(:default, sink)
     sink.should_receive(:open)
     sink.stub(:<<)
     sink.should_receive(:close)
