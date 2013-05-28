@@ -1,0 +1,31 @@
+module Chicago
+  module Flow
+    class TransformationChain
+      def initialize(*transforms)
+        @transforms = transforms
+      end
+
+      def output_streams
+        @transforms.inject([]) {|s, t| s | t.output_streams }
+      end
+
+      def process(row)
+        @transforms.inject([row]) do |rows, transform|
+          process_rows(rows, transform)
+        end
+      end
+
+      def flush
+        @transforms.inject([]) do |rows, transform|
+          process_rows(rows, transform) + transform.flush
+        end
+      end
+
+      private
+
+      def process_rows(rows, transform)
+        rows.map {|row| transform.process(row) }.flatten.compact
+      end
+    end
+  end
+end
