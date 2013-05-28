@@ -21,4 +21,10 @@ describe MysqlFileSink do
     MysqlFileSerializer.any_instance.should_receive(:serialize).with(1).and_return(1)
     sink << {:foo => 1}
   end
+
+  it "has defined fields" do
+    sink = described_class.new(:test_table, "test_file", [:foo])
+    sink.should have_defined_fields
+    sink.fields.should == [:foo]
+  end
 end

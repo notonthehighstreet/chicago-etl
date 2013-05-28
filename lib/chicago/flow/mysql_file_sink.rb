@@ -1,9 +1,11 @@
 module Chicago
   module Flow
     class MysqlFileSink
-      def initialize(table, filepath, columns)
+      attr_reader :fields
+      
+      def initialize(table, filepath, fields)
         @filepath = filepath
-        @columns = columns
+        @fields = fields
         @serializer = MysqlFileSerializer.new
       end
 
@@ -13,11 +15,15 @@ module Chicago
 
       def <<(row)
         open unless @csv
-        @csv << @columns.map {|c| @serializer.serialize(row[c]) }
+        @csv << fields.map {|c| @serializer.serialize(row[c]) }
       end
 
       def close
         @csv.close
+      end
+
+      def has_defined_fields?
+        true
       end
     end
   end
