@@ -24,12 +24,12 @@ describe PipelineStage do
   }
 
   let(:sink) { ArraySink.new }
-  let(:source) { [{:a => 1}] }
+  let(:source) { ArraySource.new([{:a => 1}]) }
 
   it "reads from source to sink" do
     pipeline = described_class.new(source).register_sink(:default, sink)
     pipeline.execute
-    sink.data.should == source
+    sink.data.should == [{:a => 1}]
   end
 
   it "passes rows through transforms" do
