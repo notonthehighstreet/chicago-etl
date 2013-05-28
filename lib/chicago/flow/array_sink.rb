@@ -3,7 +3,8 @@ module Chicago
     class ArraySink
       attr_reader :data
       
-      def initialize
+      def initialize(fields=[])
+        @fields = [fields].flatten
         @data = []
       end
 

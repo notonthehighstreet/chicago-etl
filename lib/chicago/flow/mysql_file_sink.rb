@@ -1,11 +1,9 @@
 module Chicago
   module Flow
-    class MysqlFileSink
-      attr_reader :fields
-      
+    class MysqlFileSink < PipelineEndpoint
       def initialize(table, filepath, fields)
+        @fields = [fields].flatten
         @filepath = filepath
-        @fields = fields
         @serializer = MysqlFileSerializer.new
       end
 
@@ -20,10 +18,6 @@ module Chicago
 
       def close
         @csv.close
-      end
-
-      def has_defined_fields?
-        true
       end
     end
   end
