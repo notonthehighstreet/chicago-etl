@@ -23,13 +23,13 @@ describe PipelineStage do
     }
   }
 
-  let(:sink) { [] }
+  let(:sink) { ArraySink.new }
   let(:source) { [{:a => 1}] }
 
   it "reads from source to sink" do
     pipeline = described_class.new(source, :sinks => {:default => sink})
     pipeline.execute
-    sink.should == source
+    sink.data.should == source
   end
 
   it "passes rows through transforms" do
@@ -37,19 +37,19 @@ describe PipelineStage do
                                    :sinks => {:default => sink},
                                    :transformations => [transform.new])
     pipeline.execute
-    sink.should == [{:a => 2}]
+    sink.data.should == [{:a => 2}]
   end
 
   it "writes rows to the appropriate sink for their stream, and strips the stream tag" do
-    error_sink = []
+    error_sink = ArraySink.new
 
     pipeline = described_class.new(source,
                                    :sinks => {:default => sink, :error => error_sink},
                                    :transformations => [add_error.new])
 
     pipeline.execute
-    sink.should == [{:a => 1}]
-    error_sink.should == [{:message => "error"}]
+    sink.data.should == [{:a => 1}]
+    error_sink.data.should == [{:message => "error"}]
   end
 
   it "calls an error handler if sinks are not registered" do
@@ -68,5 +68,14 @@ describe PipelineStage do
                                    :transformations => [add_error.new])
 
     expect { pipeline.execute }.to raise_error(Chicago::Flow::Error)
+  end
+
+  it "opens sinks before writing and closes them afterwards" do
+    sink = mock(:sink)
+    pipeline = described_class.new(source, :sinks => {:default => sink})
+    sink.should_receive(:open)
+    sink.stub(:<<)
+    sink.should_receive(:close)
+    pipeline.execute
   end
 end

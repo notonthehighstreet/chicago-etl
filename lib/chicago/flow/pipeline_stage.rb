@@ -28,10 +28,12 @@ module Chicago
       
       def execute
         validate_pipeline
+        @sinks.values.each(&:open)
         @source.each do |row|
           transformation_chain.process(row).each {|row| process_row(row) }
         end
         transformation_chain.flush.each {|row| process_row(row) }
+        @sinks.values.each(&:close)
       end
 
       def required_sinks
