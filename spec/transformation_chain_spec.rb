@@ -1,8 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe Chicago::Flow::TransformationChain do
+describe TransformationChain do
   let(:add_1_to_a) {
-    Class.new(Chicago::Flow::Transformation) {
+    Class.new(Transformation) {
       def process_row(row)
         row[:a] += 1
         row
@@ -11,7 +11,7 @@ describe Chicago::Flow::TransformationChain do
   }
 
   let(:dup_row) {
-    Class.new(Chicago::Flow::Transformation) {
+    Class.new(Transformation) {
       def output_streams
         [:default, @options[:onto]].flatten
       end
@@ -19,13 +19,6 @@ describe Chicago::Flow::TransformationChain do
       def process_row(row)
         new_row = assign_stream(row.dup, @options[:onto])
         [row, new_row]
-      end
-    }
-  }
-
-  let(:filter_all) {
-    Class.new(Chicago::Flow::Transformation) {
-      def process_row(row)
       end
     }
   }
@@ -55,7 +48,7 @@ describe Chicago::Flow::TransformationChain do
   end
 
   it "can cope with a filter returning nil" do
-    described_class.new(filter_all.new, dup_row.new, add_1_to_a.new).process({:a => 1}).
+    described_class.new(Filter.new, dup_row.new, add_1_to_a.new).process({:a => 1}).
       should == []
   end
 
