@@ -21,6 +21,14 @@ module Chicago
         end
       end
 
+      def upstream_fields(fields)
+        @transforms.inject(fields) {|t| t.upstream_fields(fields) }
+      end
+
+      def downstream_fields(fields)
+        @transforms.inject(fields) {|t| t.downstream_fields(fields) }
+      end
+
       private
 
       def process_rows(rows, transform)

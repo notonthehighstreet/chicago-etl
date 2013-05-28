@@ -9,6 +9,20 @@ describe Chicago::Flow::Transformation do
       end
     }
   }
+
+  let(:add_and_remove) {
+    Class.new(Chicago::Flow::Transformation) {
+      adds_fields :b, :c
+      removes_fields :a
+      
+      def process_row(row)
+        row.delete(:a)
+        row[:b] = 1
+        row[:c] = 2
+        row
+      end
+    }
+  }
   
   it "writes to the :default stream by default" do
     subject.output_streams.should == [:default]
@@ -37,5 +51,23 @@ describe Chicago::Flow::Transformation do
 
   it "can be flushed" do
     subject.flush.should == []
+  end
+
+  it "can specify which fields are added" do
+    add_and_remove.new.added_fields.should == [:b, :c]
+  end
+
+  it "can specify which fields are removed" do
+    add_and_remove.new.removed_fields.should == [:a]
+  end
+
+  it "can calculate downstream fields" do
+    Set.new(add_and_remove.new.downstream_fields([:a, :b, :d])).
+      should == Set.new([:b, :c, :d])
+  end
+
+  it "can calculate upstream fields" do
+    Set.new(add_and_remove.new.upstream_fields([:b, :c, :d])).
+      should == Set.new([:a, :d])
   end
 end

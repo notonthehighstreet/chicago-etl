@@ -13,6 +13,36 @@ module Chicago
           @options = options || {}
         end
       end
+
+      class << self
+        attr_reader :added_fields, :removed_fields
+
+        def adds_fields(*fields)
+          @added_fields ||= []
+          @added_fields += fields.flatten
+        end
+
+        def removes_fields(*fields)
+          @removed_fields ||= []
+          @removed_fields += fields.flatten
+        end
+      end
+      
+      def added_fields
+        self.class.added_fields
+      end
+
+      def removed_fields
+        self.class.removed_fields
+      end
+      
+      def upstream_fields(fields)
+        ((fields + removed_fields) - added_fields).uniq
+      end
+
+      def downstream_fields(fields)
+        ((fields - removed_fields) + added_fields).uniq
+      end
       
       def process(row)
         applies_to_stream?(row[STREAM]) ? process_row(row) : row
