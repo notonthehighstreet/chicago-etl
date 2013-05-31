@@ -1,6 +1,6 @@
 module Chicago
   module Flow
-    class ArraySink
+    class ArraySink < Sink
       attr_reader :data
       
       def initialize(fields=[])
@@ -12,7 +12,7 @@ module Chicago
       end
       
       def <<(row)
-        @data << row
+        @data << row.merge(constant_values)
       end
 
       def close
