@@ -8,14 +8,8 @@ module Chicago
         @data = []
       end
 
-      def open
-      end
-      
       def <<(row)
         @data << row.merge(constant_values)
-      end
-
-      def close
       end
     end
   end

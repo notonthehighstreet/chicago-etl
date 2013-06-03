@@ -12,9 +12,6 @@ module Chicago
         @target_table = target_table
       end
 
-      def open
-      end
-
       def <<(row)
         csv << fields.map {|c| @serializer.serialize(row[c]) }
       end
