@@ -3,6 +3,7 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 require 'rspec'
 require 'yaml'
 require 'chicago/flow'
+require 'chicago/flow/mysql'
 
 unless defined? TEST_DB
   TEST_DB = Sequel.connect(YAML.load(File.read(File.dirname(__FILE__) + "/database.yml")))
