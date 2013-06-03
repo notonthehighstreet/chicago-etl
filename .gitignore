@@ -1,3 +1,5 @@
+spec/database.yml
+
 # rcov generated
 coverage
 coverage.data

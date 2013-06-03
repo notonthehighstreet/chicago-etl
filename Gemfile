@@ -3,6 +3,7 @@ source "http://rubygems.org"
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
 group :development do
+  gem "mysql", "2.8.1"
   gem "sequel"
   gem "sequel_load_data_infile", :require => "sequel/load_data_infile"
   gem "rspec", "~> 2"
