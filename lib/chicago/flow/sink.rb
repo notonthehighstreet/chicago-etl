@@ -1,13 +1,15 @@
 module Chicago
   module Flow
     class Sink < PipelineEndpoint
+      # Specifies a hash of values that are assumed to apply to all
+      # rows.
+      #
+      # Subclasses should use there constant values appropriately when
+      # writing rows, by merging them with the row or otherwise
+      # ensuring that they end up in the final source this sink
+      # represents.
       def constant_values
         @constant_values ||= {}
-      end
-
-      def set_constant_value(field, value)
-        constant_values[field] = value
-        self
       end
 
       # Performs any operations before writing rows to this sink.
