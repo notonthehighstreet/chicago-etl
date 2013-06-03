@@ -1,12 +1,16 @@
 require 'sequel'
 require 'sequel/load_data_infile'
+require 'tempfile'
 
 module Chicago
   module Flow
     class MysqlFileSink < Sink
-      def initialize(db, target_table, filepath, fields)
+      attr_reader :filepath
+
+      def initialize(db, target_table, fields, options = {})
         @fields = [fields].flatten
-        @filepath = filepath
+        @filepath = options[:filepath] || 
+          Tempfile.new(target_table.to_s).path
         @serializer = MysqlFileSerializer.new
         @db = db
         @target_table = target_table
@@ -18,8 +22,8 @@ module Chicago
 
       def close
         csv.close
-        load_from_file(@filepath)
-        File.unlink(@filepath) if File.exists?(@filepath)
+        load_from_file(filepath)
+        File.unlink(filepath) if File.exists?(filepath)
       end
 
       def load_from_file(file)
@@ -30,7 +34,7 @@ module Chicago
       private
 
       def csv
-        @csv ||= CSV.open(@filepath)
+        @csv ||= CSV.open(filepath)
       end
     end
   end

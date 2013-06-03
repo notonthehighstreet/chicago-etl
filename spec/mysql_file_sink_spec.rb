@@ -7,7 +7,7 @@ describe MysqlFileSink do
   let(:csv) { mock(:csv) }
 
   let(:sink) {
-    described_class.new(db, :table, "test_file", [:foo])
+    described_class.new(db, :table, [:foo], :filepath => "test_file")
   }
   
   before :each do
@@ -47,5 +47,9 @@ describe MysqlFileSink do
   it "specifies that INSERT IGNORE should be used" do
     dataset.should_receive(:insert_ignore)
     sink.close
+  end
+
+  it "writes csv to a tempfile if no explicit filepath is given" do
+    described_class.new(db, :table, [:foo]).filepath.should match(/table/)
   end
 end
