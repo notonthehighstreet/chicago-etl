@@ -32,7 +32,15 @@ describe MysqlFileSink do
   end
 
   it "loads the csv file into the database when closed" do
-    dataset.should_receive(:load_csv_infile).with("test_file", [:foo])
+    dataset.should_receive(:load_csv_infile).
+      with("test_file", [:foo], :set => {})
+    sink.close
+  end
+
+  it "uses the :set hash to load constant values" do
+    sink.constant_values[:bar] = 1
+    dataset.should_receive(:load_csv_infile).
+      with("test_file", [:foo], :set => {:bar => 1})
     sink.close
   end
 

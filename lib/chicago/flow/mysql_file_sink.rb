@@ -18,18 +18,19 @@ module Chicago
 
       def close
         csv.close
-        load_file_into_table
+        load_from_file(@filepath)
         File.unlink(@filepath) if File.exists?(@filepath)
+      end
+
+      def load_from_file(file)
+        @db[@target_table].insert_ignore.
+          load_csv_infile(file, @fields, :set => constant_values)
       end
 
       private
 
       def csv
         @csv ||= CSV.open(@filepath)
-      end
-
-      def load_file_into_table
-        @db[@target_table].insert_ignore.load_csv_infile(@filepath, @fields)
       end
     end
   end
