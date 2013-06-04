@@ -14,6 +14,8 @@ describe MysqlFileSink do
     CSV.stub(:open).and_return(csv)
     csv.stub(:<<)
     csv.stub(:close).and_return(csv)
+
+    File.stub(:size?).and_return(true)
   end
   
   it "writes specified columns to rows in a file" do
@@ -44,12 +46,31 @@ describe MysqlFileSink do
     sink.close
   end
 
-  it "specifies that INSERT IGNORE should be used" do
-    dataset.should_receive(:insert_ignore)
+  it "does not IGNORE rows by default" do
+    dataset.should_not_receive(:insert_ignore)
     sink.close
+  end
+
+  it "can specify that INSERT IGNORE should be used" do
+    dataset.should_receive(:insert_ignore)
+    described_class.new(db, :table, [:foo], 
+                        :filepath => "test_file", :ignore => true).close
   end
 
   it "writes csv to a tempfile if no explicit filepath is given" do
     described_class.new(db, :table, [:foo]).filepath.should match(/table/)
+  end
+
+  it "doesn't attempt to load data if the file is empty or does not exist" do
+    File.stub(:size?).and_return(false)
+    dataset.should_not_receive(:load_csv_infile)
+    sink.close
+  end
+
+  it "removes the temporary file when closed" do
+    File.stub(:exists?).and_return(true)
+    File.should_receive(:unlink).with("test_file")
+
+    sink.close
   end
 end
