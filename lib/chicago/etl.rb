@@ -5,7 +5,6 @@ require 'chicago/flow/mysql'
 require 'chicago/etl/counter'
 require 'chicago/etl/key_builder'
 require 'chicago/etl/schema_table_sink_factory'
-require 'chicago/etl/sink'
 require 'chicago/etl/buffering_insert_writer'
 
 require 'chicago/etl/load_dataset_builder'
