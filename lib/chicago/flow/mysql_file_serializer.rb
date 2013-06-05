@@ -8,7 +8,7 @@ module Chicago
       def serialize(value)
         case value
         when nil
-          "\\N"
+          "NULL"
         when true
           "1"
         when false

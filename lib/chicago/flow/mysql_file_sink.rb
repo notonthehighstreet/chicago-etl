@@ -1,6 +1,8 @@
 require 'sequel'
 require 'sequel/load_data_infile'
-require 'tempfile'
+require 'tmpdir'
+
+Sequel.extension :core_extensions
 
 module Chicago
   module Flow
@@ -9,7 +11,7 @@ module Chicago
 
       def initialize(db, table_name, fields, options = {})
         @fields = [fields].flatten
-        @filepath = options[:filepath] || Tempfile.new(table_name.to_s).path
+        @filepath = options[:filepath] || temp_file(table_name)
         @serializer = MysqlFileSerializer.new
         @db = db
         @table_name = table_name
@@ -21,15 +23,16 @@ module Chicago
       end
 
       def close
-        csv.close
+        csv.flush
         load_from_file(filepath)
+        csv.close
         File.unlink(filepath) if File.exists?(filepath)
       end
 
       # Loads data from the file into the MySQL table via LOAD DATA
       # INFILE, if the file exists and has content.
       def load_from_file(file)
-        return unless File.size?(file)        
+        return unless File.size?(file)
         dataset.load_csv_infile(file, @fields, :set => constant_values)
       end
 
@@ -40,7 +43,11 @@ module Chicago
       end
 
       def csv
-        @csv ||= CSV.open(filepath)
+        @csv ||= CSV.open(filepath, "w")
+      end
+
+      def temp_file(table_name)
+        File.join(Dir.tmpdir, "#{table_name}.#{rand(1_000_000)}.csv")
       end
     end
   end

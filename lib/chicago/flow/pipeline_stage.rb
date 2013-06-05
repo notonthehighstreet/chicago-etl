@@ -5,7 +5,7 @@ module Chicago
     
     class RaisingErrorHandler
       def unregistered_sinks(sinks)
-        raise Error.new("#{sinks} are not registered")
+        raise Error.new("Sinks not registered: #{sinks.join(",")}")
       end
     end
 

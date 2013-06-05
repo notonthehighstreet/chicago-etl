@@ -1,8 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe Chicago::Flow::MysqlFileSerializer do
-  it "serializes nil into \\N" do
-    subject.serialize(nil).should == "\\N"
+  it "serializes nil into NULL" do
+    subject.serialize(nil).should == "NULL"
   end
 
   it "serializes true into '1'" do

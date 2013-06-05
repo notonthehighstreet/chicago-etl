@@ -14,6 +14,7 @@ describe MysqlFileSink do
     CSV.stub(:open).and_return(csv)
     csv.stub(:<<)
     csv.stub(:close).and_return(csv)
+    csv.stub(:flush)
 
     File.stub(:size?).and_return(true)
   end
@@ -58,7 +59,7 @@ describe MysqlFileSink do
   end
 
   it "writes csv to a tempfile if no explicit filepath is given" do
-    described_class.new(db, :table, [:foo]).filepath.should match(/table/)
+    described_class.new(db, :table, [:foo]).filepath.should match(/table\.\d+\.csv/)
   end
 
   it "doesn't attempt to load data if the file is empty or does not exist" do
