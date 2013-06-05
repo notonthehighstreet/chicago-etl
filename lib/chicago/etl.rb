@@ -1,4 +1,13 @@
 require 'sequel'
+require 'chicago/flow'
+require 'chicago/flow/mysql'
+
+if RUBY_VERSION == "1.8.7"
+  require 'fastercsv'
+  CSV = FasterCSV
+else
+  require 'csv'
+end
 
 require 'chicago/etl/counter'
 require 'chicago/etl/key_builder'
@@ -11,7 +20,6 @@ require 'chicago/etl/load_dataset_builder'
 
 # Sequel Extensions
 require 'chicago/etl/sequel/filter_to_etl_batch'
-require 'chicago/etl/sequel/load_data_infile'
 require 'chicago/etl/sequel/dependant_tables'
 
 # Screens
