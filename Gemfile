@@ -2,7 +2,7 @@ source "http://rubygems.org"
 
 gem "fastercsv", :platform => :ruby_18
 gem "sequel"
-gem "sequel_load_data_infile", :require => "sequel/load_data_infile"
+gem "sequel_load_data_infile", ">= 0.0.2", :require => "sequel/load_data_infile"
 gem "sequel_fast_columns", :require => "sequel/fast_columns"
 
 # Add dependencies to develop your gem here.
