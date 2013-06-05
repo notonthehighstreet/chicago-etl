@@ -2,13 +2,6 @@ require 'sequel'
 require 'chicago/flow'
 require 'chicago/flow/mysql'
 
-if RUBY_VERSION == "1.8.7"
-  require 'fastercsv'
-  CSV = FasterCSV
-else
-  require 'csv'
-end
-
 require 'chicago/etl/counter'
 require 'chicago/etl/key_builder'
 require 'chicago/etl/schema_table_sink_factory'
