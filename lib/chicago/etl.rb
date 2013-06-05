@@ -21,7 +21,6 @@ require 'chicago/etl/screens/invalid_element'
 require 'chicago/etl/screens/out_of_bounds'
 
 # Transformations
-require 'chicago/etl/transformations/add_insert_timestamp'
 require 'chicago/etl/transformations/uk_post_code'
 require 'chicago/etl/transformations/uk_post_code_field'
 
