@@ -24,15 +24,14 @@ module Chicago
         def make
           if dimension?
             key_table = staging_db[table.key_table_name]
-            key_sink = BufferingInsertWriter.new(key_table,
-                                                 [:original_id, :dimension_id])
+            sink = SchemaTableSinkFactory.new(@staging_db, table).key_sink
             
             if table.identifiable?
-              IdentifiableDimensionKeyBuilder.new(key_table, key_sink)
+              IdentifiableDimensionKeyBuilder.new(key_table, sink)
             elsif existing_hash_column?(table)
-              ExistingHashColumnKeyBuilder.new(key_table, key_sink)
+              ExistingHashColumnKeyBuilder.new(key_table, sink)
             else
-              HashingKeyBuilder.new(key_table, key_sink, columns_to_hash)
+              HashingKeyBuilder.new(key_table, sink, columns_to_hash)
             end
           elsif fact?
             FactKeyBuilder.new(staging_db[table.table_name])
@@ -102,8 +101,8 @@ module Chicago
       end
 
       # Flushes any newly created keys to the key table.
-      def flush
-        @new_keys.flush
+      def close
+        @new_keys.close
       end
       
       protected
@@ -215,7 +214,7 @@ module Chicago
       end
 
       # No-op, provided for interface compatability.
-      def flush
+      def close
       end
     end
   end

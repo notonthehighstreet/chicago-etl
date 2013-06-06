@@ -39,8 +39,9 @@ describe Chicago::ETL::KeyBuilder do
   before :each do
     @db = stub(:staging_database).as_null_object
     @db.stub(:[]).and_return(stub(:max => nil, :select_hash => {}))
-    @writer = stub(:writer).as_null_object
-    Chicago::ETL::BufferingInsertWriter.stub(:new).and_return(@writer)
+    @writer = stub(:sink).as_null_object
+    Chicago::ETL::SchemaTableSinkFactory.stub(:new).
+      and_return(stub(:factory, :key_sink => @writer))
   end
 
   describe "for identifiable dimensions" do
@@ -80,45 +81,9 @@ describe Chicago::ETL::KeyBuilder do
       expect { builder.key(:foo => :bar) }.to raise_error(Chicago::ETL::KeyError)
     end
 
-    it "flushes new keys to a key table" do
-      pending
-      dataset = stub(:dataset, :max => 1, :select_hash => {40 => 1})
-      dataset.stub(:insert_replace => dataset)
-      @db.stub(:[]).with(:keys_dimension_user).and_return(dataset)
-
-      dataset.should_receive(:multi_insert).
-        with([{:original_id => 30, :dimension_id => 2}])
-                                              
-      builder = described_class.for_table(@dimension, @db)
-      builder.key(:original_id => 30)
-      builder.key(:original_id => 40)
-      builder.flush
-    end
-
-    it "flushes new keys only once" do
-      pending
-      dataset = stub(:dataset, :max => 1, :select_hash => {40 => 1})
-      dataset.stub(:insert_replace => dataset)
-      @db.stub(:[]).with(:keys_dimension_user).and_return(dataset)
-
-      dataset.should_receive(:multi_insert).
-        with([{:original_id => 30, :dimension_id => 2}])
-      dataset.should_receive(:multi_insert).with([])
-                                              
-      builder = described_class.for_table(@dimension, @db)
-      builder.key(:original_id => 30)
-      builder.key(:original_id => 40)
-      builder.flush
-      builder.flush
-    end
-
-    it "replaces old mappings with new values" do
-      pending
-      dataset = stub(:dataset, :max => 1, :select_hash => {40 => 1}, :multi_insert => nil)
-      @db.stub(:[]).with(:keys_dimension_user).and_return(dataset)
-
-      dataset.should_receive(:insert_replace).and_return(dataset)
-      described_class.for_table(@dimension, @db).flush
+    it "closes the sink when close is called" do
+      @writer.should_receive(:close)
+      described_class.for_table(@dimension, @db).close
     end
   end
 
@@ -220,8 +185,8 @@ describe Chicago::ETL::KeyBuilder do
       @builder.key({}).should == 101
     end
 
-    it "supports the flush interface as a no-op" do
-      lambda { @builder.flush }.should_not raise_error
+    it "supports the close interface as a no-op" do
+      lambda { @builder.close }.should_not raise_error
     end
   end
 end
