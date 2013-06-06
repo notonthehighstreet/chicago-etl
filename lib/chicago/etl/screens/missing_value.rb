@@ -6,9 +6,9 @@ module Chicago
           column.descriptive? ? 1 : 2
         end
 
-        def log_error(value, errors)
+        def error(value)
           if ! (column.column_type == :boolean || column.optional?)
-            errors << error_hash(value)
+            super(value)
           end
         end
 

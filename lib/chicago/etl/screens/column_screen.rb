@@ -1,53 +1,59 @@
 module Chicago
   module ETL
     module Screens
-      class ColumnScreen
-        attr_reader :column, :table_name
-        
-        def initialize(table_name, column)
-          @table_name = table_name
-          @column = column
-          @error_name = self.class.name.split('::').last.sub(/Screen$/,'').titlecase
-        end
-
+      class ColumnScreen < Flow::Transformation
         def self.for_columns(table_name, columns)
-          screens = columns.map {|column| new(table_name, column) }
-          CompositeScreen.new(screens)
+          columns.map {|column|
+            new(:default, :table_name => table_name, :column => column) 
+          }
         end
 
-        def call(row, errors=[])
-          value = row[column.database_name]
+        def output_streams
+          [:default, :error]
+        end
 
-          if applies?(value)
+        def process_row(row)
+          rows = [row]
+          
+          if applies?(row[column.database_name])
             overwrite_value(row)
-            log_error(value, errors)
+            error_row = error(row[column.database_name])
+            rows << assign_stream(error_row, :error) if error_row
           end
 
-          [row, errors]
+          rows
         end
 
         def severity
           1
         end
 
+        def table_name
+          @options[:table_name]
+        end
+
+        def column
+          @options[:column]
+        end
+
         private
+
+        def error_name
+          self.class.name.split('::').last.sub(/Screen$/,'').titlecase
+        end
 
         def overwrite_value(row)
           row[column.database_name] = column.default_value
         end
 
-        def log_error(value, errors)
-          errors << error_hash(value)
-        end
-
-        def error_hash(value)
+        def error(value)
           {
             :process_name => "StandardTransformations",
             :process_version => 2,
             :table => table_name.to_s,
             :column => column.database_name.to_s,
             :severity => severity,
-            :error => @error_name
+            :error => error_name
           }
         end
 

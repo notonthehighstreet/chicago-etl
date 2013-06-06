@@ -9,56 +9,48 @@ describe Chicago::ETL::Screens::OutOfBounds do
     Chicago::Schema::Column.new(:str, :string, :min => 2, :max => 5) 
   }
 
+  let(:int_transformation) {
+    described_class.new(:table_name => :dimension_foo, :column => int_col)
+  }
+
+  let(:str_transformation) {
+    described_class.new(:table_name => :dimension_foo, :column => str_col)
+  }
+
   it "applies to numeric columns when the value is lower than the minimum" do
-    row, errors = described_class.new(:dimension_foo, int_col).
-      call(:int => -1)
-    
-    errors.first[:error].should == "Out Of Bounds"
+    rows = int_transformation.process_row(:int => -1)
+    rows.last[:error].should == "Out Of Bounds"
   end
 
   it "applies to numeric columns when the value is above the minimum" do
-    row, errors = described_class.new(:dimension_foo, int_col).
-      call(:int => 101)
-    
-    errors.first[:error].should == "Out Of Bounds"
+    rows = int_transformation.process_row(:int => 101)
+    rows.last[:error].should == "Out Of Bounds"
   end
 
   it "applies to string columns when the number of chars is below minimum" do
-    row, errors = described_class.new(:dimension_foo, str_col).
-      call(:str => "a")
-    
-    errors.first[:error].should == "Out Of Bounds"
+    rows = str_transformation.process_row(:str => "a")
+    rows.last[:error].should == "Out Of Bounds"
   end
 
   it "applies to string columns when the number of chars is above maximum" do
-    row, errors = described_class.new(:dimension_foo, str_col).
-      call(:str => "abcdef")
-    
-    errors.first[:error].should == "Out Of Bounds"
+    rows = str_transformation.process_row(:str => "abcdef")
+    rows.last[:error].should == "Out Of Bounds"
   end
 
   it "does not apply to string values in range" do
-    row, errors = described_class.new(:dimension_foo, str_col).
-      call(:str => "abcde")
-    
-    errors.should be_empty
+    str_transformation.process_row(:str => "abcde").size.should == 1
   end
 
   it "does not apply to numeric values in range" do
-    row, errors = described_class.new(:dimension_foo, int_col).
-      call(:int => 0)
-    
-    errors.should be_empty
+    int_transformation.process_row(:int => 0).size.should == 1
   end
 
   it "has severity 2" do
-    described_class.new(:dimension_foo, int_col).severity.should == 2
+    int_transformation.severity.should == 2
   end
 
   it "does not replace values with default" do
-    row, errors = described_class.new(:dimension_foo, str_col).
-      call(:str => "a")
-
-    row.should == {:str => "a"}
+    str_transformation.process_row(:str => "a").first.
+      should == {:str => "a"}
   end
 end

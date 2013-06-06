@@ -14,45 +14,45 @@ describe Chicago::ETL::Screens::MissingValue do
   }
 
   it "reports nil in an expected column as a missing value, with severity 2" do
-    row, errors = described_class.new(:dimension_foo, string_col).call({})
-    
-    errors.first[:table].should == "dimension_foo"
-    errors.first[:column].should == "str"
-    errors.first[:error].should == "Missing Value"
-    errors.first[:severity].should == 2
+    rows = described_class.new(:table_name => :dimension_foo, 
+                               :column => string_col).process_row({})
+    rows.last[:table].should == "dimension_foo"
+    rows.last[:column].should == "str"
+    rows.last[:error].should == "Missing Value"
+    rows.last[:severity].should == 2
   end
 
   it "reports an empty string value in an expected column as a missing value" do
-    row, errors = described_class.new(:dimension_foo, string_col).
-      call({:str => "  "})
+    rows = described_class.new(:table_name => :dimension_foo, 
+                               :column => string_col).
+      process_row({:str => "  "})
     
-    errors.first[:error].should == "Missing Value"
+    rows.last[:error].should == "Missing Value"
   end
 
   it "does not report 0 as a missing value" do
-    row, errors = described_class.new(:dimension_foo, int_col).
-      call({:int => 0})
-    
-    errors.should be_empty
+    rows = described_class.new(:table_name => :dimension_foo, :column => int_col).
+      process_row({:int => 0})
+    rows.size.should == 1
   end
 
   it "reports missing values with severity 1 if the column is descriptive" do
-    row, errors = described_class.new(:dimension_foo, descriptive_col).call({})
-    errors.first[:severity].should == 1
+    rows = described_class.new(:table_name => :dimension_foo, :column => descriptive_col).process_row({})
+    rows.last[:severity].should == 1
   end
 
   it "does not report boolean values as missing" do
-    row, errors = described_class.new(:dimension_foo, bool_col).call({})
-    errors.should be_empty
+    rows = described_class.new(:table_name => :dimension_foo, :column => bool_col).process_row({})
+    rows.size.should == 1
   end
 
   it "does not report optional columns as missing values" do
-    row, errors = described_class.new(:dimension_foo, optional_col).call({})
-    errors.should be_empty
+    rows = described_class.new(:table_name => :dimension_foo, :column => optional_col).process_row({})
+    rows.size.should == 1
   end
 
   it "fills in a default value for missing values" do
-    row, errors = described_class.new(:dimension_foo, optional_col).call({})
-    row.should == {:str => ''}
+    rows = described_class.new(:table_name => :dimension_foo, :column => optional_col).process_row({})
+    rows.should == [{:str => ''}]
   end
 end
