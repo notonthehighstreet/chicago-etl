@@ -39,9 +39,9 @@ describe Chicago::ETL::KeyBuilder do
   before :each do
     @db = stub(:staging_database).as_null_object
     @db.stub(:[]).and_return(stub(:max => nil, :select_hash => {}))
-    @writer = stub(:sink).as_null_object
+    @sink = stub(:sink).as_null_object
     Chicago::ETL::SchemaTableSinkFactory.stub(:new).
-      and_return(stub(:factory, :key_sink => @writer))
+      and_return(stub(:factory, :key_sink => @sink))
   end
 
   describe "for identifiable dimensions" do
@@ -82,7 +82,7 @@ describe Chicago::ETL::KeyBuilder do
     end
 
     it "closes the sink when close is called" do
-      @writer.should_receive(:close)
+      @sink.should_receive(:close)
       described_class.for_table(@dimension, @db).close
     end
   end
