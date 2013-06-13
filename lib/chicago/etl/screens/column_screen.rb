@@ -13,15 +13,16 @@ module Chicago
         end
 
         def process_row(row)
-          rows = [row]
-          
           if applies?(row[column.database_name])
             overwrite_value(row)
             error_row = error(row[column.database_name])
-            rows << assign_stream(error_row, :error) if error_row
+            if error_row
+              row[:_errors] ||= [] 
+              row[:_errors] << error_row
+            end
           end
 
-          rows
+          row
         end
 
         def severity

@@ -14,14 +14,13 @@ describe Chicago::ETL::Screens::InvalidElement do
   end
 
   it "reports invalid element for enum columns" do
-    rows = transformation.process_row({:enum => "Bar"})
+    row = transformation.process_row({:enum => "Bar"})
     
-    rows.should include(:enum => 'Unknown')
-    rows.any? {|r| r[:error] == "Invalid Element" && r[:_stream] == :error }.
-      should be_true
+    row[:enum].should == 'Unknown'
+    row[:_errors].first[:error].should == "Invalid Element"
   end
 
   it "does not report a valid element" do
-    transformation.process_row({:enum => "foo"}).should == [{:enum => 'foo'}]
+    transformation.process_row({:enum => "foo"}).should == {:enum => 'foo'}
   end
 end

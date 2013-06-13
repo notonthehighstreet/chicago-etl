@@ -18,31 +18,32 @@ describe Chicago::ETL::Screens::OutOfBounds do
   }
 
   it "applies to numeric columns when the value is lower than the minimum" do
-    rows = int_transformation.process_row(:int => -1)
-    rows.last[:error].should == "Out Of Bounds"
+    row = int_transformation.process_row(:int => -1)
+    row[:_errors].first[:error].should == "Out Of Bounds"
   end
 
   it "applies to numeric columns when the value is above the minimum" do
-    rows = int_transformation.process_row(:int => 101)
-    rows.last[:error].should == "Out Of Bounds"
+    row = int_transformation.process_row(:int => 101)
+    row[:_errors].first[:error].should == "Out Of Bounds"
   end
 
   it "applies to string columns when the number of chars is below minimum" do
-    rows = str_transformation.process_row(:str => "a")
-    rows.last[:error].should == "Out Of Bounds"
+    row = str_transformation.process_row(:str => "a")
+    row[:_errors].first[:error].should == "Out Of Bounds"
   end
 
   it "applies to string columns when the number of chars is above maximum" do
-    rows = str_transformation.process_row(:str => "abcdef")
-    rows.last[:error].should == "Out Of Bounds"
+    row = str_transformation.process_row(:str => "abcdef")
+    row[:_errors].first[:error].should == "Out Of Bounds"
   end
 
   it "does not apply to string values in range" do
-    str_transformation.process_row(:str => "abcde").size.should == 1
+    str_transformation.process_row(:str => "abcde").
+      should_not have_key(:_errors)
   end
 
   it "does not apply to numeric values in range" do
-    int_transformation.process_row(:int => 0).size.should == 1
+    int_transformation.process_row(:int => 0).should_not have_key(:_errors)
   end
 
   it "has severity 2" do
@@ -50,7 +51,6 @@ describe Chicago::ETL::Screens::OutOfBounds do
   end
 
   it "does not replace values with default" do
-    str_transformation.process_row(:str => "a").first.
-      should == {:str => "a"}
+    str_transformation.process_row(:str => "a")[:str].should == "a"
   end
 end
