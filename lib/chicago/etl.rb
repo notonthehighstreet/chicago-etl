@@ -6,7 +6,7 @@ require 'chicago/etl/counter'
 require 'chicago/etl/key_builder'
 require 'chicago/etl/schema_table_sink_factory'
 require 'chicago/etl/buffering_insert_writer'
-
+require 'chicago/etl/transformations'
 require 'chicago/etl/load_dataset_builder'
 
 # Sequel Extensions
