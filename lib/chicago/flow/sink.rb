@@ -12,6 +12,12 @@ module Chicago
         @constant_values ||= {}
       end
 
+      # Sets a number of constant values.
+      def set_constant_values(hash={})
+        constant_values.merge!(hash)
+        self
+      end
+
       # Performs any operations before writing rows to this sink.
       #
       # By default does nothing; may be overridden by subclasses.
