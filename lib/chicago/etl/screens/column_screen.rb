@@ -2,9 +2,9 @@ module Chicago
   module ETL
     module Screens
       class ColumnScreen < Flow::Transformation
-        def self.for_columns(table_name, columns)
+        def self.for_columns(columns)
           columns.map {|column|
-            new(:default, :table_name => table_name, :column => column) 
+            new(:default, :column => column) 
           }
         end
 
@@ -29,10 +29,6 @@ module Chicago
           1
         end
 
-        def table_name
-          @options[:table_name]
-        end
-
         def column
           @options[:column]
         end
@@ -49,9 +45,6 @@ module Chicago
 
         def error(value)
           {
-            :process_name => "StandardTransformations",
-            :process_version => 2,
-            :table => table_name.to_s,
             :column => column.database_name.to_s,
             :severity => severity,
             :error => error_name

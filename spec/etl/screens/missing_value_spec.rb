@@ -14,10 +14,9 @@ describe Chicago::ETL::Screens::MissingValue do
   }
 
   it "reports nil in an expected column as a missing value, with severity 2" do
-    row = described_class.new(:table_name => :dimension_foo, 
-                              :column => string_col).process_row({})
+    row = described_class.new(:column => string_col).process_row({})
+                              
     error = row[:_errors].first
-    error[:table].should == "dimension_foo"
     error[:column].should == "str"
     error[:error].should == "Missing Value"
     error[:severity].should == 2
@@ -25,35 +24,35 @@ describe Chicago::ETL::Screens::MissingValue do
 
   it "reports an empty string value in an expected column as a missing value" do
     row = described_class.
-      new(:table_name => :dimension_foo, :column => string_col).
+      new(:column => string_col).
       process_row({:str => "  "})
     
     row[:_errors].should_not be_nil
   end
 
   it "does not report 0 as a missing value" do
-    row = described_class.new(:table_name => :dimension_foo, :column => int_col).
+    row = described_class.new(:column => int_col).
       process_row({:int => 0})
     row[:_errors].should be_nil
   end
 
   it "reports missing values with severity 1 if the column is descriptive" do
-    row = described_class.new(:table_name => :dimension_foo, :column => descriptive_col).process_row({})
+    row = described_class.new(:column => descriptive_col).process_row({})
     row[:_errors].last[:severity].should == 1
   end
 
   it "does not report boolean values as missing" do
-    row = described_class.new(:table_name => :dimension_foo, :column => bool_col).process_row({})
+    row = described_class.new(:column => bool_col).process_row({})
     row[:_errors].should be_nil
   end
 
   it "does not report optional columns as missing values" do
-    row = described_class.new(:table_name => :dimension_foo, :column => optional_col).process_row({})
+    row = described_class.new(:column => optional_col).process_row({})
     row[:_errors].should be_nil
   end
 
   it "fills in a default value for missing values" do
-    row = described_class.new(:table_name => :dimension_foo, :column => optional_col).process_row({})
+    row = described_class.new(:column => optional_col).process_row({})
     row[:str].should == ''
   end
 end

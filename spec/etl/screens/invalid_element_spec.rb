@@ -6,7 +6,7 @@ describe Chicago::ETL::Screens::InvalidElement do
   }
 
   let(:transformation) {
-    described_class.new(:table_name => :dimension_foo, :column => enum_col)
+    described_class.new(:column => enum_col)
   }
 
   it "has a severity of 3" do

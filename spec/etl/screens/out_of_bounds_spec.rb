@@ -10,11 +10,11 @@ describe Chicago::ETL::Screens::OutOfBounds do
   }
 
   let(:int_transformation) {
-    described_class.new(:table_name => :dimension_foo, :column => int_col)
+    described_class.new(:column => int_col)
   }
 
   let(:str_transformation) {
-    described_class.new(:table_name => :dimension_foo, :column => str_col)
+    described_class.new(:column => str_col)
   }
 
   it "applies to numeric columns when the value is lower than the minimum" do
