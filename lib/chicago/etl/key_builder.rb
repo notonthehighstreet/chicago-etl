@@ -1,5 +1,4 @@
 require 'digest/md5'
-require 'chicago/etl/buffering_insert_writer'
 
 module Chicago
   module ETL

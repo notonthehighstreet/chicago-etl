@@ -5,7 +5,6 @@ require 'chicago/flow/mysql'
 require 'chicago/etl/counter'
 require 'chicago/etl/key_builder'
 require 'chicago/etl/schema_table_sink_factory'
-require 'chicago/etl/buffering_insert_writer'
 require 'chicago/etl/transformations'
 require 'chicago/etl/load_dataset_builder'
 
@@ -15,7 +14,6 @@ require 'chicago/etl/sequel/dependant_tables'
 
 # Screens
 require 'chicago/etl/screens/column_screen'
-require 'chicago/etl/screens/composite_screen'
 require 'chicago/etl/screens/missing_value'
 require 'chicago/etl/screens/invalid_element'
 require 'chicago/etl/screens/out_of_bounds'
