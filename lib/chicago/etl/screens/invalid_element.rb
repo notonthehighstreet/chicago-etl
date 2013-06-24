@@ -2,8 +2,8 @@ module Chicago
   module ETL
     module Screens
       class InvalidElement < ColumnScreen
-        def self.for_columns(table_name, columns)
-          columns.select(&:elements).map {|column| new(table_name, column) }
+        def self.for_columns(columns)
+          columns.select(&:elements).map {|column| new(:default, :column => column) }
         end
 
         def severity
