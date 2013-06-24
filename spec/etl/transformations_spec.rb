@@ -28,6 +28,10 @@ describe Chicago::ETL::Transformations::WrittenRowFilter do
     filter.process_row(:id => 2).should == {:id => 2}
     filter.process_row(:id => 1).should be_nil
   end
+
+  it "requires a key option" do
+    expect { described_class.new }.to raise_error(ArgumentError)
+  end
 end
 
 describe Chicago::ETL::Transformations::AddKey do
