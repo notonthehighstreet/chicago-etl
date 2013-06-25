@@ -3,13 +3,10 @@ module Chicago
     module Transformations
       # Filters rows so they only get output once, based on a :key.
       class WrittenRowFilter < Flow::Transformation
+        requires_options :key
+
         def initialize(*args)
           super(*args)
-          
-          if @options[:key].nil? 
-            raise ArgumentError.new("Key option must be specified for written row filter")
-          end
-
           @written_rows = Set.new
         end
         
@@ -34,6 +31,7 @@ module Chicago
       #
       # Pass the :key_builder option to set the KeyBuilder.
       class AddKey < Flow::Transformation
+        requires_options :key_builder
         adds_fields :id
 
         def process_row(row)
@@ -60,6 +58,31 @@ module Chicago
           end
 
           [row] + errors
+        end
+      end
+
+      class DimensionKeyMapping < Flow::Transformation
+        requires_options :original_key, :key_table
+
+        def output_streams
+          [:default, key_table]
+        end
+
+        def process_row(row)
+          key_row = {
+            :original_id => row.delete(original_key),
+            :dimension_id => row[:id]
+          }
+          assign_stream(key_row, key_table)
+          [row, key_row]
+        end
+
+        def original_key
+          @options[:original_key]
+        end
+
+        def key_table
+          @options[:key_table]
         end
       end
     end

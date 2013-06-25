@@ -55,3 +55,23 @@ describe Chicago::ETL::Transformations::AddKey do
     transform.added_fields.should == [:id]
   end
 end
+
+describe Chicago::ETL::Transformations::DimensionKeyMapping do
+  let(:transform) {
+    described_class.new(:original_key => :original_id,
+                        :key_table => :keys_foo)
+  }
+  
+  it "should require an original_key and a key table" do
+    described_class.required_options.should == [:original_key, :key_table]
+  end
+
+  it "removes the key from the stream" do
+    transform.process_row({:original_id => 1}).first.should == {}
+  end
+
+  it "links the original key with the id on the stream" do
+    transform.process_row({:original_id => 1, :id => 2}).last.
+      should == {:_stream => :keys_foo, :original_id => 1, :dimension_id => 2}
+  end
+end
