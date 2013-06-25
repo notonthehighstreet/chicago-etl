@@ -12,8 +12,7 @@ module Chicago
     class PipelineStage
       attr_reader :transformation_chain
       
-      def initialize(source, options={})
-        @source = source
+      def initialize(options={})
         @sinks  = options[:sinks] || {}
         @transformations = options[:transformations] || []
         @error_handler = options[:error_handler] || RaisingErrorHandler.new
@@ -31,10 +30,10 @@ module Chicago
         end
       end
       
-      def execute
+      def execute(source)
         validate_pipeline
         @sinks.values.each(&:open)
-        @source.each do |row|
+        source.each do |row|
           transformation_chain.process(row).each {|row| process_row(row) }
         end
         transformation_chain.flush.each {|row| process_row(row) }

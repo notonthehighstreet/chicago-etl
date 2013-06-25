@@ -38,8 +38,8 @@ describe "Mysql -> Mysql through transformation chain" do
   end
 
   after :each do
-    # TEST_DB[:source].truncate
-    # TEST_DB[:destination].truncate
+    TEST_DB[:source].truncate
+    TEST_DB[:destination].truncate
   end
 
   it "copies data from source to destination" do
@@ -50,15 +50,15 @@ describe "Mysql -> Mysql through transformation chain" do
     sink_1 = MysqlFileSink.new(TEST_DB, :destination, [:id, :foo, :bin])
     sink_2 = ArraySink.new([:id, :foo, :bin])
 
-    stage = PipelineStage.new(source,
-                              :transformations => [dup_row.new(:onto => :other)])
+    stage = PipelineStage.
+      new(:transformations => [dup_row.new(:onto => :other)])
 
-    expect { stage.execute }.to raise_error
+    expect { stage.execute(source) }.to raise_error
 
     stage.register_sink(:default, sink_1)
     stage.register_sink(:other, sink_2)
 
-    stage.execute
+    stage.execute(source)
 
     expected = [{:id => 1, :foo => nil, :bin => "1F"},
                 {:id => 2, :foo => "Hello", :bin => "1F"}]
