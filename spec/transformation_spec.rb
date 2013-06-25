@@ -2,7 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe Chicago::Flow::Transformation do
   let(:add_1_to_a) {
-    Class.new(Chicago::Flow::Transformation) {
+    Class.new(described_class) {
       def process_row(row)
         row[:a] += 1
         row
@@ -11,7 +11,7 @@ describe Chicago::Flow::Transformation do
   }
 
   let(:add_and_remove) {
-    Class.new(Chicago::Flow::Transformation) {
+    Class.new(described_class) {
       adds_fields :b, :c
       removes_fields :a
       
@@ -69,5 +69,23 @@ describe Chicago::Flow::Transformation do
   it "can calculate upstream fields" do
     Set.new(add_and_remove.new.upstream_fields([:b, :c, :d])).
       should == Set.new([:a, :d])
+  end
+
+  it "has an empty array of added fields by default" do
+    subject.added_fields.should == []
+  end
+
+  it "has an empty array of removed fields by default" do
+    subject.removed_fields.should == []
+  end
+
+  it "has an empty array of required options by default" do
+    subject.required_options.should == []
+  end
+
+  it "can enforce options" do
+    klass = Class.new(described_class) { requires_options :foo }
+    expect { klass.new }.to raise_error(ArgumentError)
+    expect { klass.new(:foo => :bar) }.to_not raise_error(ArgumentError)
   end
 end
