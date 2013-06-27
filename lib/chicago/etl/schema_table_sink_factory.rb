@@ -21,10 +21,21 @@ module Chicago
       # Returns a sink to load data into the MySQL table backing the
       # key table for a Dimension.
       def key_sink(options={})
+        table = options.delete(:table) || @schema_table.key_table_name
         Flow::MysqlFileSink.new(@db,
-                                @schema_table.key_table_name,
+                                table,
                                 [:original_id, :dimension_id],
                                 mysql_options(options))
+      end
+
+      def error_sink(options={})
+        Flow::MysqlFileSink.
+          new(@db, :etl_error_log, 
+              [:column, :row_id, :error, :severity, :error_detail], mysql_options(options)).
+          set_constant_values(:table => @schema_table.table_name.to_s,
+                              :process_name => "StandardTransformations",
+                              :process_version => 3,
+                              :logged_at => Time.now)
       end
 
       private
