@@ -12,4 +12,5 @@ group :development do
   gem "rspec", "~> 2"
   gem "bundler", "~> 1"
   gem "jeweler", "~> 1.8.4"
+  gem "simplecov", :require => false, :platforms => :mri_19
 end
