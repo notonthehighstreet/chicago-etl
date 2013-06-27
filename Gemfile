@@ -11,7 +11,6 @@ group :development do
   gem "yard"
   gem "flog"
   gem "jeweler"
-  gem "rcov", :platforms => :mri_18
-  gem "simplecov", :platforms => :mri_19
+  gem "simplecov", :platforms => :mri_19, :require => false
   gem "ZenTest"
 end
