@@ -77,10 +77,33 @@ describe Chicago::ETL::Transformations::DimensionKeyMapping do
 
   it "removes the key from the stream" do
     transform.process({:original_id => 1}).first.should == {}
+    transform.removed_fields.should == [:original_id]
   end
 
   it "links the original key with the id on the stream" do
     transform.process({:original_id => 1, :id => 2}).last.
       should == {:_stream => :keys_foo, :original_id => 1, :dimension_id => 2}
+  end
+end
+
+describe Chicago::ETL::Transformations::HashColumns do
+  it "requires a columns option" do
+    described_class.required_options.should include(:columns)
+  end
+
+  it "adds a hash field to the row" do
+    Digest::MD5.stub(:hexdigest).with("ab").and_return("a")
+
+    transform = described_class.new(:columns => [:a, :b])
+    transform.added_fields.should == [:hash]
+    transform.process(:a => 'a', :b => 'b')[:hash].should == "A"
+  end
+
+  it "can add the hash to an arbitrary output field" do
+    Digest::MD5.stub(:hexdigest).with("ab").and_return("a")
+    transform = described_class.new(:columns => [:a, :b], 
+                                    :output_field => :foo)
+    transform.added_fields.should == [:foo]
+    transform.process(:a => 'a', :b => 'b')[:foo].should == "A"
   end
 end

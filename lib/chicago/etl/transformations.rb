@@ -71,8 +71,14 @@ module Chicago
         end
       end
 
+      # Removes a field from the row, and creates a row on a
+      # designated key stream
       class DimensionKeyMapping < Flow::Transformation
         requires_options :original_key, :key_table
+
+        def removed_fields
+          [original_key]
+        end
 
         def output_streams
           [:default, key_table]
@@ -93,6 +99,28 @@ module Chicago
 
         def key_table
           @options[:key_table]
+        end
+      end
+
+      # Adds a hash of the specified columns as a field in the row.
+      class HashColumns < Flow::Transformation
+        requires_options :columns
+
+        def process_row(row)
+          str = hash_columns.map {|c| row[c].to_s }.join
+          row.put(output_field, Digest::MD5.hexdigest(str).upcase)
+        end
+
+        def added_fields
+          [output_field]
+        end
+
+        def output_field
+          @options[:output_field] || :hash
+        end
+
+        def hash_columns
+          @options[:columns]
         end
       end
     end
