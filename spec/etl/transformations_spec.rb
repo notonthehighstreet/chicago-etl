@@ -6,15 +6,15 @@ describe Chicago::ETL::Transformations::DemultiplexErrors do
   end
 
   it "does nothing to a row without an :_errors key" do
-    subject.process_row({}).should == [{}]
+    subject.process({}).should == [{}]
   end
 
   it "removes the :_error key from the row" do
-    subject.process_row(:_errors => [{:error => 1}]).first.should == {}
+    subject.process(:_errors => [{:error => 1}]).first.should == {}
   end
 
   it "adds the errors onto the error stream" do
-    subject.process_row(:_errors => [{:error => 1}]).last.should == {
+    subject.process(:_errors => [{:error => 1}]).last.should == {
       :error => 1,
       Chicago::Flow::STREAM => :error
     }
@@ -24,13 +24,13 @@ end
 describe Chicago::ETL::Transformations::WrittenRowFilter do
   it "only lets the first row through" do
     filter = described_class.new(:key => :id)
-    filter.process_row(:id => 1).should == {:id => 1}
-    filter.process_row(:id => 2).should == {:id => 2}
-    filter.process_row(:id => 1).should be_nil
+    filter.process(:id => 1).should == {:id => 1}
+    filter.process(:id => 2).should == {:id => 2}
+    filter.process(:id => 1).should be_nil
   end
 
   it "requires a key option" do
-    expect { described_class.new }.to raise_error(ArgumentError)
+    described_class.required_options.should include(:key)
   end
 end
 
@@ -38,21 +38,30 @@ describe Chicago::ETL::Transformations::AddKey do
   let(:key_builder) { stub(:key_builder, :key => 42) }
   let(:transform) { described_class.new(:key_builder => key_builder) }
 
-  it "adds the key to the row" do
-    transform.process_row({}).should == {:id => 42}
+  it "requires a key builder" do
+    described_class.required_options.should include(:key_builder)
   end
 
-  it "does not override a key already present" do
-    transform.process_row(:id => 1).should == {:id => 1}
+  it "adds the key to the row" do
+    transform.process({}).should == {:id => 42}
   end
 
   it "adds the key to any rows in an embedded :_errors key" do
-    transform.process_row({:_errors => [{}]}).
+    transform.process({:_errors => [{}]}).
       should == {:id => 42, :_errors => [{:row_id => 42}]}
   end
 
   it "should declare that it adds the :id field" do
     transform.added_fields.should == [:id]
+  end
+
+  it "should declare that it writes to the dimension_key stream" do
+    transform.output_streams.should include(:dimension_key)
+  end
+
+  it "should return a new row on the dimension_key stream" do
+    key_builder.stub(:key => [42, {:original_id => 42}])
+    transform.process({}).last.should == {:_stream => :dimension_key, :original_id => 42}
   end
 end
 
@@ -67,11 +76,11 @@ describe Chicago::ETL::Transformations::DimensionKeyMapping do
   end
 
   it "removes the key from the stream" do
-    transform.process_row({:original_id => 1}).first.should == {}
+    transform.process({:original_id => 1}).first.should == {}
   end
 
   it "links the original key with the id on the stream" do
-    transform.process_row({:original_id => 1, :id => 2}).last.
+    transform.process({:original_id => 1, :id => 2}).last.
       should == {:_stream => :keys_foo, :original_id => 1, :dimension_id => 2}
   end
 end

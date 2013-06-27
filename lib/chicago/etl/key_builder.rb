@@ -23,14 +23,13 @@ module Chicago
         def make
           if dimension?
             key_table = staging_db[table.key_table_name]
-            sink = SchemaTableSinkFactory.new(@staging_db, table).key_sink
             
             if table.identifiable?
-              IdentifiableDimensionKeyBuilder.new(key_table, sink)
+              IdentifiableDimensionKeyBuilder.new(key_table)
             elsif existing_hash_column?(table)
-              ExistingHashColumnKeyBuilder.new(key_table, sink)
+              ExistingHashColumnKeyBuilder.new(key_table)
             else
-              HashingKeyBuilder.new(key_table, sink, columns_to_hash)
+              HashingKeyBuilder.new(key_table, columns_to_hash)
             end
           elsif fact?
             FactKeyBuilder.new(staging_db[table.table_name])
@@ -66,9 +65,8 @@ module Chicago
         Factory.new(table, staging_db).make
       end
 
-      def initialize(key_table, key_sink)
+      def initialize(key_table)
         @key_table = key_table
-        @new_keys = key_sink
         @counter = Counter.new { key_table.max(:dimension_id) }
       end
 
@@ -82,14 +80,15 @@ module Chicago
         new_key = @key_mapping[row_id]
         
         if new_key
-          new_key
+          [new_key, nil]
         else
           new_key = @counter.next
-          @new_keys << {
-            :original_id => key_for_insert(row_id), 
-            :dimension_id => new_key
-          }
           @key_mapping[row_id] = new_key
+
+          [new_key, {
+             :original_id => key_for_insert(row_id), 
+             :dimension_id => new_key
+           }]
         end
       end
 
@@ -97,11 +96,6 @@ module Chicago
       #
       # Overridden by subclasses.
       def original_key(row)
-      end
-
-      # Flushes any newly created keys to the key table.
-      def close
-        @new_keys.close
       end
       
       protected
@@ -168,8 +162,8 @@ module Chicago
       attr_reader   :columns
       attr_accessor :hash_preparation
 
-      def initialize(key_table, key_sink, columns)
-        super(key_table, key_sink)
+      def initialize(key_table, columns)
+        super(key_table)
         @columns = columns
         @hash_preparation = lambda {|column| column.to_s.upcase }
       end
@@ -201,7 +195,7 @@ module Chicago
     #
     # In addition, the same row passed twice will get a different id. 
     class FactKeyBuilder
-      def initialize(db_table, key_sink=nil)
+      def initialize(db_table)
         @db_table = db_table
         @counter = Counter.new { @db_table.max(:id) }
       end
@@ -209,11 +203,7 @@ module Chicago
       # Returns an id given a row - the row actually has no bearing on
       # the id returned.
       def key(row)
-        @counter.next
-      end
-
-      # No-op, provided for interface compatability.
-      def close
+        [@counter.next, nil]
       end
     end
   end

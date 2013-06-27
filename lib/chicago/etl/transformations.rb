@@ -34,11 +34,21 @@ module Chicago
         requires_options :key_builder
         adds_fields :id
 
+        def output_streams
+          [:default, :dimension_key]
+        end
+
         def process_row(row)
-          row[:id] ||= key_builder.key(row)
-          # puts "Key assigned: #{row[:id]}"
+          key, key_row = key_builder.key(row)
+          row[:id] = key
           (row[:_errors] || []).each {|e| e[:row_id] = row[:id] }
-          row
+
+          if key_row
+            assign_stream(key_row, :dimension_key)
+            [row, key_row]
+          else
+            row
+          end
         end
 
         def key_builder

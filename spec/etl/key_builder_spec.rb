@@ -51,20 +51,20 @@ describe Chicago::ETL::KeyBuilder do
 
     it "returns an incrementing key, given a row" do
       builder = described_class.for_table(@dimension, @db)
-      builder.key(:original_id => 2).should == 1
-      builder.key(:original_id => 3).should == 2
+      builder.key(:original_id => 2).first.should == 1
+      builder.key(:original_id => 3).first.should == 2
     end
 
     it "returns the same key for the same record" do
       builder = described_class.for_table(@dimension, @db)
-      builder.key(:original_id => 2).should == 1
-      builder.key(:original_id => 2).should == 1
+      builder.key(:original_id => 2).first.should == 1
+      builder.key(:original_id => 2).first.should == 1
     end
 
     it "takes into account the current maximum key in the database" do
       @db.stub(:[]).with(:keys_dimension_user).and_return(stub(:max => 2, :select_hash => {}))
       builder = described_class.for_table(@dimension, @db)
-      builder.key(:original_id => 1).should == 3
+      builder.key(:original_id => 1).first.should == 3
     end
 
     it "returns previously created keys" do
@@ -72,18 +72,13 @@ describe Chicago::ETL::KeyBuilder do
       @db.stub(:[]).with(:keys_dimension_user).and_return(dataset)
 
       builder = described_class.for_table(@dimension, @db)
-      builder.key(:original_id => 30).should == 2
-      builder.key(:original_id => 40).should == 1
+      builder.key(:original_id => 30).first.should == 2
+      builder.key(:original_id => 40).first.should == 1
     end
 
     it "raises an error when original_id isn't present in the row" do
       builder = described_class.for_table(@dimension, @db)
       expect { builder.key(:foo => :bar) }.to raise_error(Chicago::ETL::KeyError)
-    end
-
-    it "closes the sink when close is called" do
-      @sink.should_receive(:close)
-      described_class.for_table(@dimension, @db).close
     end
   end
 
@@ -94,18 +89,18 @@ describe Chicago::ETL::KeyBuilder do
     end
 
     it "returns an incrementing key, given a row" do
-      @builder.key(:hash => "aaa").should == 1
-      @builder.key(:hash => "aab").should == 2
+      @builder.key(:hash => "aaa").first.should == 1
+      @builder.key(:hash => "aab").first.should == 2
     end
 
     it "returns the same incrementing key" do
-      @builder.key(:hash => "aaa").should == 1
-      @builder.key(:hash => "aaa").should == 1
+      @builder.key(:hash => "aaa").first.should == 1
+      @builder.key(:hash => "aaa").first.should == 1
     end
 
     it "returns the same incrementing key, ignoring case" do
-      @builder.key(:hash => "aaa").should == 1
-      @builder.key(:hash => "AAA").should == 1
+      @builder.key(:hash => "aaa").first.should == 1
+      @builder.key(:hash => "AAA").first.should == 1
     end
 
     it "inserts the hash as a binary literal" do
@@ -123,25 +118,25 @@ describe Chicago::ETL::KeyBuilder do
 
     it "returns an incrementing key, given a row" do
       @builder.key(:line1 => "some street", :post_code => "TW3 X45").
-        should == 1
+        first.should == 1
       @builder.key(:line1 => "some road", :post_code => "TW3 X45").
-        should == 2
+        first.should == 2
     end
 
     it "returns the same incrementing key, ignoring case" do
       @builder.key(:line1 => "some street", :post_code => "TW3 X45").
-        should == 1
+        first.should == 1
       @builder.key(:line1 => "some STREET", :post_code => "TW3 X45").
-        should == 1
+        first.should == 1
     end
 
     it "can override default hash preparation" do
       @builder.hash_preparation = lambda {|c| c }
 
       @builder.key(:line1 => "some street", :post_code => "TW3 X45").
-        should == 1
+        first.should == 1
       @builder.key(:line1 => "some STREET", :post_code => "TW3 X45").
-        should == 2
+        first.should == 2
     end
 
     it "inserts the hash as a binary literal" do
@@ -175,18 +170,14 @@ describe Chicago::ETL::KeyBuilder do
     end
 
     it "increments the id, regardless of row equality" do
-      @builder.key({}).should == 1
-      @builder.key({}).should == 2
+      @builder.key({}).first.should == 1
+      @builder.key({}).first.should == 2
     end
 
     it "increments from the last id stored id in the fact table" do
       @db.stub(:[]).with(:facts_addresses).and_return(stub(:max => 100, :select_hash => {}))
       @builder = described_class.for_table(@schema.fact(:addresses), @db)
-      @builder.key({}).should == 101
-    end
-
-    it "supports the close interface as a no-op" do
-      lambda { @builder.close }.should_not raise_error
+      @builder.key({}).first.should == 101
     end
   end
 end
