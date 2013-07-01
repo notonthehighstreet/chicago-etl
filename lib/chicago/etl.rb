@@ -8,6 +8,7 @@ require 'chicago/etl/key_builder'
 require 'chicago/etl/schema_table_sink_factory'
 require 'chicago/etl/transformations'
 require 'chicago/etl/load_dataset_builder'
+require 'chicago/etl/dataset_batch_stage'
 
 # Sequel Extensions
 require 'chicago/etl/sequel/filter_to_etl_batch'
