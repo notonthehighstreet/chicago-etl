@@ -40,6 +40,10 @@ module Chicago
         dataset.load_csv_infile(file, @fields, :set => constant_values)
       end
 
+      def truncate
+        @db.truncate(@table_name)
+      end
+
       private
 
       def dataset

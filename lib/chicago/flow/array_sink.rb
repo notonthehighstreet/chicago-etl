@@ -12,6 +12,10 @@ module Chicago
       def <<(row)
         @data << row.merge(constant_values)
       end
+
+      def truncate
+        @data.clear
+      end
     end
   end
 end

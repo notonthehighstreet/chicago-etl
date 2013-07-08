@@ -35,6 +35,15 @@ module Chicago
       # By default does nothing; may be overridden by subclasses.
       def <<(row)
       end
+
+      # Removes all rows from this sink.
+      #
+      # This includes all rows written prior to this particular
+      # execution of a pipeline stage.
+      #
+      # By default does nothing; should be overritten by subclasses.
+      def truncate
+      end
     end
   end
 end

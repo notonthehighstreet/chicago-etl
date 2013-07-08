@@ -17,4 +17,10 @@ describe ArraySink do
     sink << {:a => 1}
     sink.data.should == [{:a => 1, :number => 1}]
   end
+
+  it "can be truncated" do
+    sink << {:a => 1}
+    sink.truncate
+    sink.data.should be_empty
+  end
 end

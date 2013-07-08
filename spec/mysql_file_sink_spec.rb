@@ -74,4 +74,9 @@ describe MysqlFileSink do
 
     sink.close
   end
+
+  it "truncates the table" do
+    db.should_receive(:truncate).with(:table)
+    sink.truncate
+  end
 end
