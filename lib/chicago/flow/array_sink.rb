@@ -1,9 +1,10 @@
 module Chicago
   module Flow
     class ArraySink < Sink
-      attr_reader :data
+      attr_reader :data, :name
       
-      def initialize(fields=[])
+      def initialize(name, fields=[])
+        @name = name
         @fields = [fields].flatten
         @data = []
       end

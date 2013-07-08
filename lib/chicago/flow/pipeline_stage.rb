@@ -19,6 +19,11 @@ module Chicago
         @transformation_chain = TransformationChain.new(*@transformations)
       end
 
+      # Returns the named sink, if it exists
+      def sink(name)
+        @sinks[name.to_sym]
+      end
+
       def register_sink(name, sink)
         @sinks[name.to_sym] = sink
         self

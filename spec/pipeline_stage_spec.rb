@@ -23,7 +23,7 @@ describe PipelineStage do
     }
   }
 
-  let(:sink) { ArraySink.new }
+  let(:sink) { ArraySink.new(:test) }
   let(:source) { ArraySource.new([{:a => 1}]) }
 
   it "reads from source to sink" do
@@ -41,7 +41,7 @@ describe PipelineStage do
   end
 
   it "writes rows to the appropriate sink for their stream, and strips the stream tag" do
-    error_sink = ArraySink.new
+    error_sink = ArraySink.new(:test)
 
     pipeline = described_class.new(:transformations => [add_error.new]).
       register_sink(:default, sink).

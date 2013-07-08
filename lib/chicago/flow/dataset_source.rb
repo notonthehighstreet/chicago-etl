@@ -4,6 +4,8 @@ require 'sequel/fast_columns'
 module Chicago
   module Flow
     class DatasetSource < PipelineEndpoint
+      attr_reader :dataset
+
       def initialize(dataset)
         @dataset = dataset
       end

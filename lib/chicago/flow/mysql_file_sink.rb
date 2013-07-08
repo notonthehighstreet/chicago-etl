@@ -18,6 +18,10 @@ module Chicago
         @insert_ignore = !!options[:ignore]
       end
 
+      def name
+        @table_name
+      end
+
       def <<(row)
         csv << fields.map {|c| @serializer.serialize(row[c]) }
       end
