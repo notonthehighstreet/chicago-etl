@@ -6,6 +6,7 @@ Sequel.extension :core_extensions
 
 module Chicago
   module Flow
+    # @api public
     class MysqlFileSink < Sink
       attr_reader :filepath
       attr_writer :truncation_strategy
@@ -45,7 +46,7 @@ module Chicago
         if @truncation_strategy
           @truncation_strategy.call
         else
-          @db.truncate(@table_name)
+          @db[@table_name].truncate
         end
       end
 

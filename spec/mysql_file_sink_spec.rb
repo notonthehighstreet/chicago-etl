@@ -80,7 +80,7 @@ describe MysqlFileSink do
   end
 
   it "truncates the table by default" do
-    db.should_receive(:truncate).with(:table)
+    dataset.should_receive(:truncate)
     sink.truncate
   end
 
