@@ -1,14 +1,6 @@
 module Chicago
   module Flow
-    class Error < RuntimeError
-    end
-    
-    class RaisingErrorHandler
-      def unregistered_sinks(sinks)
-        raise Error.new("Sinks not registered: #{sinks.join(",")}")
-      end
-    end
-
+    # @api public
     class PipelineStage
       attr_reader :transformation_chain
       

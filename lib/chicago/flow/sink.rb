@@ -1,5 +1,9 @@
 module Chicago
   module Flow
+    # The destination for rows passing through a pipeline stage.
+    #
+    # @api public
+    # @abstract
     class Sink < PipelineEndpoint
       # Specifies a hash of values that are assumed to apply to all
       # rows.

@@ -2,6 +2,7 @@ require 'date'
 
 module Chicago
   module Flow
+    # @api private
     class MysqlFileSerializer
       # Transforms a value to be suitable for use in file in a LOAD
       # DATA INFILE mysql statement.

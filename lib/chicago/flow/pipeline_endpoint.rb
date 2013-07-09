@@ -1,5 +1,7 @@
 module Chicago
   module Flow
+    # @api public
+    # abstract
     class PipelineEndpoint
       attr_reader :fields
 

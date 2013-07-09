@@ -1,5 +1,6 @@
 module Chicago
   module Flow
+    # @api public
     class ArraySource < PipelineEndpoint
       def initialize(array, fields=[])
         @fields = [fields].flatten

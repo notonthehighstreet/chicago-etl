@@ -3,6 +3,7 @@ require 'sequel/fast_columns'
 
 module Chicago
   module Flow
+    # @api public
     class DatasetSource < PipelineEndpoint
       attr_reader :dataset
 

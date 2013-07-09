@@ -1,5 +1,6 @@
 module Chicago
   module Flow
+    # @api private
     class TransformationChain
       def initialize(*transforms)
         @transforms = transforms

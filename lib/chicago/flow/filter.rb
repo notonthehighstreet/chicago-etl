@@ -1,5 +1,6 @@
 module Chicago
   module Flow
+    # @api public
     class Filter < Transformation
       def initialize(stream=:default, &block)
         super(stream)
