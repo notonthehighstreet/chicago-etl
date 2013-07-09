@@ -41,12 +41,9 @@ module Chicago
       
       def execute(source)
         validate_pipeline
-        @sinks.values.each(&:open)
-        source.each do |row|
-          transformation_chain.process(row).each {|row| process_row(row) }
-        end
-        transformation_chain.flush.each {|row| process_row(row) }
-        @sinks.values.each(&:close)
+        sinks.each(&:open)
+        pipe_rows_to_sinks_from(source)
+        sinks.each(&:close)
       end
 
       def required_sinks
@@ -59,6 +56,13 @@ module Chicago
       
       private
       
+      def pipe_rows_to_sinks_from(source)
+        source.each do |row|
+          transformation_chain.process(row).each {|row| process_row(row) }
+        end
+        transformation_chain.flush.each {|row| process_row(row) }
+      end
+
       def process_row(row)
         stream = row.delete(:_stream) || :default
         @sinks[stream] << row

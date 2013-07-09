@@ -31,6 +31,11 @@ describe PipelineStage do
     stage.sinks.should == [sink]
   end
 
+  it "returns a sink by name" do
+    stage = described_class.new.register_sink(:default, sink)
+    stage.sink(:default).should == sink
+  end
+
   it "reads from source to sink" do
     pipeline = described_class.new.register_sink(:default, sink)
     pipeline.execute(source)

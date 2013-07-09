@@ -19,6 +19,10 @@ describe MysqlFileSink do
     File.stub(:size?).and_return(true)
   end
   
+  it "has the same name as the table it is loading into" do
+    sink.name.should == :table
+  end
+
   it "writes specified columns to rows in a file" do
     csv.should_receive(:<<).with([1])
     sink << {:foo => 1, :bar => 2}
