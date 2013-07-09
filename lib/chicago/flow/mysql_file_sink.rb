@@ -8,6 +8,7 @@ module Chicago
   module Flow
     class MysqlFileSink < Sink
       attr_reader :filepath
+      attr_writer :truncation_strategy
 
       def initialize(db, table_name, fields, options = {})
         @fields = [fields].flatten
@@ -41,7 +42,11 @@ module Chicago
       end
 
       def truncate
-        @db.truncate(@table_name)
+        if @truncation_strategy
+          @truncation_strategy.call
+        else
+          @db.truncate(@table_name)
+        end
       end
 
       private

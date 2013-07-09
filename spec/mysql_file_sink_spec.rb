@@ -75,8 +75,15 @@ describe MysqlFileSink do
     sink.close
   end
 
-  it "truncates the table" do
+  it "truncates the table by default" do
     db.should_receive(:truncate).with(:table)
     sink.truncate
+  end
+
+  it "can have a truncation strategy set" do
+    x = nil    
+    sink.truncation_strategy = lambda { x = "deleted table" }
+    sink.truncate
+    x.should == "deleted table"
   end
 end
