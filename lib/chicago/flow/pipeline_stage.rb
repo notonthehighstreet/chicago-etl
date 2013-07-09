@@ -24,6 +24,10 @@ module Chicago
         @sinks[name.to_sym]
       end
 
+      def sinks
+        @sinks.values
+      end
+
       def register_sink(name, sink)
         @sinks[name.to_sym] = sink
         self

@@ -26,6 +26,11 @@ describe PipelineStage do
   let(:sink) { ArraySink.new(:test) }
   let(:source) { ArraySource.new([{:a => 1}]) }
 
+  it "returns all sinks" do
+    stage = described_class.new.register_sink(:default, sink)
+    stage.sinks.should == [sink]
+  end
+
   it "reads from source to sink" do
     pipeline = described_class.new.register_sink(:default, sink)
     pipeline.execute(source)
