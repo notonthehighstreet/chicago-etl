@@ -19,10 +19,11 @@ module Chicago
       # that need their own arguments should do so by passing named
       # options.
       #
-      # May optionally by constructed with a symbol representing the
-      # stream to which this transformation should apply. The
-      # remaining argument is a hash of options, specific to the
-      # transformation subclass.
+      # @overload initialize(stream, options)
+      #   Specifies this transformation applies to a specific
+      #   stream. Options are specific to the stream subclass
+      # @overload initialize(options)
+      #   As above, but the stream is assumed to be :default
       def initialize(*args)
         stream, options = *args
         if stream.kind_of?(Hash)

@@ -1,5 +1,7 @@
 module Chicago
   module Flow
+    # A Source or a Sink.
+    #
     # @api public
     # abstract
     class PipelineEndpoint

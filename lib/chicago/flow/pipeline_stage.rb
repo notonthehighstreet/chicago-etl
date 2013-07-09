@@ -1,5 +1,9 @@
 module Chicago
   module Flow
+    # Co-ordinates iterating over rows provided by a source, passing
+    # them through a transformation chain before writing them to
+    # sink(s).
+    #
     # @api public
     class PipelineStage
       attr_reader :transformation_chain
