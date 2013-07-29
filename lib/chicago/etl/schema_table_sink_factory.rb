@@ -1,7 +1,8 @@
 module Chicago
   module ETL
-    # Builds sinks for Dimension & Fact tables.
+    # Builds Sinks for Dimension & Fact tables.
     class SchemaTableSinkFactory
+      # Creates a new factory.
       def initialize(db, schema_table)
         @db, @schema_table = db, schema_table
       end
@@ -20,6 +21,9 @@ module Chicago
       
       # Returns a sink to load data into the MySQL table backing the
       # key table for a Dimension.
+      #
+      # @option options [Symbol] :table - a custom key table name. The
+      #   schema table's key table name will be used otherwise.
       def key_sink(options={})
         table = options.delete(:table) || @schema_table.key_table_name
         sink = Flow::MysqlFileSink.new(@db,
@@ -33,6 +37,7 @@ module Chicago
         sink
       end
 
+      # Returns a sink to load errors generated in the ETL process.
       def error_sink(options={})
         sink = Flow::MysqlFileSink.
           new(@db, :etl_error_log, 

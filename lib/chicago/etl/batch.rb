@@ -32,21 +32,27 @@ module Chicago
       end
 
       # Deprecated.
+      #
+      # @deprecated Use perform_task instead
       def load(task_name, &block)
         perform_task(:load, task_name, &block)
       end
 
       # Deprecated.
+      #
+      # @deprecated Use perform_task instead
       def transform(task_name, &block)
         perform_task(:extract, task_name, &block)
       end
 
       # Deprecated.
+      #
+      # @deprecated Use perform_task instead
       def extract(task_name, &block)
         perform_task(:extract, task_name, &block)
       end
 
-      # Perform a named task if it hasn't already run successfully in
+      # Performs a named task if it hasn't already run successfully in
       # this batch.
       def perform_task(stage, task_name, &block)
         task = find_or_create_task_invocation(stage, task_name)
@@ -95,7 +101,8 @@ module Chicago
         @log ||= Logger.new(File.join(dir, "log"))
       end
 
-      def after_create # :nodoc:
+      # @api private
+      def after_create
         FileUtils.mkdir_p(dir, :mode => 0777)
       end
 

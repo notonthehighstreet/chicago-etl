@@ -8,11 +8,13 @@ module Chicago
         new(db).build
       end
 
-      def initialize(db) # :nodoc:
+      # @api private
+      def initialize(db)
         @db = db
       end
 
-      def build # :nodoc:
+      # @api private
+      def build
         create_table :etl_batches do
           primary_key :id, :type => :integer, :unsigned => true
           timestamp   :started_at, :null => false, :default => :current_timestamp.sql_function

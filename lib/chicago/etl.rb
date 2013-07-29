@@ -44,11 +44,17 @@ require 'chicago/etl/transformations/uk_post_code'
 require 'chicago/etl/transformations/uk_post_code_field'
 
 module Chicago
+  # Contains classes related to ETL processing.
   module ETL
     autoload :TableBuilder,   'chicago/etl/table_builder.rb'
     autoload :Batch,          'chicago/etl/batch.rb'
     autoload :TaskInvocation, 'chicago/etl/task_invocation.rb'
 
+    # Executes a pipeline stage in the context of an ETL Batch.
+    #
+    # Tasks execution status is stored in a database etl task
+    # invocations table - this ensures tasks aren't run more than once
+    # within a batch.
     def self.execute(stage, etl_batch, reextract, logger)
       etl_batch.perform_task(:load, stage.name) do
         logger.debug "Starting loading #{stage.name}"

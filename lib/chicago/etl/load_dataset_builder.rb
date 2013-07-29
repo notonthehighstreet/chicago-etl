@@ -69,7 +69,6 @@ module Chicago
           raise "Column #{name} was either ambiguous or non-existant"
         end
       end
-        
     end
   end
 end
