@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roland Swingler"]
-  s.date = "2013-04-16"
+  s.date = "2013-07-29"
   s.description = "ETL tools for Chicago"
   s.email = "roland.swingler@gmail.com"
   s.extra_rdoc_files = [
@@ -25,52 +25,74 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "chicago-etl.gemspec",
+    "chicago-flow.gemspec",
     "lib/chicago-etl.rb",
     "lib/chicago/etl.rb",
     "lib/chicago/etl/batch.rb",
-    "lib/chicago/etl/buffering_insert_writer.rb",
+    "lib/chicago/etl/core_extensions.rb",
     "lib/chicago/etl/counter.rb",
+    "lib/chicago/etl/dataset_batch_stage.rb",
     "lib/chicago/etl/key_builder.rb",
     "lib/chicago/etl/load_dataset_builder.rb",
-    "lib/chicago/etl/mysql_dumpfile.rb",
-    "lib/chicago/etl/mysql_load_file_value_transformer.rb",
+    "lib/chicago/etl/load_pipeline_stage_builder.rb",
+    "lib/chicago/etl/pipeline.rb",
+    "lib/chicago/etl/schema_table_sink_factory.rb",
     "lib/chicago/etl/screens/column_screen.rb",
-    "lib/chicago/etl/screens/composite_screen.rb",
     "lib/chicago/etl/screens/invalid_element.rb",
     "lib/chicago/etl/screens/missing_value.rb",
     "lib/chicago/etl/screens/out_of_bounds.rb",
     "lib/chicago/etl/sequel/dependant_tables.rb",
     "lib/chicago/etl/sequel/filter_to_etl_batch.rb",
-    "lib/chicago/etl/sequel/load_data_infile.rb",
-    "lib/chicago/etl/sink.rb",
     "lib/chicago/etl/table_builder.rb",
     "lib/chicago/etl/task_invocation.rb",
     "lib/chicago/etl/tasks.rb",
-    "lib/chicago/etl/transformations/add_insert_timestamp.rb",
+    "lib/chicago/etl/transformations.rb",
     "lib/chicago/etl/transformations/uk_post_code.rb",
     "lib/chicago/etl/transformations/uk_post_code_field.rb",
+    "lib/chicago/flow/array_sink.rb",
+    "lib/chicago/flow/array_source.rb",
+    "lib/chicago/flow/dataset_source.rb",
+    "lib/chicago/flow/errors.rb",
+    "lib/chicago/flow/filter.rb",
+    "lib/chicago/flow/mysql.rb",
+    "lib/chicago/flow/mysql_file_serializer.rb",
+    "lib/chicago/flow/mysql_file_sink.rb",
+    "lib/chicago/flow/null_sink.rb",
+    "lib/chicago/flow/pipeline_endpoint.rb",
+    "lib/chicago/flow/pipeline_stage.rb",
+    "lib/chicago/flow/sink.rb",
+    "lib/chicago/flow/transformation.rb",
+    "lib/chicago/flow/transformation_chain.rb",
     "spec/db_connections.yml.dist",
     "spec/etl/batch_spec.rb",
+    "spec/etl/core_extensions_spec.rb",
     "spec/etl/counter_spec.rb",
+    "spec/etl/dataset_batch_stage_spec.rb",
     "spec/etl/etl_batch_id_dataset_filter.rb",
     "spec/etl/key_builder_spec.rb",
     "spec/etl/load_dataset_builder_spec.rb",
-    "spec/etl/mysql_dumpfile_spec.rb",
-    "spec/etl/mysql_load_file_value_transformer_spec.rb",
-    "spec/etl/screens/composite_screen_spec.rb",
+    "spec/etl/pipeline_stage_builder_spec.rb",
+    "spec/etl/schema_table_sink_factory_spec.rb",
     "spec/etl/screens/invalid_element_spec.rb",
     "spec/etl/screens/missing_value_spec.rb",
     "spec/etl/screens/out_of_bounds_spec.rb",
     "spec/etl/sequel/dependant_tables_spec.rb",
     "spec/etl/sequel/filter_to_etl_batch_spec.rb",
-    "spec/etl/sequel/load_data_infile_expression_spec.rb",
-    "spec/etl/sequel/load_data_infile_spec.rb",
-    "spec/etl/sink_spec.rb",
     "spec/etl/table_builder_spec.rb",
     "spec/etl/task_spec.rb",
-    "spec/etl/transformations/add_insert_timestamp_spec.rb",
     "spec/etl/transformations/uk_post_code_field_spec.rb",
     "spec/etl/transformations/uk_post_code_spec.rb",
+    "spec/etl/transformations_spec.rb",
+    "spec/flow/array_sink_spec.rb",
+    "spec/flow/array_source_spec.rb",
+    "spec/flow/dataset_source_spec.rb",
+    "spec/flow/filter_spec.rb",
+    "spec/flow/mysql_file_serializer_spec.rb",
+    "spec/flow/mysql_file_sink_spec.rb",
+    "spec/flow/mysql_integration_spec.rb",
+    "spec/flow/pipeline_stage_spec.rb",
+    "spec/flow/transformation_chain_spec.rb",
+    "spec/flow/transformation_spec.rb",
     "spec/spec_helper.rb"
   ]
   s.homepage = "http://github.com/notonthehighstreet/chicago-etl"
@@ -84,35 +106,50 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<chicagowarehouse>, ["~> 0.4"])
+      s.add_runtime_dependency(%q<fastercsv>, [">= 0"])
+      s.add_runtime_dependency(%q<sequel>, [">= 0"])
+      s.add_runtime_dependency(%q<sequel_load_data_infile>, [">= 0.0.2"])
+      s.add_runtime_dependency(%q<sequel_fast_columns>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2"])
       s.add_development_dependency(%q<timecop>, [">= 0"])
       s.add_development_dependency(%q<yard>, [">= 0"])
       s.add_development_dependency(%q<flog>, [">= 0"])
-      s.add_development_dependency(%q<jeweler>, [">= 0"])
-      s.add_development_dependency(%q<rcov>, [">= 0"])
       s.add_development_dependency(%q<simplecov>, [">= 0"])
       s.add_development_dependency(%q<ZenTest>, [">= 0"])
+      s.add_development_dependency(%q<mysql>, ["= 2.8.1"])
+      s.add_development_dependency(%q<bundler>, ["~> 1"])
+      s.add_development_dependency(%q<jeweler>, [">= 0"])
     else
       s.add_dependency(%q<chicagowarehouse>, ["~> 0.4"])
+      s.add_dependency(%q<fastercsv>, [">= 0"])
+      s.add_dependency(%q<sequel>, [">= 0"])
+      s.add_dependency(%q<sequel_load_data_infile>, [">= 0.0.2"])
+      s.add_dependency(%q<sequel_fast_columns>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2"])
       s.add_dependency(%q<timecop>, [">= 0"])
       s.add_dependency(%q<yard>, [">= 0"])
       s.add_dependency(%q<flog>, [">= 0"])
-      s.add_dependency(%q<jeweler>, [">= 0"])
-      s.add_dependency(%q<rcov>, [">= 0"])
       s.add_dependency(%q<simplecov>, [">= 0"])
       s.add_dependency(%q<ZenTest>, [">= 0"])
+      s.add_dependency(%q<mysql>, ["= 2.8.1"])
+      s.add_dependency(%q<bundler>, ["~> 1"])
+      s.add_dependency(%q<jeweler>, [">= 0"])
     end
   else
     s.add_dependency(%q<chicagowarehouse>, ["~> 0.4"])
+    s.add_dependency(%q<fastercsv>, [">= 0"])
+    s.add_dependency(%q<sequel>, [">= 0"])
+    s.add_dependency(%q<sequel_load_data_infile>, [">= 0.0.2"])
+    s.add_dependency(%q<sequel_fast_columns>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2"])
     s.add_dependency(%q<timecop>, [">= 0"])
     s.add_dependency(%q<yard>, [">= 0"])
     s.add_dependency(%q<flog>, [">= 0"])
-    s.add_dependency(%q<jeweler>, [">= 0"])
-    s.add_dependency(%q<rcov>, [">= 0"])
     s.add_dependency(%q<simplecov>, [">= 0"])
     s.add_dependency(%q<ZenTest>, [">= 0"])
+    s.add_dependency(%q<mysql>, ["= 2.8.1"])
+    s.add_dependency(%q<bundler>, ["~> 1"])
+    s.add_dependency(%q<jeweler>, [">= 0"])
   end
 end
 
