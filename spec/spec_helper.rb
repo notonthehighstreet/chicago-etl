@@ -12,6 +12,7 @@ require 'yaml'
 require 'timecop'
 
 include Chicago
+include Chicago::Flow
 
 unless defined? TEST_DB
   TEST_DB = Sequel.connect(YAML.load(File.read(File.dirname(__FILE__) + "/db_connections.yml")))

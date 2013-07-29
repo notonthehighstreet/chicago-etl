@@ -1,5 +1,22 @@
+if RUBY_VERSION.split(".")[1] < "9"
+  require 'fastercsv'
+  CSV = FasterCSV
+else
+  require 'csv'
+end
+
 require 'sequel'
-require 'chicago/flow'
+require 'chicago/flow/errors'
+require 'chicago/flow/transformation'
+require 'chicago/flow/filter'
+require 'chicago/flow/transformation_chain'
+require 'chicago/flow/pipeline_stage'
+require 'chicago/flow/pipeline_endpoint'
+require 'chicago/flow/array_source'
+require 'chicago/flow/dataset_source'
+require 'chicago/flow/sink'
+require 'chicago/flow/array_sink'
+require 'chicago/flow/null_sink'
 require 'chicago/flow/mysql'
 
 require 'chicago/etl/core_extensions'
