@@ -1,4 +1,0 @@
-adapter: mysql
-username: root
-socket: /var/run/mysqld/mysqld.sock
-database: chicago_flow_test_db
