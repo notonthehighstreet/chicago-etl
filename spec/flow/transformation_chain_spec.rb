@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe TransformationChain do
+describe Chicago::Flow::TransformationChain do
   let(:add_1_to_a) {
-    Class.new(Transformation) {
+    Class.new(Chicago::Flow::Transformation) {
       def process_row(row)
         row[:a] += 1
         row
@@ -11,7 +11,7 @@ describe TransformationChain do
   }
 
   let(:dup_row) {
-    Class.new(Transformation) {
+    Class.new(Chicago::Flow::Transformation) {
       def output_streams
         [:default, @options[:onto]].flatten
       end
@@ -48,7 +48,8 @@ describe TransformationChain do
   end
 
   it "can cope with a filter returning nil" do
-    described_class.new(Filter.new, dup_row.new, add_1_to_a.new).process({:a => 1}).
+    described_class.new(Chicago::Flow::Filter.new, 
+                        dup_row.new, add_1_to_a.new).process({:a => 1}).
       should == []
   end
 

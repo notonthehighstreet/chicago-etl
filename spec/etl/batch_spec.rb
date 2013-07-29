@@ -15,7 +15,8 @@ describe Chicago::ETL::Batch do
   end
 
   it "should set the start timestamp of the batch to now when created" do
-    ETL::Batch.instance.start.started_at.to_i.should == Time.now.to_i
+    (ETL::Batch.instance.start.started_at.to_i - Time.now.to_i).abs.
+      should <= 5
   end
 
   it "should have a state of 'Started' when started" do

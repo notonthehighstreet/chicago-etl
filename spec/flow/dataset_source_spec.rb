@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe DatasetSource do
+describe Chicago::Flow::DatasetSource do
   let(:dataset) { stub(:dataset) }
 
   it "should delegtate each to the dataset" do

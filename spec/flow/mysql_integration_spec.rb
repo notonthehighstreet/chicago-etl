@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "Mysql -> Mysql through transformation chain" do
   let(:dup_row) {
-    Class.new(Transformation) {
+    Class.new(Chicago::Flow::Transformation) {
       def output_streams
         [:default, @options[:onto]].flatten
       end
@@ -46,11 +46,14 @@ describe "Mysql -> Mysql through transformation chain" do
     TEST_DB[:source].multi_insert([{:foo => nil, :bin => :unhex.sql_function("1F")},
                                   {:foo => "Hello", :bin => :unhex.sql_function("1F")}])
 
-    source = DatasetSource.new(TEST_DB[:source].select(:id, :foo, :hex.sql_function(:bin).as(:bin)))
-    sink_1 = MysqlFileSink.new(TEST_DB, :destination, [:id, :foo, :bin])
-    sink_2 = ArraySink.new([:id, :foo, :bin])
+    source = Chicago::Flow::DatasetSource.
+      new(TEST_DB[:source].
+          select(:id, :foo, :hex.sql_function(:bin).as(:bin)))
+    sink_1 = Chicago::Flow::MysqlFileSink.
+      new(TEST_DB, :destination, [:id, :foo, :bin])
+    sink_2 = Chicago::Flow::ArraySink.new([:id, :foo, :bin])
 
-    stage = PipelineStage.
+    stage = Chicago::Flow::PipelineStage.
       new(:transformations => [dup_row.new(:onto => :other)])
 
     expect { stage.execute(source) }.to raise_error

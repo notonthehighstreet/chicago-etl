@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe PipelineStage do
+describe Chicago::Flow::PipelineStage do
   let(:transform) {
-    Class.new(Transformation) {
+    Class.new(Chicago::Flow::Transformation) {
       def process_row(row)
         row[:a] += 1
         row
@@ -11,20 +11,20 @@ describe PipelineStage do
   }
   
   let(:add_error) {
-    Class.new(Transformation) {
+    Class.new(Chicago::Flow::Transformation) {
       # add_output_stream :error
       def output_streams
         [:default, :error]
       end
       
       def process_row(row)
-        [row, {STREAM => :error, :message => "error"}]
+        [row, {Chicago::Flow::STREAM => :error, :message => "error"}]
       end
     }
   }
 
-  let(:sink) { ArraySink.new(:test) }
-  let(:source) { ArraySource.new([{:a => 1}]) }
+  let(:sink) { Chicago::Flow::ArraySink.new(:test) }
+  let(:source) { Chicago::Flow::ArraySource.new([{:a => 1}]) }
 
   it "returns all sinks" do
     stage = described_class.new.register_sink(:default, sink)
@@ -51,7 +51,7 @@ describe PipelineStage do
   end
 
   it "writes rows to the appropriate sink for their stream, and strips the stream tag" do
-    error_sink = ArraySink.new(:test)
+    error_sink = Chicago::Flow::ArraySink.new(:test)
 
     pipeline = described_class.new(:transformations => [add_error.new]).
       register_sink(:default, sink).
