@@ -9,6 +9,8 @@ require 'chicago/etl/schema_table_sink_factory'
 require 'chicago/etl/transformations'
 require 'chicago/etl/load_dataset_builder'
 require 'chicago/etl/dataset_batch_stage'
+require 'chicago/etl/load_pipeline_stage_builder'
+require 'chicago/etl/pipeline'
 
 # Sequel Extensions
 require 'chicago/etl/sequel/filter_to_etl_batch'
@@ -29,5 +31,13 @@ module Chicago
     autoload :TableBuilder,   'chicago/etl/table_builder.rb'
     autoload :Batch,          'chicago/etl/batch.rb'
     autoload :TaskInvocation, 'chicago/etl/task_invocation.rb'
+
+    def self.execute(stage, etl_batch, reextract, logger)
+      etl_batch.perform_task(:load, stage.name) do
+        logger.debug "Starting loading #{stage.name}"
+        stage.execute(etl_batch, reextract)
+        logger.debug "Finished loading #{stage.name}"
+      end
+    end
   end
 end
