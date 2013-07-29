@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
 gem "chicagowarehouse", "~> 0.4"
-gem "chicago-flow"
+gem "chicago-flow", :path => "~/projects/work/chicago-flow"
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
