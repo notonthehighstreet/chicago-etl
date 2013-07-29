@@ -86,7 +86,7 @@ module Chicago
           @key_mapping[row_id] = new_key
 
           [new_key, {
-             :original_id => key_for_insert(row_id), 
+             :original_id => row_id, 
              :dimension_id => new_key
            }]
         end
@@ -124,10 +124,6 @@ module Chicago
         row[:original_id]
       end
 
-      def key_for_insert(original_id)
-        original_id
-      end
-
       def original_key_select_fragment
         :original_id
       end
@@ -140,10 +136,6 @@ module Chicago
     class ExistingHashColumnKeyBuilder < KeyBuilder
       def original_key(row)
         row[:hash].upcase
-      end
-
-      def key_for_insert(original_id)
-        ("0x" + original_id).lit
       end
 
       def original_key_select_fragment
@@ -171,10 +163,6 @@ module Chicago
       def original_key(row)
         str = columns.map {|column| hash_preparation.call(row[column]) }.join
         Digest::MD5.hexdigest(str).upcase
-      end
-
-      def key_for_insert(original_id)
-        ("0x" + original_id).lit
       end
 
       def original_key_select_fragment

@@ -43,16 +43,20 @@ describe Chicago::ETL::SchemaTableSinkFactory do
   end
 
   it "builds the key table sink" do
+    sink = stub(:sink).as_null_object
     sink_class.should_receive(:new).
-      with(db, :keys_dimension_foo, [:original_id, :dimension_id], {})
+      with(db, :keys_dimension_foo, [:original_id, :dimension_id], {}).
+      and_return(sink)
 
     described_class.new(db, dimension).key_sink()
   end
 
   it "builds other explicit key table sinks" do
+    sink = stub(:sink).as_null_object
     sink_class.should_receive(:new).
-      with(db, :keys_foo, [:original_id, :dimension_id], {})
-
+      with(db, :keys_foo, [:original_id, :dimension_id], {}).
+      and_return(sink)
+    
     described_class.new(db, dimension).key_sink(:table => :keys_foo)
   end
 

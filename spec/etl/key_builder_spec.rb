@@ -102,13 +102,6 @@ describe Chicago::ETL::KeyBuilder do
       @builder.key(:hash => "aaa").first.should == 1
       @builder.key(:hash => "AAA").first.should == 1
     end
-
-    it "inserts the hash as a binary literal" do
-      # Yuck. Don't like the implementation test, but mock
-      # expectations fail here for some reason, maybe because of the
-      # Sequel::LiteralString?
-      @builder.key_for_insert(@builder.original_key(:hash => "aaa")).should == "0xAAA".lit
-    end
   end
 
   describe "for non-identifiable dimensions with natural keys" do
@@ -137,13 +130,6 @@ describe Chicago::ETL::KeyBuilder do
         first.should == 1
       @builder.key(:line1 => "some STREET", :post_code => "TW3 X45").
         first.should == 2
-    end
-
-    it "inserts the hash as a binary literal" do
-      # Yuck. Don't like the implementation test, but mock
-      # expectations fail here for some reason, maybe because of the
-      # Sequel::LiteralString?
-      @builder.key_for_insert(@builder.original_key(:line1 => "some street", :post_code => "TW3 X45")).should == "0x817860F2417EB83D81FEA9D82E6B213A".lit
     end
 
     it "selects the Hex version of the binary column for the cache" do

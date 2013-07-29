@@ -22,20 +22,31 @@ module Chicago
       # key table for a Dimension.
       def key_sink(options={})
         table = options.delete(:table) || @schema_table.key_table_name
-        Flow::MysqlFileSink.new(@db,
-                                table,
-                                [:original_id, :dimension_id],
-                                mysql_options(options))
+        sink = Flow::MysqlFileSink.new(@db,
+                                       table,
+                                       [:original_id, :dimension_id],
+                                       mysql_options(options))
+        sink.truncation_strategy = lambda do
+          # No Op - we want to maintain keys to avoid having to sort
+          # out fact tables.
+        end
+        sink
       end
 
       def error_sink(options={})
-        Flow::MysqlFileSink.
+        sink = Flow::MysqlFileSink.
           new(@db, :etl_error_log, 
               [:column, :row_id, :error, :severity, :error_detail], mysql_options(options)).
           set_constant_values(:table => @schema_table.table_name.to_s,
                               :process_name => "StandardTransformations",
                               :process_version => 3,
                               :logged_at => Time.now)
+
+        sink.truncation_strategy = lambda do
+          @db[:etl_error_log].
+            where(:table => @schema_table.table_name.to_s).delete
+        end
+        sink
       end
 
       private

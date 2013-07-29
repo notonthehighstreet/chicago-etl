@@ -1,6 +1,5 @@
 module Chicago
   module ETL
-
     class TaskInvocation < Sequel::Model
       set_dataset :etl_task_invocations
       many_to_one :batch
