@@ -2,6 +2,9 @@ require 'set'
 
 module Chicago
   module ETL
+    # Currently unused - work in progress.
+    # 
+    # @api private
     class LoadDatasetBuilder
       def initialize(&block)
         @constructed_columns = {}

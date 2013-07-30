@@ -1,6 +1,8 @@
 module Chicago
   module ETL
     module Screens
+      # Screen which checks to see if a column's value is out of
+      # defined bounds.
       class OutOfBounds < ColumnScreen
         def severity
           2

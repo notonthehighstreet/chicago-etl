@@ -1,6 +1,7 @@
 module Chicago
   module ETL
     module Screens
+      # @abstract
       class ColumnScreen < Flow::Transformation
         def self.for_columns(columns)
           columns.map {|column|

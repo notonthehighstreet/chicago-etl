@@ -1,6 +1,8 @@
 module Chicago
   module ETL
     module Screens
+      # Screen which checks to see if a field is present in the row if
+      # required.
       class MissingValue < ColumnScreen
         def severity
           column.descriptive? ? 1 : 2

@@ -11,6 +11,8 @@ module Chicago
     #
     # @api public
     class KeyBuilder
+      # Creates the appropriate KeyBuilder for a star schema table.
+      #
       # @api private
       class Factory
         attr_reader :table, :staging_db
@@ -19,7 +21,7 @@ module Chicago
           @table = table
           @staging_db = staging_db
         end
-
+        
         def make
           if dimension?
             key_table = staging_db[table.key_table_name]

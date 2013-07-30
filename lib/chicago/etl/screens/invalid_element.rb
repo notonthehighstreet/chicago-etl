@@ -1,6 +1,8 @@
 module Chicago
   module ETL
     module Screens
+      # Transformation which checks to see if a field's value is in a
+      # column's elements.
       class InvalidElement < ColumnScreen
         def self.for_columns(columns)
           columns.select(&:elements).map {|column| new(:default, :column => column) }
