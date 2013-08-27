@@ -19,17 +19,18 @@ module Chicago
       def define_dimension_load(name, options={}, &block)
         dimension_name = options[:dimension] || name
         @load_dimensions << build_stage(name, 
-                                        @schema.dimension(dimension_name))
+                                        @schema.dimension(dimension_name),
+                                        &block)
       end
 
       # Defines a fact load stage
       def define_fact_load(name, options={}, &block)
         fact_name = options[:fact] || name
-        @load_facts << build_stage(name, @schema.fact(fact_name))
+        @load_facts << build_stage(name, @schema.fact(fact_name), &block)
       end
 
       # Builds a stage, but does not define it.
-      def build_stage(name, schema_table)
+      def build_stage(name, schema_table, &block)
         DatasetBatchStageBuilder.new(@db, schema_table).build(name, &block)
       end
     end
