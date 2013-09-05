@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "chicago-etl"
-  s.version = "0.0.13"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roland Swingler"]
-  s.date = "2013-07-29"
+  s.date = "2013-09-05"
   s.description = "ETL tools for Chicago"
   s.email = "roland.swingler@gmail.com"
   s.extra_rdoc_files = [
