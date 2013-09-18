@@ -31,27 +31,6 @@ module Chicago
         end
       end
 
-      # Deprecated.
-      #
-      # @deprecated Use perform_task instead
-      def load(task_name, &block)
-        perform_task(:load, task_name, &block)
-      end
-
-      # Deprecated.
-      #
-      # @deprecated Use perform_task instead
-      def transform(task_name, &block)
-        perform_task(:extract, task_name, &block)
-      end
-
-      # Deprecated.
-      #
-      # @deprecated Use perform_task instead
-      def extract(task_name, &block)
-        perform_task(:extract, task_name, &block)
-      end
-
       # Performs a named task if it hasn't already run successfully in
       # this batch.
       def perform_task(stage, task_name, &block)
