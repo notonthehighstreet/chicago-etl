@@ -6,7 +6,11 @@ module Chicago
       def initialize(name, options={})
         @name = name
         @source = options.fetch(:source)
+        raise ArgumentError, "Stage #{name} requires a source" unless @source
+
         @sinks = options.fetch(:sinks)
+        raise ArgumentError, "Stage #{name} requires at least one sink" if @sinks.empty?
+
         @transformations = options.fetch(:transformations)
         @transformation_chain = Chicago::Flow::TransformationChain.
           new(*@transformations)
