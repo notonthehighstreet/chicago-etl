@@ -45,7 +45,7 @@ describe "Mysql -> Mysql through transformation chain" do
   it "copies data from source to destination" do
     TEST_DB[:source].multi_insert([{:foo => nil, :bin => :unhex.sql_function("1F")},
                                   {:foo => "Hello", :bin => :unhex.sql_function("1F")}])
-
+    
     source = Chicago::Flow::DatasetSource.
       new(TEST_DB[:source].
           select(:id, :foo, :hex.sql_function(:bin).as(:bin)))
@@ -55,8 +55,6 @@ describe "Mysql -> Mysql through transformation chain" do
 
     stage = Chicago::Flow::PipelineStage.
       new(:transformations => [dup_row.new(:onto => :other)])
-
-    expect { stage.execute(source) }.to raise_error
 
     stage.register_sink(:default, sink_1)
     stage.register_sink(:other, sink_2)

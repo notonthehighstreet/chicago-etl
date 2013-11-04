@@ -19,14 +19,11 @@ module Chicago
           lambda {|source, _| source }
       end
 
-      def execute(etl_batch, reextract)
+      def execute(etl_batch, reextract=false)
         modified_source = reextract_and_filter_source(@source, etl_batch, reextract)
         transform_and_load_from(modified_source)
       end
       
-      def transform_and_load_from(source)
-      end
-
       def reextract_and_filter_source(source, etl_batch, reextract=false)
         if reextract
           filtered_dataset = source

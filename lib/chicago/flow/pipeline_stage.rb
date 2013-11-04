@@ -6,12 +6,11 @@ module Chicago
     #
     # @api public
     class PipelineStage
-      attr_reader :transformation_chain
+      attr_reader :transformation_chain, :transformations
       
       def initialize(options={})
         @sinks  = options[:sinks] || {}
         @transformations = options[:transformations] || []
-        @error_handler = options[:error_handler] || RaisingErrorHandler.new
         @transformation_chain = TransformationChain.new(*@transformations)
       end
 
@@ -20,34 +19,20 @@ module Chicago
         @sinks[name.to_sym]
       end
 
+      
       def sinks
-        @sinks.values
+        @sinks
       end
 
       def register_sink(name, sink)
         @sinks[name.to_sym] = sink
         self
       end
-      
-      def validate_pipeline
-        unless unregistered_sinks.empty?
-          @error_handler.unregistered_sinks(unregistered_sinks)
-        end
-      end
-      
+            
       def execute(source)
-        validate_pipeline
-        sinks.each(&:open)
+        sinks.values.each(&:open)
         pipe_rows_to_sinks_from(source)
-        sinks.each(&:close)
-      end
-
-      def required_sinks
-        transformation_chain.output_streams | [:default]
-      end
-
-      def unregistered_sinks
-        required_sinks - @sinks.keys
+        sinks.values.each(&:close)
       end
       
       private

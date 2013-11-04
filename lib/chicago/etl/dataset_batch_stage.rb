@@ -10,7 +10,10 @@ module Chicago
       def initialize(name, options={})
         @name = name
         @source = options.fetch(:source)
-        @pipeline_stage = options.fetch(:pipeline_stage)
+
+        @sinks = options[:pipeline_stage].sinks
+        @transformation_chain = options[:pipeline_stage].transformation_chain
+
         @filter_strategy = options[:filter_strategy] ||
           lambda { |dataset, etl_batch| @source.filter_to_etl_batch(etl_batch)}
         @truncate_pre_load = !!options[:truncate_pre_load]
@@ -21,20 +24,13 @@ module Chicago
       # Configures the dataset and flows rows into the pipeline.
       def execute(etl_batch, reextract=false)
         if @truncate_pre_load
-          pipeline_stage.sinks.each {|sink| sink.truncate }
-        elsif reextract && pipeline_stage.sink(:error)
-          pipeline_stage.sink(:error).truncate
+          sinks.each {|sink| sink.truncate }
+        elsif reextract && sink(:error)
+          sink(:error).truncate
         end
-
-        modified_source = reextract_and_filter_source(@source, etl_batch, reextract)
-        pipeline_stage.execute(modified_source)
-      end
-
-      # Returns the pipeline for this stage.
-      def pipeline_stage
-        @pipeline_stage.sink(:default).
-          set_constant_values(:_inserted_at => Time.now)
-        @pipeline_stage
+        
+        sink(:default).set_constant_values(:_inserted_at => Time.now)
+        super
       end
     end
   end

@@ -113,4 +113,6 @@ describe "defining and executing a stage" do
   end
 
   it "does not filter the dataset if re-extracting"
+
+  it "opens sinks before writing and closes them afterwards"
 end
