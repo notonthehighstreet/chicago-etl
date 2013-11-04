@@ -90,8 +90,8 @@ describe "defining and executing a stage" do
   it "allows the source to be filtered via a filter strategy" do
     etl_batch_double = double
     fake_source = []
+    fake_source.should_receive(:another_dataset_method).and_return([])
     
-    fake_source.should_receive(:another_dataset_method).and_return([])    
     pipeline.define_stage(:test_stage) do
       source do
         fake_source
@@ -111,4 +111,6 @@ describe "defining and executing a stage" do
       stage.execute(etl_batch_double, false)
     end
   end
+
+  it "does not filter the dataset if re-extracting"
 end

@@ -36,17 +36,6 @@ module Chicago
           set_constant_values(:_inserted_at => Time.now)
         @pipeline_stage
       end
-
-      # Returns a DatasetSource for the provided dataset filtered to
-      # the ETL batch as appropriate.
-      def source(etl_batch, reextract=false)
-        if reextract
-          filtered_dataset = @dataset
-        else
-          filtered_dataset = @filter_strategy.call(@dataset, etl_batch)
-        end
-        Chicago::Flow::DatasetSource.new(filtered_dataset)
-      end
     end
   end
 end

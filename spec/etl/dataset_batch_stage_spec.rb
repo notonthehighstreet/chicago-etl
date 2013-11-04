@@ -18,24 +18,6 @@ describe Chicago::ETL::DatasetBatchStage do
     sink.constant_values[:_inserted_at].should_not be_nil
   end
 
-  it "filters the dataset to the batch" do
-    dataset.should_recieve(:filter_to_etl_batch).with(etl_batch)
-    stage.source(etl_batch)
-  end
-
-  it "does not filter the dataset if re-extracting" do
-    dataset.should_not_recieve(:filter_to_etl_batch)
-    stage.source(etl_batch, true)
-  end
-
-  it "can filter via a custom strategy" do
-    dataset.should_not_recieve(:filter_to_etl_batch)
-
-    filter_strategy = lambda {|ds, batch| ds }
-    described_class.new(:foo, :source => dataset, :pipeline_stage => pipeline_stage, :filter_strategy => filter_strategy).
-      source(etl_batch)
-  end
-
   it "executes the pipeline stage using a DatasetSource" do
     pipeline_stage.should_receive(:execute).
       with(kind_of(Chicago::Flow::DatasetSource))
