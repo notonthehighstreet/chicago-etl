@@ -29,6 +29,9 @@ require 'chicago/etl/dataset_batch_stage'
 require 'chicago/etl/load_pipeline_stage_builder'
 require 'chicago/etl/pipeline'
 
+require 'chicago/etl/stage'
+require 'chicago/etl/stage_builder'
+
 # Sequel Extensions
 require 'chicago/etl/sequel/filter_to_etl_batch'
 require 'chicago/etl/sequel/dependant_tables'

@@ -8,11 +8,24 @@ module Chicago
       # Returns all defined fact load tasks
       attr_reader :load_facts
 
+      # Returns all the defined generic stages.
+      attr_reader :stages
+
       # Creates a pipeline for a Schema.
       def initialize(db, schema)
         @schema, @db = schema, db
         @load_dimensions = Chicago::Schema::NamedElementCollection.new
         @load_facts = Chicago::Schema::NamedElementCollection.new
+        @stages = Chicago::Schema::NamedElementCollection.new
+      end
+
+      # Defines a generic stage in the pipeline.
+      def define_stage(name, &block)
+        @stages << build_schemaless_stage(name, &block)
+      end
+
+      def build_schemaless_stage(name, &block)
+        StageBuilder.new(@db).build(name, &block)
       end
 
       # Defines a dimension load stage
@@ -73,6 +86,7 @@ module Chicago
 
       # Define elements of the pipeline. See LoadPipelineStageBuilder
       # for details.
+      # TODO: rename pipeline => transforms below this method
       def pipeline(&block)
         @pipeline_stage = LoadPipelineStageBuilder.new(@db, @schema_table).
           build(&block)
@@ -81,9 +95,11 @@ module Chicago
       # Defines the dataset, see DatasetBuilder .
       #
       # The block must return a Sequel::Dataset.
-      def dataset(&block)
+      # TODO: rename dataset => source below this method, make generic
+      def source(&block)
         @dataset = DatasetBuilder.new(@db).build(&block)
       end
+      alias :dataset :source
 
       # Define a custom filter strategy for filtering to an ETL batch.
       def filter_strategy(&block)
