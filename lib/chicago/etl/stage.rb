@@ -14,6 +14,9 @@ module Chicago
         @transformations = options.fetch(:transformations)
         @transformation_chain = Chicago::Flow::TransformationChain.
           new(*@transformations)
+
+        @filter_strategy = options[:filter_strategy] || 
+          lambda {|source, _| source }
       end
 
       def execute(etl_batch, reextract)

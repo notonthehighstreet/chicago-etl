@@ -86,4 +86,29 @@ describe "defining and executing a stage" do
     stage.sink(:another_stream).data.length.should == 1
     stage.sink(:another_stream).data.first.should == {:some_field => "has an error value"}
   end
+
+  it "allows the source to be filtered via a filter strategy" do
+    etl_batch_double = double
+    fake_source = []
+    
+    fake_source.should_receive(:another_dataset_method).and_return([])    
+    pipeline.define_stage(:test_stage) do
+      source do
+        fake_source
+      end
+
+      sinks do
+        add Chicago::Flow::ArraySink.new(:test)
+      end
+
+      filter_strategy do |source, etl_batch|
+        etl_batch.should == etl_batch_double
+        source.another_dataset_method
+      end
+    end
+    
+    pipeline.stages.each do |stage|
+      stage.execute(etl_batch_double, false)
+    end
+  end
 end

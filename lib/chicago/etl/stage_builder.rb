@@ -13,7 +13,11 @@ module Chicago
 
         instance_eval &block
         
-        Stage.new(name, :source => @dataset, :sinks => @sinks, :transformations => @transformations)
+        Stage.new(name,
+                  :source => @dataset, 
+                  :sinks => @sinks, 
+                  :transformations => @transformations, 
+                  :filter_strategy => @filter_strategy)
       end
 
       def source(&block)
@@ -26,6 +30,12 @@ module Chicago
 
       def sinks(options={}, &block)
         @sinks = SinkBuilder.new.build(&block)
+      end
+
+      # TODO: think of potentially better ways of dealig with this
+      # problem.
+      def filter_strategy(&block)
+        @filter_strategy = block
       end
 
       class TransformationBuilder
