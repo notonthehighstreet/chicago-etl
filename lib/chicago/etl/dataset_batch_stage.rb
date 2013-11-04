@@ -4,18 +4,17 @@ module Chicago
     #
     # Allows deferring constructing a DatasetSource until extract
     # time, so that it can be filtered to an ETL batch appropriately.
-    class DatasetBatchStage
+    class DatasetBatchStage < Stage
       attr_reader :name
 
-      def initialize(name, dataset, pipeline_stage, options={})
+      def initialize(name, options={})
         @name = name
-        @dataset = dataset
-        @pipeline_stage = pipeline_stage
-        @filter_strategy = options[:filter_strategy] || lambda {|dataset, etl_batch|
-          dataset.filter_to_etl_batch(etl_batch)
-        }
+        @source = options.fetch(:source)
+        @pipeline_stage = options.fetch(:pipeline_stage)
+        @filter_strategy = options[:filter_strategy] ||
+          lambda { |dataset, etl_batch| @source.filter_to_etl_batch(etl_batch)}
         @truncate_pre_load = !!options[:truncate_pre_load]
-      end
+     end
 
       # Executes this ETL stage.
       #
@@ -27,7 +26,8 @@ module Chicago
           pipeline_stage.sink(:error).truncate
         end
 
-        pipeline_stage.execute(source(etl_batch, reextract))
+        modified_source = reextract_and_filter_source(@source, etl_batch, reextract)
+        pipeline_stage.execute(modified_source)
       end
 
       # Returns the pipeline for this stage.

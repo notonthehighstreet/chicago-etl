@@ -65,7 +65,9 @@ module Chicago
           pipeline do
           end
         end
-        DatasetBatchStage.new(name, @dataset, @pipeline_stage,
+        DatasetBatchStage.new(name,
+                              :source => @dataset, 
+                              :pipeline_stage => @pipeline_stage,
                               :filter_strategy => @filter_strategy,
                               :truncate_pre_load => @truncate_pre_load)
       end

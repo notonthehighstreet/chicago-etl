@@ -25,12 +25,11 @@ require 'chicago/etl/key_builder'
 require 'chicago/etl/schema_table_sink_factory'
 require 'chicago/etl/transformations'
 require 'chicago/etl/load_dataset_builder'
+require 'chicago/etl/stage'
+require 'chicago/etl/stage_builder'
 require 'chicago/etl/dataset_batch_stage'
 require 'chicago/etl/load_pipeline_stage_builder'
 require 'chicago/etl/pipeline'
-
-require 'chicago/etl/stage'
-require 'chicago/etl/stage_builder'
 
 # Sequel Extensions
 require 'chicago/etl/sequel/filter_to_etl_batch'

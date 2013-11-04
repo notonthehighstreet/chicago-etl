@@ -3,7 +3,7 @@ require 'spec_helper'
 describe Chicago::ETL::DatasetBatchStage do
   let(:pipeline_stage) { mock(:pipeline_stage).as_null_object }
   let(:dataset) { mock(:dataset).as_null_object }
-  let(:stage) { described_class.new(:foo, dataset, pipeline_stage) }
+  let(:stage) { described_class.new(:foo, :source => dataset, :pipeline_stage => pipeline_stage) }
   let(:etl_batch) { stub(:etl_batch) }
 
   it "has a name" do
@@ -32,7 +32,7 @@ describe Chicago::ETL::DatasetBatchStage do
     dataset.should_not_recieve(:filter_to_etl_batch)
 
     filter_strategy = lambda {|ds, batch| ds }
-    described_class.new(:foo, dataset, pipeline_stage, :filter_strategy => filter_strategy).
+    described_class.new(:foo, :source => dataset, :pipeline_stage => pipeline_stage, :filter_strategy => filter_strategy).
       source(etl_batch)
   end
 
@@ -43,7 +43,7 @@ describe Chicago::ETL::DatasetBatchStage do
   end
 
   it "truncates any sinks if truncate_pre_load has been set" do
-    stage = described_class.new(:foo, dataset, pipeline_stage,
+    stage = described_class.new(:foo, :source => dataset, :pipeline_stage => pipeline_stage,
                                 :truncate_pre_load => true)
 
     sink = Chicago::Flow::ArraySink.new(:output)

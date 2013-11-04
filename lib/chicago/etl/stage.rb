@@ -36,7 +36,7 @@ module Chicago
         Chicago::Flow::DatasetSource.new(filtered_dataset)
       end
 
-          attr_reader :transformation_chain
+      attr_reader :transformation_chain
       
       # Returns the named sink, if it exists
       def sink(name)
