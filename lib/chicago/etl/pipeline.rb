@@ -61,15 +61,17 @@ module Chicago
       # @api private
       def build(name, &block)
         instance_eval &block
-        unless defined? @pipeline_stage
+        unless defined? @sinks_and_transformations
           pipeline do
           end
         end
-        DatasetBatchStage.new(name,
-                              :source => @dataset, 
-                              :pipeline_stage => @pipeline_stage,
-                              :filter_strategy => @filter_strategy,
-                              :truncate_pre_load => @truncate_pre_load)
+         DatasetBatchStage.new(name,
+                               :source => @dataset, 
+                               :transformations => @sinks_and_transformations[:transformations],
+                               :sinks => @sinks_and_transformations[:sinks],
+                               :filter_strategy => @filter_strategy,
+                               :truncate_pre_load => @truncate_pre_load)
+
       end
 
       protected
@@ -90,7 +92,7 @@ module Chicago
       # for details.
       # TODO: rename pipeline => transforms below this method
       def pipeline(&block)
-        @pipeline_stage = LoadPipelineStageBuilder.new(@db, @schema_table).
+        @sinks_and_transformations = SchemaSinksAndTransformationsBuilder.new(@db, @schema_table).
           build(&block)
       end
 

@@ -5,7 +5,7 @@ module Chicago
     #
     # Clients will not normally instantiate this themselves but use it
     # in the context of defining an ETL stage.
-    class LoadPipelineStageBuilder
+    class SchemaSinksAndTransformationsBuilder
       # @api private
       KeyMapping = Struct.new(:table, :field)
 
@@ -41,9 +41,9 @@ module Chicago
         add_screens
         add_key_transforms
         add_final_transforms
-        pipeline_stage = create_pipeline_stage
-        register_additional_sinks(pipeline_stage)
-        pipeline_stage
+        sinks_and_transformations = create_sinks_and_transformations
+        register_additional_sinks(sinks_and_transformations)
+        sinks_and_transformations
       end
 
       protected
@@ -81,7 +81,7 @@ module Chicago
 
       private
 
-      def create_pipeline_stage
+      def create_sinks_and_transformations
         default = @sink_factory.sink(:ignore => @ignore_present_rows,
                                      :exclude => @load_separately)
         key_sink = if @schema_table.kind_of?(Chicago::Schema::Dimension)
@@ -90,24 +90,26 @@ module Chicago
                      # Facts have no key table to write to.
                      Flow::NullSink.new
                    end
-        
-        Flow::PipelineStage.
-          new(:transformations => concat_transformations,
-              :sinks => {
-                :default => default,
-                :dimension_key => key_sink,
-                :error => @sink_factory.error_sink
-              })
+
+        {
+          :transformations => concat_transformations,
+          :sinks => {
+            :default => default,
+            :dimension_key => key_sink,
+            :error => @sink_factory.error_sink
+          }
+        }
       end
 
       def concat_transformations
         TRANSFORMATION_ORDER.map {|k| @transformations[k] }.flatten
       end
 
-      def register_additional_sinks(pipeline_stage)
+      def register_additional_sinks(sinks_and_transformations)
+        sinks = sinks_and_transformations[:sinks]
         @key_mappings.each do |mapping|
           sink = @sink_factory.key_sink(:table => mapping.table)
-          pipeline_stage.register_sink(mapping.table, sink)
+          sinks[mapping.table] = sink
         end
       end
 

@@ -44,27 +44,33 @@ describe "Mysql -> Mysql through transformation chain" do
 
   it "copies data from source to destination" do
     TEST_DB[:source].multi_insert([{:foo => nil, :bin => :unhex.sql_function("1F")},
-                                  {:foo => "Hello", :bin => :unhex.sql_function("1F")}])
+                                   {:foo => "Hello", :bin => :unhex.sql_function("1F")}])
     
     source = Chicago::Flow::DatasetSource.
       new(TEST_DB[:source].
           select(:id, :foo, :hex.sql_function(:bin).as(:bin)))
+
+    transformations = [dup_row.new(:onto => :other)]
+
     sink_1 = Chicago::Flow::MysqlFileSink.
       new(TEST_DB, :destination, [:id, :foo, :bin])
     sink_2 = Chicago::Flow::ArraySink.new([:id, :foo, :bin])
 
-    stage = Chicago::Flow::PipelineStage.
-      new(:transformations => [dup_row.new(:onto => :other)])
+    stage = Chicago::ETL::Stage.new(:test, 
+                                    :source => source, 
+                                    :transformations => transformations, 
+                                    :sinks => {
+                                      :default => sink_1, 
+                                      :other => sink_2
+                                    })
 
-    stage.register_sink(:default, sink_1)
-    stage.register_sink(:other, sink_2)
-
-    stage.execute(source)
+    stage.execute(stub(:etl_batch), true)
 
     expected = [{:id => 1, :foo => nil, :bin => "1F"},
                 {:id => 2, :foo => "Hello", :bin => "1F"}]
 
     sink_2.data.should == expected
-    TEST_DB[:destination].select(:id, :foo, :hex.sql_function(:bin).as(:bin)).all.should == expected
+    TEST_DB[:destination].select(:id, :foo, :hex.sql_function(:bin).as(:bin)).
+      all.should == expected
   end
 end

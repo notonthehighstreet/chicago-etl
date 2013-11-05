@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::ETL::LoadPipelineStageBuilder do
+describe Chicago::ETL::SchemaSinksAndTransformationsBuilder do
   let(:dimension) { stub(:dimension).as_null_object }
   let(:db) { stub(:db).as_null_object }
   let(:sink_factory) { stub(:sink_factory).as_null_object }
@@ -34,6 +34,6 @@ describe Chicago::ETL::LoadPipelineStageBuilder do
       key_mapping :bar, :original_id
     end
 
-    stage.sink(:bar).should_not be_nil
+    stage[:sinks][:bar].should_not be_nil
   end
 end

@@ -8,12 +8,7 @@ module Chicago
       attr_reader :name
 
       def initialize(name, options={})
-        @name = name
-        @source = options.fetch(:source)
-
-        @sinks = options[:pipeline_stage].sinks
-        @transformation_chain = options[:pipeline_stage].transformation_chain
-
+        super
         @filter_strategy = options[:filter_strategy] ||
           lambda { |dataset, etl_batch| @source.filter_to_etl_batch(etl_batch)}
         @truncate_pre_load = !!options[:truncate_pre_load]
