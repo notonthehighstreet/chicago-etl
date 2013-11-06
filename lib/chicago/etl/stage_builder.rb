@@ -1,8 +1,6 @@
 module Chicago
   module ETL
     class StageBuilder
-      attr_reader :sink_factory
-
       def initialize(db)
         @db = db
       end
@@ -20,15 +18,17 @@ module Chicago
                   :filter_strategy => @filter_strategy)
       end
 
+      protected
+
       def source(&block)
         @dataset = DatasetBuilder.new(@db).build(&block)
       end
       
-      def transformations(klass=TransformationBuilder, &block)
-        @transformations = klass.new.build(&block)
+      def transformations(&block)
+        @transformations = TransformationBuilder.new.build(&block)
       end
 
-      def sinks(options={}, &block)
+      def sinks(&block)
         @sinks = SinkBuilder.new.build(&block)
       end
 
