@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "chicago-etl"
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roland Swingler"]
-  s.date = "2013-09-05"
+  s.date = "2013-11-07"
   s.description = "ETL tools for Chicago"
   s.email = "roland.swingler@gmail.com"
   s.extra_rdoc_files = [
@@ -43,10 +43,13 @@ Gem::Specification.new do |s|
     "lib/chicago/etl/screens/out_of_bounds.rb",
     "lib/chicago/etl/sequel/dependant_tables.rb",
     "lib/chicago/etl/sequel/filter_to_etl_batch.rb",
+    "lib/chicago/etl/stage.rb",
+    "lib/chicago/etl/stage_builder.rb",
     "lib/chicago/etl/table_builder.rb",
     "lib/chicago/etl/task_invocation.rb",
     "lib/chicago/etl/tasks.rb",
     "lib/chicago/etl/transformations.rb",
+    "lib/chicago/etl/transformations/deduplicate_rows.rb",
     "lib/chicago/etl/transformations/uk_post_code.rb",
     "lib/chicago/etl/transformations/uk_post_code_field.rb",
     "lib/chicago/flow/array_sink.rb",
@@ -68,6 +71,7 @@ Gem::Specification.new do |s|
     "spec/etl/core_extensions_spec.rb",
     "spec/etl/counter_spec.rb",
     "spec/etl/dataset_batch_stage_spec.rb",
+    "spec/etl/define_stage_spec.rb",
     "spec/etl/etl_batch_id_dataset_filter.rb",
     "spec/etl/key_builder_spec.rb",
     "spec/etl/load_dataset_builder_spec.rb",
@@ -80,6 +84,7 @@ Gem::Specification.new do |s|
     "spec/etl/sequel/filter_to_etl_batch_spec.rb",
     "spec/etl/table_builder_spec.rb",
     "spec/etl/task_spec.rb",
+    "spec/etl/transformations/deduplicate_rows_spec.rb",
     "spec/etl/transformations/uk_post_code_field_spec.rb",
     "spec/etl/transformations/uk_post_code_spec.rb",
     "spec/etl/transformations_spec.rb",
