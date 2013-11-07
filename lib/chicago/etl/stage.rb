@@ -13,9 +13,9 @@ module Chicago
 
       def initialize(name, options={})
         @name = name
-        @source = options.fetch(:source)
-        @sinks = options.fetch(:sinks)
-        @transformations = options.fetch(:transformations)
+        @source = options[:source]
+        @sinks = options[:sinks]
+        @transformations = options[:transformations] || []
         @filter_strategy = options[:filter_strategy] || 
           lambda {|source, _| source }
 
@@ -23,7 +23,7 @@ module Chicago
       end
 
       def execute(etl_batch, reextract=false)
-        transform_and_load filtered_source(source, etl_batch, reextract)
+        transform_and_load filtered_source(etl_batch, reextract)
       end
       
       # Returns the named sink, if it exists
@@ -34,15 +34,15 @@ module Chicago
       def sinks
         @sinks.values
       end
-                  
-      private
       
-      def filtered_source(source, etl_batch, reextract=false)
+      def filtered_source(etl_batch, reextract=false)
         filtered_dataset = reextract ? source : 
           @filter_strategy.call(source, etl_batch)
 
         Chicago::Flow::DatasetSource.new(filtered_dataset)
       end
+
+      private
 
       def transform_and_load(source)
         sinks.each(&:open)
@@ -68,11 +68,11 @@ module Chicago
       end
 
       def validate_arguments
-        unless @source
+        if @source.nil?
           raise ArgumentError, "Stage #{@name} requires a source"
         end
 
-        if @sinks.empty?
+        if @sinks.blank?
           raise ArgumentError, "Stage #{@name} requires at least one sink"
         end
       end

@@ -39,26 +39,6 @@ describe "defining and executing a stage" do
     stage.sink(:another_stream).data.length.should == 0
   end
 
-  it "requires sinks" do
-    expect {
-      pipeline.define_stage(:test_stage) do
-        source do
-          db.test_dataset_method
-        end
-      end
-    }.to raise_error(ArgumentError)
-  end
-  
-  it "requires sources" do
-    expect {
-      pipeline.define_stage(:test_stage) do
-        sinks do
-          add Chicago::Flow::ArraySink.new(:test)
-        end
-      end
-    }.to raise_error(ArgumentError)
-  end
-
   it "glues the source, transformations, and sink correctly" do
     pipeline.define_stage(:test_stage) do
       source do
@@ -111,8 +91,4 @@ describe "defining and executing a stage" do
       stage.execute(etl_batch_double, false)
     end
   end
-
-  it "does not filter the dataset if re-extracting"
-
-  it "opens sinks before writing and closes them afterwards"
 end
