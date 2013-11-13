@@ -56,9 +56,9 @@ module Chicago
       private
 
       def assign_new_row_and_return_old_row(row)
-        row = return_row(@working_row)
+        result = return_row(@working_row)
         @working_row = new_row(row)
-        row
+        result
       end
     end
   end
