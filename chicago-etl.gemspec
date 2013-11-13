@@ -5,7 +5,7 @@
 
 Gem::Specification.new do |s|
   s.name = "chicago-etl"
-  s.version = "0.1.3"
+  s.version = "0.1.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roland Swingler"]
@@ -32,10 +32,11 @@ Gem::Specification.new do |s|
     "lib/chicago/etl/core_extensions.rb",
     "lib/chicago/etl/counter.rb",
     "lib/chicago/etl/dataset_batch_stage.rb",
+    "lib/chicago/etl/dataset_builder.rb",
     "lib/chicago/etl/key_builder.rb",
     "lib/chicago/etl/load_dataset_builder.rb",
-    "lib/chicago/etl/load_pipeline_stage_builder.rb",
     "lib/chicago/etl/pipeline.rb",
+    "lib/chicago/etl/schema_sinks_and_transformations_builder.rb",
     "lib/chicago/etl/schema_table_sink_factory.rb",
     "lib/chicago/etl/screens/column_screen.rb",
     "lib/chicago/etl/screens/invalid_element.rb",
@@ -62,7 +63,6 @@ Gem::Specification.new do |s|
     "lib/chicago/flow/mysql_file_sink.rb",
     "lib/chicago/flow/null_sink.rb",
     "lib/chicago/flow/pipeline_endpoint.rb",
-    "lib/chicago/flow/pipeline_stage.rb",
     "lib/chicago/flow/sink.rb",
     "lib/chicago/flow/transformation.rb",
     "lib/chicago/flow/transformation_chain.rb",
@@ -70,7 +70,7 @@ Gem::Specification.new do |s|
     "spec/etl/batch_spec.rb",
     "spec/etl/core_extensions_spec.rb",
     "spec/etl/counter_spec.rb",
-    "spec/etl/dataset_batch_stage_spec.rb",
+    "spec/etl/define_dimension_stage_spec.rb",
     "spec/etl/define_stage_spec.rb",
     "spec/etl/etl_batch_id_dataset_filter.rb",
     "spec/etl/key_builder_spec.rb",
@@ -82,6 +82,7 @@ Gem::Specification.new do |s|
     "spec/etl/screens/out_of_bounds_spec.rb",
     "spec/etl/sequel/dependant_tables_spec.rb",
     "spec/etl/sequel/filter_to_etl_batch_spec.rb",
+    "spec/etl/stage_spec.rb",
     "spec/etl/table_builder_spec.rb",
     "spec/etl/task_spec.rb",
     "spec/etl/transformations/deduplicate_rows_spec.rb",
@@ -95,7 +96,6 @@ Gem::Specification.new do |s|
     "spec/flow/mysql_file_serializer_spec.rb",
     "spec/flow/mysql_file_sink_spec.rb",
     "spec/flow/mysql_integration_spec.rb",
-    "spec/flow/pipeline_stage_spec.rb",
     "spec/flow/transformation_chain_spec.rb",
     "spec/flow/transformation_spec.rb",
     "spec/spec_helper.rb"
