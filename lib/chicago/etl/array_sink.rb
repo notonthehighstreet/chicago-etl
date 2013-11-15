@@ -1,5 +1,5 @@
 module Chicago
-  module Flow
+  module ETL
     # An endpoint that stores rows in an Array.
     #
     # @api public

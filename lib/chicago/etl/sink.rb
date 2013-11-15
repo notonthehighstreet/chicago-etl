@@ -1,5 +1,5 @@
 module Chicago
-  module Flow
+  module ETL
     # The destination for rows passing through a pipeline stage.
     #
     # @api public

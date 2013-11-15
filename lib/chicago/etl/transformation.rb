@@ -1,5 +1,5 @@
 module Chicago
-  module Flow
+  module ETL
     # The key used to store the stream in the row.
     #
     # @api private

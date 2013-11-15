@@ -1,7 +1,7 @@
 require 'date'
 
 module Chicago
-  module Flow
+  module ETL
     # @api private
     class MysqlFileSerializer
       # Transforms a value to be suitable for use in file in a LOAD

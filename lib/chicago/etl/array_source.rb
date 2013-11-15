@@ -1,5 +1,5 @@
 module Chicago
-  module Flow
+  module ETL
     # @api public
     class ArraySource < PipelineEndpoint
       def initialize(array, fields=[])

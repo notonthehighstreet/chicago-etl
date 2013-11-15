@@ -2,7 +2,7 @@ module Chicago
   module ETL
     module Transformations
       # Filters rows so they only get output once, based on a :key.
-      class WrittenRowFilter < Flow::Transformation
+      class WrittenRowFilter < Transformation
         requires_options :key
 
         def initialize(*args)
@@ -30,7 +30,7 @@ module Chicago
       # :_errors field.
       #
       # Pass the :key_builder option to set the KeyBuilder.
-      class AddKey < Flow::Transformation
+      class AddKey < Transformation
         requires_options :key_builder
         adds_fields :id
 
@@ -57,7 +57,7 @@ module Chicago
       end
 
       # Removes embedded :_errors and puts them on the error stream.
-      class DemultiplexErrors < Flow::Transformation
+      class DemultiplexErrors < Transformation
         def output_streams
           [:default, :error]
         end
@@ -73,7 +73,7 @@ module Chicago
 
       # Removes a field from the row, and creates a row on a
       # designated key stream
-      class DimensionKeyMapping < Flow::Transformation
+      class DimensionKeyMapping < Transformation
         requires_options :original_key, :key_table
 
         def removed_fields
@@ -103,7 +103,7 @@ module Chicago
       end
 
       # Adds a hash of the specified columns as a field in the row.
-      class HashColumns < Flow::Transformation
+      class HashColumns < Transformation
         requires_options :columns
 
         def process_row(row)

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'sequel'
 
-describe Chicago::Flow::MysqlFileSink do
+describe Chicago::ETL::MysqlFileSink do
   let(:dataset) { mock(:dataset).as_null_object }
   let(:db) { mock(:db, :[] => dataset, :schema => []) }
   let(:csv) { mock(:csv) }
@@ -29,7 +29,7 @@ describe Chicago::Flow::MysqlFileSink do
   end
 
   it "serializes values before writing to the file" do
-    Chicago::Flow::MysqlFileSerializer.any_instance.
+    Chicago::ETL::MysqlFileSerializer.any_instance.
       should_receive(:serialize).with(1).and_return(1)
     sink << {:foo => 1}
   end

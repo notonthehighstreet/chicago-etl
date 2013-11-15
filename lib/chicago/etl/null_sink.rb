@@ -1,5 +1,5 @@
 module Chicago
-  module Flow
+  module ETL
     # Supports the Sink interface, but discards all rows written to
     # it.
     class NullSink < Sink

@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Chicago::Flow::TransformationChain do
+describe Chicago::ETL::TransformationChain do
   let(:add_1_to_a) {
-    Class.new(Chicago::Flow::Transformation) {
+    Class.new(Chicago::ETL::Transformation) {
       def process_row(row)
         row[:a] += 1
         row
@@ -11,7 +11,7 @@ describe Chicago::Flow::TransformationChain do
   }
 
   let(:dup_row) {
-    Class.new(Chicago::Flow::Transformation) {
+    Class.new(Chicago::ETL::Transformation) {
       def output_streams
         [:default, @options[:onto]].flatten
       end
@@ -24,7 +24,7 @@ describe Chicago::Flow::TransformationChain do
   }
 
   let(:store_until_flush) {
-    Class.new(Chicago::Flow::Transformation) {
+    Class.new(Chicago::ETL::Transformation) {
       def process_row(row)
         @cache ||= []
         @cache << row
@@ -48,7 +48,7 @@ describe Chicago::Flow::TransformationChain do
   end
 
   it "can cope with a filter returning nil" do
-    described_class.new(Chicago::Flow::Filter.new, 
+    described_class.new(Chicago::ETL::Filter.new, 
                         dup_row.new, add_1_to_a.new).process({:a => 1}).
       should == []
   end
@@ -56,7 +56,7 @@ describe Chicago::Flow::TransformationChain do
   it "can write to different streams" do
     described_class.new(dup_row.new(:onto => :other),
                         add_1_to_a.new).process({:a => 1}).
-      should == [{:a => 2}, {:a => 1, Chicago::Flow::STREAM => :other}]
+      should == [{:a => 2}, {:a => 1, Chicago::ETL::STREAM => :other}]
   end
 
   it "knows what streams it writes to as a chain" do

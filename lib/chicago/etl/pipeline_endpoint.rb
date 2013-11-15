@@ -1,5 +1,5 @@
 module Chicago
-  module Flow
+  module ETL
     # A Source or a Sink.
     #
     # @api public

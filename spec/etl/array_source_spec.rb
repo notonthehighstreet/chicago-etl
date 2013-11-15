@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::Flow::ArraySource do
+describe Chicago::ETL::ArraySource do
   it "has an each method that yields rows" do
     described_class.new([{:a => 1}]).each do |row|
       row.should == {:a => 1}

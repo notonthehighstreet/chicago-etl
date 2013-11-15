@@ -1,5 +1,5 @@
 module Chicago
-  module Flow
+  module ETL
     # @api private
     class TransformationChain
       def initialize(*transforms)

@@ -1,6 +1,6 @@
 module Chicago
   module ETL
-    class DeduplicateRows < Chicago::Flow::Transformation
+    class DeduplicateRows < Transformation
       def process_row(row)
         if @working_row.nil?
           @working_row = new_row(row)

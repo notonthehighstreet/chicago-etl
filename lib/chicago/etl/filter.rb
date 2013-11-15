@@ -1,5 +1,5 @@
 module Chicago
-  module Flow
+  module ETL
     # @api public
     class Filter < Transformation
       def initialize(stream=:default, &block)

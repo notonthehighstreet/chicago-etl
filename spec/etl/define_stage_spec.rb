@@ -1,6 +1,6 @@
 require "spec_helper"
 
-class TestTransformation < Chicago::Flow::Transformation
+class TestTransformation < Chicago::ETL::Transformation
   def output_streams
     [:another_stream]
   end
@@ -23,8 +23,8 @@ describe "defining and executing a stage" do
       end
 
       sinks do
-        add Chicago::Flow::ArraySink.new(:test)
-        add Chicago::Flow::ArraySink.new(:test), :stream => :another_stream
+        add Chicago::ETL::ArraySink.new(:test)
+        add Chicago::ETL::ArraySink.new(:test), :stream => :another_stream
       end
     end
 
@@ -50,8 +50,8 @@ describe "defining and executing a stage" do
       end
 
       sinks do
-        add Chicago::Flow::ArraySink.new(:test)
-        add Chicago::Flow::ArraySink.new(:test), :stream => :another_stream
+        add Chicago::ETL::ArraySink.new(:test)
+        add Chicago::ETL::ArraySink.new(:test), :stream => :another_stream
       end
     end
 
@@ -78,7 +78,7 @@ describe "defining and executing a stage" do
       end
 
       sinks do
-        add Chicago::Flow::ArraySink.new(:test)
+        add Chicago::ETL::ArraySink.new(:test)
       end
 
       filter_strategy do |source, etl_batch|

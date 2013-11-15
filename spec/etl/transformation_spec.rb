@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::Flow::Transformation do
+describe Chicago::ETL::Transformation do
   let(:add_1_to_a) {
     Class.new(described_class) {
       def process_row(row)
@@ -45,8 +45,8 @@ describe Chicago::Flow::Transformation do
 
   it "can apply to all streams using :all" do
     add_1_to_a.new(:all).process({:a => 1}).should == {:a => 2}
-    add_1_to_a.new(:all).process({:a => 1, Chicago::Flow::STREAM => :other}).
-      should == {:a => 2, Chicago::Flow::STREAM => :other}
+    add_1_to_a.new(:all).process({:a => 1, Chicago::ETL::STREAM => :other}).
+      should == {:a => 2, Chicago::ETL::STREAM => :other}
   end
 
   it "can be flushed" do

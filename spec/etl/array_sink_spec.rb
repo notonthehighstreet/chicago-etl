@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::Flow::ArraySink do
+describe Chicago::ETL::ArraySink do
   let(:sink) { described_class.new(:foo) }
 
   it "has a name" do

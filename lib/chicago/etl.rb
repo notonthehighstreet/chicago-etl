@@ -6,17 +6,17 @@ else
 end
 
 require 'sequel'
-require 'chicago/flow/errors'
-require 'chicago/flow/transformation'
-require 'chicago/flow/filter'
-require 'chicago/flow/transformation_chain'
-require 'chicago/flow/pipeline_endpoint'
-require 'chicago/flow/array_source'
-require 'chicago/flow/dataset_source'
-require 'chicago/flow/sink'
-require 'chicago/flow/array_sink'
-require 'chicago/flow/null_sink'
-require 'chicago/flow/mysql'
+require 'chicago/etl/errors'
+require 'chicago/etl/transformation'
+require 'chicago/etl/filter'
+require 'chicago/etl/transformation_chain'
+require 'chicago/etl/pipeline_endpoint'
+require 'chicago/etl/array_source'
+require 'chicago/etl/dataset_source'
+require 'chicago/etl/sink'
+require 'chicago/etl/array_sink'
+require 'chicago/etl/null_sink'
+require 'chicago/etl/mysql'
 
 require 'chicago/etl/core_extensions'
 require 'chicago/etl/counter'
@@ -66,4 +66,7 @@ module Chicago
       end
     end
   end
+
+  # Deprecated, allows clients to transition when they like.
+  Flow = ETL
 end

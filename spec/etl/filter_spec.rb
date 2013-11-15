@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::Flow::Filter do
+describe Chicago::ETL::Filter do
   it "filters all rows by default" do
     subject.process({:a => 1}).should be_nil
   end

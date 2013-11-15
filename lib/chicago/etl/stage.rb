@@ -39,7 +39,7 @@ module Chicago
         filtered_dataset = reextract ? source : 
           @filter_strategy.call(source, etl_batch)
 
-        Chicago::Flow::DatasetSource.new(filtered_dataset)
+        DatasetSource.new(filtered_dataset)
       end
 
       private
@@ -58,8 +58,7 @@ module Chicago
       end
 
       def transformation_chain
-        @transformation_chain ||= Chicago::Flow::TransformationChain.
-          new(*@transformations)
+        @transformation_chain ||= TransformationChain.new(*@transformations)
       end
 
       def process_row(row)

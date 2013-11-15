@@ -88,7 +88,7 @@ module Chicago
                      @sink_factory.key_sink
                    else
                      # Facts have no key table to write to.
-                     Flow::NullSink.new
+                     NullSink.new
                    end
 
         {

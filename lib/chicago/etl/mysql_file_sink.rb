@@ -5,7 +5,7 @@ require 'tmpdir'
 Sequel.extension :core_extensions
 
 module Chicago
-  module Flow
+  module ETL
     # @api public
     class MysqlFileSink < Sink
       attr_reader :filepath

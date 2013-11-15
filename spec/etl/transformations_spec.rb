@@ -16,7 +16,7 @@ describe Chicago::ETL::Transformations::DemultiplexErrors do
   it "adds the errors onto the error stream" do
     subject.process(:_errors => [{:error => 1}]).last.should == {
       :error => 1,
-      Chicago::Flow::STREAM => :error
+      Chicago::ETL::STREAM => :error
     }
   end
 end

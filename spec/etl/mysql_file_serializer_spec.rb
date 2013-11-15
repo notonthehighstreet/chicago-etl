@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::Flow::MysqlFileSerializer do
+describe Chicago::ETL::MysqlFileSerializer do
   it "serializes nil into NULL" do
     subject.serialize(nil).should == "NULL"
   end

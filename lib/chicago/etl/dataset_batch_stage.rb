@@ -11,7 +11,6 @@ module Chicago
         super
         @filter_strategy = options[:filter_strategy] ||
           lambda { |dataset, etl_batch| @source.filter_to_etl_batch(etl_batch)}
-        @truncate_pre_load = !!options[:truncate_pre_load]
      end
 
       # Executes this ETL stage.

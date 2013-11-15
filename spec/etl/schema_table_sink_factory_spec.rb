@@ -12,7 +12,7 @@ describe Chicago::ETL::SchemaTableSinkFactory do
     end
   }
 
-  let(:sink_class) { Chicago::Flow::MysqlFileSink }
+  let(:sink_class) { Chicago::ETL::MysqlFileSink }
 
   it "builds a MysqlFileSink" do
     sink_class.should_receive(:new).

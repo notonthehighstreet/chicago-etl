@@ -13,10 +13,10 @@ module Chicago
       # Pass an :exclude option if you don't want all columns of the
       # schema table to be loaded via this sink.
       def sink(options={})
-        Flow::MysqlFileSink.new(@db,
-                                @schema_table.table_name,
-                                load_columns(options[:exclude]),
-                                mysql_options(options))
+        MysqlFileSink.new(@db,
+                          @schema_table.table_name,
+                          load_columns(options[:exclude]),
+                          mysql_options(options))
       end
       
       # Returns a sink to load data into the MySQL table backing the
@@ -26,20 +26,20 @@ module Chicago
       #   schema table's key table name will be used otherwise.
       def key_sink(options={})
         table = options.delete(:table) || @schema_table.key_table_name
-        sink = Flow::MysqlFileSink.new(@db,
-                                       table,
-                                       [:original_id, :dimension_id],
-                                       mysql_options(options))
+        sink = MysqlFileSink.new(@db,
+                                 table,
+                                 [:original_id, :dimension_id],
+                                 mysql_options(options))
         sink.truncation_strategy = lambda do
           # No Op - we want to maintain keys to avoid having to sort
           # out fact tables.
         end
         sink
       end
-
+      
       # Returns a sink to load errors generated in the ETL process.
       def error_sink(options={})
-        sink = Flow::MysqlFileSink.
+        sink = MysqlFileSink.
           new(@db, :etl_error_log, 
               [:column, :row_id, :error, :severity, :error_detail], mysql_options(options)).
           set_constant_values(:table => @schema_table.table_name.to_s,
@@ -53,7 +53,7 @@ module Chicago
         end
         sink
       end
-
+      
       private
       
       def load_columns(exclude=nil)

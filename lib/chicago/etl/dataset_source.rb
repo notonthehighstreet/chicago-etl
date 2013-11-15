@@ -2,7 +2,7 @@ require 'sequel'
 require 'sequel/fast_columns'
 
 module Chicago
-  module Flow
+  module ETL
     # @api public
     class DatasetSource < PipelineEndpoint
       attr_reader :dataset
