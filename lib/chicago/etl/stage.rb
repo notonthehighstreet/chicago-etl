@@ -28,6 +28,11 @@ module Chicago
         @truncate_pre_load
       end
 
+      # Returns the unqualified name of this stage.
+      def task_name
+        name.name
+      end
+
       def execute(etl_batch, reextract=false)
         sinks.each {|sink| sink.truncate } if truncate_pre_load?
         transform_and_load filtered_source(etl_batch, reextract)

@@ -18,7 +18,7 @@ describe "creating and running a dimension stage" do
   let(:pipeline) { Chicago::ETL::Pipeline.new(db, schema)}
 
   it "glues the source, transformations, and sink correctly" do
-    pipeline.define_dimension_load(:test) do
+    pipeline.define_stage(:load, :dimensions, :test) do
       dataset do
         db.test_dataset_method
       end
