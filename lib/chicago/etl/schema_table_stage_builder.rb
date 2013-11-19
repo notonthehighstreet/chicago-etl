@@ -36,12 +36,6 @@ module Chicago
 
       protected
       
-      # Specifies that the dataset should never be filtered to the ETL
-      # batch - i.e. it should behave as if reextract was always true
-      def full_reload
-        @filter_strategy = lambda {|dataset, etl_batch| dataset }
-      end
-
       # Define elements of the pipeline. See LoadPipelineStageBuilder
       # for details.
       #

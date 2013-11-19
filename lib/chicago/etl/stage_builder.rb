@@ -6,10 +6,10 @@ module Chicago
       end
 
       def build(name, &block)
-        @sinks = {}
-        @transformations = []
-
         instance_eval &block
+
+        @sinks ||= sinks {}
+        @transformations ||= transformations {}
         
         Stage.new(name,
                   :source => @dataset, 
@@ -25,6 +25,12 @@ module Chicago
       # data.
       def truncate_pre_load
         @truncate_pre_load = true
+      end
+
+      # Specifies that the dataset should never be filtered to the ETL
+      # batch - i.e. it should behave as if reextract was always true
+      def full_reload
+        @filter_strategy = lambda {|dataset, etl_batch| dataset }
       end
 
       def source(&block)
