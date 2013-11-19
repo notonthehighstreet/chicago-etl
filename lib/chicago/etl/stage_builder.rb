@@ -15,10 +15,17 @@ module Chicago
                   :source => @dataset, 
                   :sinks => @sinks, 
                   :transformations => @transformations, 
-                  :filter_strategy => @filter_strategy)
+                  :filter_strategy => @filter_strategy,
+                  :truncate_pre_load => @truncate_pre_load)
       end
 
       protected
+
+      # Specifies that the sinks should be truncated before loading
+      # data.
+      def truncate_pre_load
+        @truncate_pre_load = true
+      end
 
       def source(&block)
         @dataset = DatasetBuilder.new(@db).build(&block)
