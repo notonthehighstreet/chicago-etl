@@ -32,6 +32,11 @@ module Chicago
       def task_name
         name.name
       end
+      
+      # Returns true if the sinks should be truncated pre-load.
+      def truncate_pre_load?
+        @truncate_pre_load
+      end
 
       def execute(etl_batch, reextract=false)
         sinks.each {|sink| sink.truncate } if truncate_pre_load?
