@@ -1,18 +1,8 @@
 module Chicago
   module ETL
-    # Links a PipelineStage to a Dataset.
-    #
     # Allows deferring constructing a DatasetSource until extract
     # time, so that it can be filtered to an ETL batch appropriately.
     class DatasetBatchStage < Stage
-      attr_reader :name
-
-      def initialize(name, options={})
-        super
-        @filter_strategy = options[:filter_strategy] ||
-          lambda { |dataset, etl_batch| @source.filter_to_etl_batch(etl_batch)}
-     end
-
       # Executes this ETL stage.
       #
       # Configures the dataset and flows rows into the pipeline.

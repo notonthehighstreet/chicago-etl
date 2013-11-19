@@ -65,13 +65,17 @@ module Chicago
           pipeline do
           end
         end
-         DatasetBatchStage.new(name,
-                               :source => @dataset, 
-                               :transformations => @sinks_and_transformations[:transformations],
-                               :sinks => @sinks_and_transformations[:sinks],
-                               :filter_strategy => @filter_strategy,
-                               :truncate_pre_load => @truncate_pre_load)
 
+        @filter_strategy ||= lambda {|dataset, etl_batch| 
+          dataset.filter_to_etl_batch(etl_batch)
+        }
+        
+        DatasetBatchStage.new(name,
+                              :source => @dataset, 
+                              :transformations => @sinks_and_transformations[:transformations],
+                              :sinks => @sinks_and_transformations[:sinks],
+                              :filter_strategy => @filter_strategy,
+                              :truncate_pre_load => @truncate_pre_load)
       end
 
       protected
