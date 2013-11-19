@@ -17,9 +17,7 @@ module Chicago
       #
       # Configures the dataset and flows rows into the pipeline.
       def execute(etl_batch, reextract=false)
-        if @truncate_pre_load
-          sinks.each {|sink| sink.truncate }
-        elsif reextract && sink(:error)
+        if reextract && sink(:error) && !truncate_pre_load?
           sink(:error).truncate
         end
         

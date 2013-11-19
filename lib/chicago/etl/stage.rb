@@ -18,11 +18,18 @@ module Chicago
         @transformations = options[:transformations] || []
         @filter_strategy = options[:filter_strategy] || 
           lambda {|source, _| source }
+        @truncate_pre_load = !!options[:truncate_pre_load]
 
         validate_arguments
       end
+      
+      # Returns true if the sinks should be truncated pre-load.
+      def truncate_pre_load?
+        @truncate_pre_load
+      end
 
       def execute(etl_batch, reextract=false)
+        sinks.each {|sink| sink.truncate } if truncate_pre_load?
         transform_and_load filtered_source(etl_batch, reextract)
       end
       
