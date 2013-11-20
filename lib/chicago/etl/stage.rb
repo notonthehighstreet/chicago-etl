@@ -18,28 +18,18 @@ module Chicago
         @transformations = options[:transformations] || []
         @filter_strategy = options[:filter_strategy] || 
           lambda {|source, _| source }
-        @truncate_pre_load = !!options[:truncate_pre_load]
+        @pre_execution_strategy = options[:pre_execution_strategy]
 
         validate_arguments
       end
       
-      # Returns true if the sinks should be truncated pre-load.
-      def truncate_pre_load?
-        @truncate_pre_load
-      end
-
       # Returns the unqualified name of this stage.
       def task_name
         name.name
       end
       
-      # Returns true if the sinks should be truncated pre-load.
-      def truncate_pre_load?
-        @truncate_pre_load
-      end
-
       def execute(etl_batch, reextract=false)
-        sinks.each {|sink| sink.truncate } if truncate_pre_load?
+        prepare_stage(etl_batch, reextract)
         transform_and_load filtered_source(etl_batch, reextract)
       end
       
@@ -60,6 +50,12 @@ module Chicago
       end
 
       private
+
+      def prepare_stage(etl_batch, reextract)
+        if @pre_execution_strategy
+          @pre_execution_strategy.call(self, etl_batch, reextract)
+        end
+      end
 
       def transform_and_load(source)
         sinks.each(&:open)

@@ -29,7 +29,6 @@ require 'chicago/etl/load_dataset_builder'
 require 'chicago/etl/dataset_builder'
 require 'chicago/etl/stage'
 require 'chicago/etl/stage_builder'
-require 'chicago/etl/dataset_batch_stage'
 require 'chicago/etl/schema_sinks_and_transformations_builder'
 require 'chicago/etl/pipeline'
 

@@ -10,13 +10,14 @@ module Chicago
 
         @sinks ||= sinks {}
         @transformations ||= transformations {}
-        
+        @pre_execution_strategy = determine_pre_execution_strategy
+
         Stage.new(name,
                   :source => @dataset, 
                   :sinks => @sinks, 
                   :transformations => @transformations, 
                   :filter_strategy => @filter_strategy,
-                  :truncate_pre_load => @truncate_pre_load)
+                  :pre_execution_strategy => @pre_execution_strategy)
       end
 
       protected
@@ -45,10 +46,18 @@ module Chicago
         @sinks = SinkBuilder.new.build(&block)
       end
 
-      # TODO: think of potentially better ways of dealig with this
+      # TODO: think of potentially better ways of dealing with this
       # problem.
       def filter_strategy(&block)
         @filter_strategy = block
+      end
+
+      def determine_pre_execution_strategy
+        if @truncate_pre_load
+          lambda {|stage, etl_batch, reextract|
+            stage.sinks.each {|sink| sink.truncate }
+          }
+        end
       end
 
       class TransformationBuilder

@@ -22,16 +22,17 @@ module Chicago
           end
         end
 
+        @pre_execution_strategy = determine_pre_execution_strategy
         @filter_strategy ||= lambda {|dataset, etl_batch| 
           dataset.filter_to_etl_batch(etl_batch)
         }
         
-        DatasetBatchStage.new(name,
-                              :source => @dataset, 
-                              :transformations => @transformations,
-                              :sinks => @sinks,
-                              :filter_strategy => @filter_strategy,
-                              :truncate_pre_load => @truncate_pre_load)
+        Stage.new(name,
+                  :source => @dataset, 
+                  :transformations => @transformations,
+                  :sinks => @sinks,
+                  :filter_strategy => @filter_strategy,
+                  :pre_execution_strategy => @pre_execution_strategy)
       end
 
       protected
@@ -45,6 +46,22 @@ module Chicago
           new(@db, @schema_table).build(&block)
         @sinks = sinks_and_transformations[:sinks]
         @transformations = sinks_and_transformations[:transformations] || []
+      end
+
+      def determine_pre_execution_strategy
+        if @truncate_pre_load
+          lambda {|stage, etl_batch, reextract|
+            stage.sinks.each {|sink| sink.truncate }
+            stage.sink(:default).
+              set_constant_values(:_inserted_at => Time.now)
+          }
+        else
+          lambda {|stage, etl_batch, reextract|
+            stage.sink(:error).truncate if reextract && stage.sink(:error)
+            stage.sink(:default).
+              set_constant_values(:_inserted_at => Time.now)
+          }
+        end
       end
 
       alias :dataset :source
