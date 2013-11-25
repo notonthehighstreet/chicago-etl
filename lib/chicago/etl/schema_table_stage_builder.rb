@@ -10,29 +10,8 @@ module Chicago
       # @api private
       def initialize(db, schema_table)
         super(db)
-        @schema_table = schema_table
-      end
-
-      # @api private
-      def build(name, &block)
-        instance_eval &block
-
-        unless defined? @sinks
-          pipeline do
-          end
-        end
-
-        @pre_execution_strategy = determine_pre_execution_strategy
-        @filter_strategy ||= lambda {|dataset, etl_batch| 
-          dataset.filter_to_etl_batch(etl_batch)
-        }
-        
-        Stage.new(name,
-                  :source => @dataset, 
-                  :transformations => @transformations,
-                  :sinks => @sinks,
-                  :filter_strategy => @filter_strategy,
-                  :pre_execution_strategy => @pre_execution_strategy)
+        @wrapped_builder = SchemaSinksAndTransformationsBuilder.
+          new(@db, schema_table)
       end
 
       protected
@@ -42,29 +21,28 @@ module Chicago
       #
       # @deprecated
       def pipeline(&block)
-        sinks_and_transformations = SchemaSinksAndTransformationsBuilder.
-          new(@db, @schema_table).build(&block)
+        sinks_and_transformations = @wrapped_builder.build(&block)
         @sinks = sinks_and_transformations[:sinks]
         @transformations = sinks_and_transformations[:transformations] || []
       end
 
-      def determine_pre_execution_strategy
-        if @truncate_pre_load
-          lambda {|stage, etl_batch, reextract|
-            stage.sinks.each {|sink| sink.truncate }
-            stage.sink(:default).
-              set_constant_values(:_inserted_at => Time.now)
-          }
-        else
-          lambda {|stage, etl_batch, reextract|
-            stage.sink(:error).truncate if reextract && stage.sink(:error)
-            stage.sink(:default).
-              set_constant_values(:_inserted_at => Time.now)
-          }
+      # @api private
+      def set_default_stage_values
+        unless defined? @sinks
+          pipeline do
+          end
         end
-      end
 
-      alias :dataset :source
+        @pre_execution_strategies << lambda {|stage, etl_batch, reextract|
+          stage.sink(:error).truncate if reextract && stage.sink(:error)
+          stage.sink(:default).
+            set_constant_values(:_inserted_at => Time.now)
+        }
+
+        @filter_strategy ||= lambda {|dataset, etl_batch| 
+          dataset.filter_to_etl_batch(etl_batch)
+        }
+      end
     end
   end
 end

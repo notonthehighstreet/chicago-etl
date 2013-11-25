@@ -6,18 +6,16 @@ module Chicago
       end
 
       def build(name, &block)
+        @pre_execution_strategies = []        
         instance_eval &block
-
-        @sinks ||= sinks {}
-        @transformations ||= transformations {}
-        @pre_execution_strategy = determine_pre_execution_strategy
+        set_default_stage_values
 
         Stage.new(name,
                   :source => @dataset, 
                   :sinks => @sinks, 
                   :transformations => @transformations, 
                   :filter_strategy => @filter_strategy,
-                  :pre_execution_strategy => @pre_execution_strategy)
+                  :pre_execution_strategies => @pre_execution_strategies)
       end
 
       protected
@@ -25,7 +23,9 @@ module Chicago
       # Specifies that the sinks should be truncated before loading
       # data.
       def truncate_pre_load
-        @truncate_pre_load = true
+        @pre_execution_strategies << lambda {|stage, etl_batch, reextract|
+          stage.sinks.each {|sink| sink.truncate }
+        }
       end
 
       # Specifies that the dataset should never be filtered to the ETL
@@ -52,12 +52,10 @@ module Chicago
         @filter_strategy = block
       end
 
-      def determine_pre_execution_strategy
-        if @truncate_pre_load
-          lambda {|stage, etl_batch, reextract|
-            stage.sinks.each {|sink| sink.truncate }
-          }
-        end
+      # @api private
+      def set_default_stage_values
+        @sinks ||= sinks {}
+        @transformations ||= transformations {}
       end
 
       class TransformationBuilder

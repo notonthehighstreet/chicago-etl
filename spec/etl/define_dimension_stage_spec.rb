@@ -19,7 +19,7 @@ describe "creating and running a dimension stage" do
 
   it "glues the source, transformations, and sink correctly" do
     pipeline.define_stage(:load, :dimensions, :test) do
-      dataset do
+      source do
         db.test_dataset_method
       end
     end

@@ -16,9 +16,8 @@ module Chicago
         @source = options[:source]
         @sinks = options[:sinks]
         @transformations = options[:transformations] || []
-        @filter_strategy = options[:filter_strategy] || 
-          lambda {|source, _| source }
-        @pre_execution_strategy = options[:pre_execution_strategy]
+        @filter_strategy = options[:filter_strategy] || lambda {|s, _| s }
+        @pre_execution_strategies = options[:pre_execution_strategies] || []
 
         validate_arguments
       end
@@ -52,8 +51,8 @@ module Chicago
       private
 
       def prepare_stage(etl_batch, reextract)
-        if @pre_execution_strategy
-          @pre_execution_strategy.call(self, etl_batch, reextract)
+        @pre_execution_strategies.each do |strategy| 
+          strategy.call(self, etl_batch, reextract)
         end
       end
 
