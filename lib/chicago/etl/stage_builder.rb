@@ -6,7 +6,9 @@ module Chicago
       end
 
       def build(name, &block)
-        @pre_execution_strategies = []        
+        @pre_execution_strategies = []
+        @executable = true
+
         instance_eval &block
         set_default_stage_values
 
@@ -15,7 +17,8 @@ module Chicago
                   :sinks => @sinks, 
                   :transformations => @transformations, 
                   :filter_strategy => @filter_strategy,
-                  :pre_execution_strategies => @pre_execution_strategies)
+                  :pre_execution_strategies => @pre_execution_strategies,
+                  :executable => @executable)
       end
 
       protected
@@ -32,6 +35,11 @@ module Chicago
       # batch - i.e. it should behave as if reextract was always true
       def full_reload
         @filter_strategy = lambda {|dataset, etl_batch| dataset }
+      end
+
+      # Mark this stage as executable or non-executable.
+      def executable(value=true)
+        @executable = value
       end
 
       def source(&block)

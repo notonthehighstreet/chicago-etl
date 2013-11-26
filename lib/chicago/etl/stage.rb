@@ -18,6 +18,7 @@ module Chicago
         @transformations = options[:transformations] || []
         @filter_strategy = options[:filter_strategy] || lambda {|s, _| s }
         @pre_execution_strategies = options[:pre_execution_strategies] || []
+        @executable = options.has_key?(:executable) ? options[:executable] : true
 
         validate_arguments
       end
@@ -27,6 +28,12 @@ module Chicago
         name.name
       end
       
+      # Returns true if this stage should be executed.
+      def executable?
+        @executable
+      end
+      
+      # Executes this stage in the context of an ETL::Batch
       def execute(etl_batch, reextract=false)
         prepare_stage(etl_batch, reextract)
         transform_and_load filtered_source(etl_batch, reextract)
@@ -41,6 +48,7 @@ module Chicago
         @sinks.values
       end
       
+      # @api private
       def filtered_source(etl_batch, reextract=false)
         filtered_dataset = reextract ? source : 
           @filter_strategy.call(source, etl_batch)

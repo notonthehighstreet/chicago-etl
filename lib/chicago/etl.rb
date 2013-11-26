@@ -61,9 +61,13 @@ module Chicago
     # within a batch.
     def self.execute(stage, etl_batch, reextract, logger)
       etl_batch.perform_task(:load, stage.name) do
-        logger.debug "Starting loading #{stage.name}"
-        stage.execute(etl_batch, reextract)
-        logger.debug "Finished loading #{stage.name}"
+        if stage.executable?
+          logger.debug "Starting loading #{stage.name}"
+          stage.execute(etl_batch, reextract)
+          logger.info "Finished loading #{stage.name}"
+        else
+          logger.info "Skipping stage #{stage.name}"
+        end
       end
     end
   end
