@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "chicago-etl"
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roland Swingler"]
-  s.date = "2013-11-19"
+  s.date = "2013-11-26"
   s.description = "ETL tools for Chicago"
   s.email = "roland.swingler@gmail.com"
   s.extra_rdoc_files = [
@@ -33,7 +33,6 @@ Gem::Specification.new do |s|
     "lib/chicago/etl/batch.rb",
     "lib/chicago/etl/core_extensions.rb",
     "lib/chicago/etl/counter.rb",
-    "lib/chicago/etl/dataset_batch_stage.rb",
     "lib/chicago/etl/dataset_builder.rb",
     "lib/chicago/etl/dataset_source.rb",
     "lib/chicago/etl/errors.rb",
@@ -48,6 +47,7 @@ Gem::Specification.new do |s|
     "lib/chicago/etl/pipeline_endpoint.rb",
     "lib/chicago/etl/schema_sinks_and_transformations_builder.rb",
     "lib/chicago/etl/schema_table_sink_factory.rb",
+    "lib/chicago/etl/schema_table_stage_builder.rb",
     "lib/chicago/etl/screens/column_screen.rb",
     "lib/chicago/etl/screens/invalid_element.rb",
     "lib/chicago/etl/screens/missing_value.rb",
@@ -57,6 +57,7 @@ Gem::Specification.new do |s|
     "lib/chicago/etl/sink.rb",
     "lib/chicago/etl/stage.rb",
     "lib/chicago/etl/stage_builder.rb",
+    "lib/chicago/etl/stage_name.rb",
     "lib/chicago/etl/table_builder.rb",
     "lib/chicago/etl/task_invocation.rb",
     "lib/chicago/etl/tasks.rb",
@@ -76,6 +77,7 @@ Gem::Specification.new do |s|
     "spec/etl/define_dimension_stage_spec.rb",
     "spec/etl/define_stage_spec.rb",
     "spec/etl/etl_batch_id_dataset_filter.rb",
+    "spec/etl/execution_wrapper_spec.rb",
     "spec/etl/filter_spec.rb",
     "spec/etl/key_builder_spec.rb",
     "spec/etl/load_dataset_builder_spec.rb",
@@ -89,6 +91,7 @@ Gem::Specification.new do |s|
     "spec/etl/screens/out_of_bounds_spec.rb",
     "spec/etl/sequel/dependant_tables_spec.rb",
     "spec/etl/sequel/filter_to_etl_batch_spec.rb",
+    "spec/etl/stage_name_spec.rb",
     "spec/etl/stage_spec.rb",
     "spec/etl/table_builder_spec.rb",
     "spec/etl/task_spec.rb",
