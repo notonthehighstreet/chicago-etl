@@ -34,9 +34,9 @@ module Chicago
       end
       
       # Executes this stage in the context of an ETL::Batch
-      def execute(etl_batch, reextract=false)
-        prepare_stage(etl_batch, reextract)
-        transform_and_load filtered_source(etl_batch, reextract)
+      def execute(etl_batch)
+        prepare_stage(etl_batch)
+        transform_and_load filtered_source(etl_batch)
       end
       
       # Returns the named sink, if it exists
@@ -49,8 +49,8 @@ module Chicago
       end
       
       # @api private
-      def filtered_source(etl_batch, reextract=false)
-        filtered_dataset = reextract ? source : 
+      def filtered_source(etl_batch)
+        filtered_dataset = etl_batch.reextracting? ? source : 
           @filter_strategy.call(source, etl_batch)
 
         DatasetSource.new(filtered_dataset)
@@ -58,9 +58,9 @@ module Chicago
 
       private
 
-      def prepare_stage(etl_batch, reextract)
+      def prepare_stage(etl_batch)
         @pre_execution_strategies.each do |strategy| 
-          strategy.call(self, etl_batch, reextract)
+          strategy.call(self, etl_batch)
         end
       end
 

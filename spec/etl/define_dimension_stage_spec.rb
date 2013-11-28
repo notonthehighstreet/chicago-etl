@@ -25,7 +25,7 @@ describe "creating and running a dimension stage" do
     end
 
     pipeline.stages.each do |stage|
-      stage.execute(double, true)
+      stage.execute(double(:reextracting? => true))
     end
   end
 

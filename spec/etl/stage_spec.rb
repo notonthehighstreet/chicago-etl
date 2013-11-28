@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Chicago::ETL::Stage do
+  let(:etl_batch) { stub(:etl_batch, :reextracting? => true) }
+
   it "requires a source" do
     expect {
       described_class.new(:test,
@@ -23,7 +25,7 @@ describe Chicago::ETL::Stage do
                                 :sinks => {:default => stub(:sink)},
                                 :filter_strategy => lambda { fail })
 
-    stage.filtered_source(stub(:etl_batch), true)
+    stage.filtered_source(etl_batch)
   end
 
   it "opens sinks before writing and closes them afterwards" do
@@ -35,6 +37,6 @@ describe Chicago::ETL::Stage do
                                 :source => [],
                                 :sinks => {:default => sink})
 
-    stage.execute(stub(:etl_batch), true)
+    stage.execute(etl_batch)
   end
 end

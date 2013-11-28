@@ -29,7 +29,7 @@ describe "defining and executing a stage" do
     end
 
     pipeline.stages.each do |stage|
-      stage.execute(double, true)
+      stage.execute(double(:reextracting? => true))
     end
 
     stage = pipeline.stages.first
@@ -56,7 +56,7 @@ describe "defining and executing a stage" do
     end
 
     pipeline.stages.each do |stage|
-      stage.execute(double, true)
+      stage.execute(double(:reextracting? => true))
     end
 
     stage = pipeline.stages.first
@@ -68,7 +68,7 @@ describe "defining and executing a stage" do
   end
 
   it "allows the source to be filtered via a filter strategy" do
-    etl_batch_double = double
+    etl_batch_double = double(:reextracting? => false)
     fake_source = []
     fake_source.should_receive(:another_dataset_method).and_return([])
     
@@ -88,7 +88,7 @@ describe "defining and executing a stage" do
     end
     
     pipeline.stages.each do |stage|
-      stage.execute(etl_batch_double, false)
+      stage.execute(etl_batch_double)
     end
   end
 end

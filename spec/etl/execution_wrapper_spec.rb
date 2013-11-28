@@ -15,13 +15,13 @@ describe "Chicago::ETL Execution method" do
     stage.should_not_receive(:execute)
     logger.should_receive(:info).with("Skipping stage test")
 
-    Chicago::ETL.execute(stage, batch, false, logger)
+    Chicago::ETL.execute(stage, batch, logger)
   end
 
   it "executes the stage" do
     stage = stub(:stage, :executable? => true, :name => "test")
-    stage.should_receive(:execute).with(batch, false)
+    stage.should_receive(:execute).with(batch)
 
-    Chicago::ETL.execute(stage, batch, false, logger)
+    Chicago::ETL.execute(stage, batch, logger)
   end
 end

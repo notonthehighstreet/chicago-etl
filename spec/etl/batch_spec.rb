@@ -84,4 +84,9 @@ describe Chicago::ETL::Batch do
     batch = ETL::Batch.instance.start
     lambda { batch.perform_task(:transform, "Test") {} }.should_not raise_error(Sequel::DatabaseError)
   end
+
+  it "can be marked as re-extracting" do
+    ETL::Batch.instance.reextract.should be_reextracting
+    ETL::Batch.instance.should_not be_reextracting
+  end
 end

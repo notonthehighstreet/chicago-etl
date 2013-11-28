@@ -33,8 +33,11 @@ module Chicago
           end
         end
 
-        @pre_execution_strategies << lambda {|stage, etl_batch, reextract|
-          stage.sink(:error).truncate if reextract && stage.sink(:error)
+        @pre_execution_strategies << lambda {|stage, etl_batch|
+          if etl_batch.reextracting? && stage.sink(:error)
+            stage.sink(:error).truncate
+          end
+
           stage.sink(:default).
             set_constant_values(:_inserted_at => Time.now)
         }
