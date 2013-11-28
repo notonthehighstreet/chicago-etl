@@ -4,38 +4,22 @@ module Chicago
     #
     # A Stage wires together a Source, 0 or more Transformations and 1
     # or more Sinks.
-    class Stage
+    class Stage < BasicStage
       # Returns the source for this stage.
       attr_reader :source
       
-      # Returns the name of this stage.
-      attr_reader :name
-
       def initialize(name, options={})
-        @name = name
+        super(name, options)
         @source = options[:source]
         @sinks = options[:sinks]
         @transformations = options[:transformations] || []
         @filter_strategy = options[:filter_strategy] || lambda {|s, _| s }
-        @pre_execution_strategies = options[:pre_execution_strategies] || []
-        @executable = options.has_key?(:executable) ? options[:executable] : true
 
         validate_arguments
       end
-      
-      # Returns the unqualified name of this stage.
-      def task_name
-        name.name
-      end
-      
-      # Returns true if this stage should be executed.
-      def executable?
-        @executable
-      end
-      
+            
       # Executes this stage in the context of an ETL::Batch
-      def execute(etl_batch)
-        prepare_stage(etl_batch)
+      def perform_execution(etl_batch)
         transform_and_load filtered_source(etl_batch)
       end
       
@@ -57,12 +41,6 @@ module Chicago
       end
 
       private
-
-      def prepare_stage(etl_batch)
-        @pre_execution_strategies.each do |strategy| 
-          strategy.call(self, etl_batch)
-        end
-      end
 
       def transform_and_load(source)
         sinks.each(&:open)
