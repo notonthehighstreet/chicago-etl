@@ -45,6 +45,18 @@ module Chicago
         perform_task(:extract, task_name, &block)
       end
 
+      # Marks this batch for re-extraction.
+      def reextract
+        @reextract = true
+        self
+      end
+
+      # Returns true when this batch should re-extract - i.e. load
+      # records without regard to creation/update times.
+      def reextracting?
+        !!@reextract
+      end
+
       # Deprecated.
       #
       # @deprecated Use perform_task instead

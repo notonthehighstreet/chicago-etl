@@ -26,13 +26,13 @@ module Chicago
       # Specifies that the sinks should be truncated before loading
       # data.
       def truncate_pre_load
-        @pre_execution_strategies << lambda {|stage, etl_batch, reextract|
+        @pre_execution_strategies << lambda {|stage, etl_batch|
           stage.sinks.each {|sink| sink.truncate }
         }
       end
 
       # Specifies that the dataset should never be filtered to the ETL
-      # batch - i.e. it should behave as if reextract was always true
+      # batch - i.e. it should behave as if the batch is reextracting
       def full_reload
         @filter_strategy = lambda {|dataset, etl_batch| dataset }
       end

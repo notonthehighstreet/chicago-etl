@@ -59,11 +59,11 @@ module Chicago
     # Tasks execution status is stored in a database etl task
     # invocations table - this ensures tasks aren't run more than once
     # within a batch.
-    def self.execute(stage, etl_batch, reextract, logger)
+    def self.execute(stage, etl_batch, logger)
       etl_batch.perform_task(:load, stage.name) do
         if stage.executable?
           logger.debug "Starting loading #{stage.name}"
-          stage.execute(etl_batch, reextract)
+          stage.execute etl_batch
           logger.info "Finished loading #{stage.name}"
         else
           logger.info "Skipping stage #{stage.name}"
