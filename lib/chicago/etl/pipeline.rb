@@ -14,16 +14,8 @@ module Chicago
       # Defines a generic stage in the pipeline.
       def define_stage(*args, &block)
         options = args.last.kind_of?(Hash) ? args.pop : {}
-
         name = StageName.new(args)
-        
-        if name =~ [:load, :dimensions]
-          @stages << build_dimension_load_stage(name, options, &block)
-        elsif name =~ [:load, :facts]
-          @stages << build_fact_load_stage(name, options, &block)
-        else
-          @stages << StageBuilder.new(@db).build(name, &block)
-        end
+        @stages << builder(name, options).build(name, &block)
       end
 
       def build_stage(name, schema_table, &block)
@@ -32,14 +24,24 @@ module Chicago
 
       private
 
-      def build_dimension_load_stage(name, options, &block)
-        dimension_name = options[:dimension] || name.name
-        build_stage(name, @schema.dimension(dimension_name), &block)
+      def builder(name, options)
+        if name =~ [:load, :dimensions]
+          dimension_load_stage_builder(name, options)
+        elsif name =~ [:load, :facts]
+          fact_load_stage_builder(name, options)
+        else
+          StageBuilder.new(@db)
+        end
       end
 
-      def build_fact_load_stage(name, options, &block)
+      def dimension_load_stage_builder(name, options)
+        dimension_name = options[:dimension] || name.name
+        SchemaTableStageBuilder.new(@db, @schema.dimension(dimension_name))
+      end
+
+      def fact_load_stage_builder(name, options)
         fact_name = options[:fact] || name.name
-        build_stage(name, @schema.fact(fact_name), &block)
+        SchemaTableStageBuilder.new(@db, @schema.fact(fact_name))
       end
     end
   end
