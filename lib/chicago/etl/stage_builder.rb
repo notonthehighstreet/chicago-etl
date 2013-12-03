@@ -1,11 +1,16 @@
 module Chicago
   module ETL
     class StageBuilder
-      def initialize(db)
+      attr_reader :db, :schema
+      
+      def initialize(db, schema)
         @db = db
+        @schema = schema
       end
 
-      def build(name, &block)
+      def build(name, options={}, &block)
+        parse_options(name, options)
+
         @pre_execution_strategies = []
         @executable = true
 
@@ -64,6 +69,10 @@ module Chicago
       def set_default_stage_values
         @sinks ||= sinks {}
         @transformations ||= transformations {}
+      end
+
+      # @api private
+      def parse_options(name, options)
       end
 
       class TransformationBuilder
