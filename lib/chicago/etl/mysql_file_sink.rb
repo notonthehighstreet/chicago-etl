@@ -11,13 +11,17 @@ module Chicago
       attr_reader :filepath
       attr_writer :truncation_strategy
 
-      def initialize(db, table_name, columns, options = {})
-        @columns = [columns].flatten
+      def initialize(db, table_name, options = {})
         @filepath = options[:filepath] || temp_file(table_name)
         @serializer = MysqlFileSerializer.new
         @db = db
         @table_name = table_name
         @insert_ignore = !!options[:ignore]
+      end
+
+      def set_columns(*columns)
+        @columns = [columns].flatten
+        self
       end
 
       def name

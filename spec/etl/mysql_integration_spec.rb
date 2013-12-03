@@ -53,7 +53,8 @@ describe "Mysql -> Mysql through transformation chain" do
     transformations = [dup_row.new(:onto => :other)]
 
     sink_1 = Chicago::ETL::MysqlFileSink.
-      new(TEST_DB, :destination, [:id, :foo, :bin])
+      new(TEST_DB, :destination).
+      set_columns(:id, :foo, :bin)
     sink_2 = Chicago::ETL::ArraySink.new([:id, :foo, :bin])
 
     stage = Chicago::ETL::Stage.new(:test, 

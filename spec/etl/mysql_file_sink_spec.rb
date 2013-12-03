@@ -7,7 +7,8 @@ describe Chicago::ETL::MysqlFileSink do
   let(:csv) { mock(:csv) }
 
   let(:sink) {
-    described_class.new(db, :table, [:foo], :filepath => "test_file")
+    described_class.new(db, :table, :filepath => "test_file").
+    set_columns(:foo)
   }
   
   before :each do
@@ -59,12 +60,12 @@ describe Chicago::ETL::MysqlFileSink do
 
   it "can specify that INSERT IGNORE should be used" do
     dataset.should_receive(:insert_ignore)
-    described_class.new(db, :table, [:foo], 
+    described_class.new(db, :table, 
                         :filepath => "test_file", :ignore => true).close
   end
 
   it "writes csv to a tempfile if no explicit filepath is given" do
-    described_class.new(db, :table, [:foo]).filepath.should match(/table\.\d+\.csv/)
+    described_class.new(db, :table).filepath.should match(/table\.\d+\.csv/)
   end
 
   it "doesn't attempt to load data if the file is empty or does not exist" do

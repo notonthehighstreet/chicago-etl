@@ -19,12 +19,18 @@ module Chicago
         @transformations = sinks_and_transformations[:transformations] || []
       end
 
+      def load_separately(*columns)
+        @load_separately = columns
+      end
+
       # @api private
       def set_default_stage_values
         unless defined? @sinks
           pipeline do
           end
         end
+
+        @sinks[:default].set_columns(load_columns(@load_separately))
 
         @pre_execution_strategies << lambda {|stage, etl_batch|
           if etl_batch.reextracting? && stage.sink(:error)
@@ -44,14 +50,21 @@ module Chicago
       def parse_options(name, options)
         if name =~ [:load, :dimensions]
           dimension_name = options[:dimension] || name.name
-          schema_table = schema.dimension(dimension_name)
+          @schema_table = schema.dimension(dimension_name)
         else
           fact_name = options[:fact] || name.name
-          schema_table = schema.fact(fact_name)
+          @schema_table = schema.fact(fact_name)
         end
 
         @wrapped_builder = SchemaSinksAndTransformationsBuilder.
-          new(db, schema_table)
+          new(db, @schema_table)
+      end
+
+      def load_columns(exclude=nil)
+        exclude = [exclude].compact.flatten
+        [:id] + @schema_table.columns.
+          reject {|c| exclude.include?(c.name) }.
+          map {|c| c.database_name }
       end
     end
   end

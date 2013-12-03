@@ -13,9 +13,7 @@ module Chicago
       # Pass an :exclude option if you don't want all columns of the
       # schema table to be loaded via this sink.
       def sink(options={})
-        MysqlFileSink.new(@db,
-                          @schema_table.table_name,
-                          load_columns(options[:exclude]),
+        MysqlFileSink.new(@db, @schema_table.table_name, 
                           mysql_options(options))
       end
       
@@ -26,10 +24,10 @@ module Chicago
       #   schema table's key table name will be used otherwise.
       def key_sink(options={})
         table = options.delete(:table) || @schema_table.key_table_name
-        sink = MysqlFileSink.new(@db,
-                                 table,
-                                 [:original_id, :dimension_id],
-                                 mysql_options(options))
+
+        sink = MysqlFileSink.new(@db, table, mysql_options(options)).
+          set_columns(:original_id, :dimension_id)
+
         sink.truncation_strategy = lambda do
           # No Op - we want to maintain keys to avoid having to sort
           # out fact tables.
@@ -39,9 +37,8 @@ module Chicago
       
       # Returns a sink to load errors generated in the ETL process.
       def error_sink(options={})
-        sink = MysqlFileSink.
-          new(@db, :etl_error_log, 
-              [:column, :row_id, :error, :severity, :error_detail], mysql_options(options)).
+        sink = MysqlFileSink.new(@db, :etl_error_log, mysql_options(options)).
+          set_columns(:column, :row_id, :error, :severity, :error_detail).
           set_constant_values(:table => @schema_table.table_name.to_s,
                               :process_name => "StandardTransformations",
                               :process_version => 3,
@@ -55,13 +52,6 @@ module Chicago
       end
       
       private
-      
-      def load_columns(exclude=nil)
-        exclude = [exclude].compact.flatten
-        [:id] + @schema_table.columns.
-          reject {|c| exclude.include?(c.name) }.
-          map {|c| c.database_name }
-      end
 
       def mysql_options(options)
         [:filepath, :ignore].inject({}) do |hsh, k|
