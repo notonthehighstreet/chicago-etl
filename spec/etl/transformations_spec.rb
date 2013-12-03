@@ -52,7 +52,7 @@ describe Chicago::ETL::Transformations::AddKey do
   end
 
   it "should declare that it adds the :id field" do
-    transform.added_fields.should == [:id]
+    transform.added_columns.should == [:id]
   end
 
   it "should declare that it writes to the dimension_key stream" do
@@ -77,7 +77,7 @@ describe Chicago::ETL::Transformations::DimensionKeyMapping do
 
   it "removes the key from the stream" do
     transform.process({:original_id => 1}).first.should == {}
-    transform.removed_fields.should == [:original_id]
+    transform.removed_columns.should == [:original_id]
   end
 
   it "links the original key with the id on the stream" do
@@ -95,7 +95,7 @@ describe Chicago::ETL::Transformations::HashColumns do
     Digest::MD5.stub(:hexdigest).with("ab").and_return("a")
 
     transform = described_class.new(:columns => [:a, :b])
-    transform.added_fields.should == [:hash]
+    transform.added_columns.should == [:hash]
     transform.process(:a => 'a', :b => 'b')[:hash].should == "A"
   end
 
@@ -103,7 +103,7 @@ describe Chicago::ETL::Transformations::HashColumns do
     Digest::MD5.stub(:hexdigest).with("ab").and_return("a")
     transform = described_class.new(:columns => [:a, :b], 
                                     :output_field => :foo)
-    transform.added_fields.should == [:foo]
+    transform.added_columns.should == [:foo]
     transform.process(:a => 'a', :b => 'b')[:foo].should == "A"
   end
 end

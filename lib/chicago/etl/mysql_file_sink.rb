@@ -11,8 +11,8 @@ module Chicago
       attr_reader :filepath
       attr_writer :truncation_strategy
 
-      def initialize(db, table_name, fields, options = {})
-        @fields = [fields].flatten
+      def initialize(db, table_name, columns, options = {})
+        @columns = [columns].flatten
         @filepath = options[:filepath] || temp_file(table_name)
         @serializer = MysqlFileSerializer.new
         @db = db
@@ -25,7 +25,7 @@ module Chicago
       end
 
       def <<(row)
-        csv << fields.map {|c| @serializer.serialize(row[c]) }
+        csv << columns.map {|c| @serializer.serialize(row[c]) }
       end
 
       def close
@@ -39,7 +39,7 @@ module Chicago
       # INFILE, if the file exists and has content.
       def load_from_file(file)
         return unless File.size?(file)
-        dataset.load_csv_infile(file, @fields, :set => constant_values)
+        dataset.load_csv_infile(file, @columns, :set => constant_values)
       end
 
       def truncate

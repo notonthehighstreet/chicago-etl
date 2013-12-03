@@ -12,8 +12,8 @@ describe Chicago::ETL::Transformation do
 
   let(:add_and_remove) {
     Class.new(described_class) {
-      adds_fields :b, :c
-      removes_fields :a
+      adds_columns :b, :c
+      removes_columns :a
       
       def process_row(row)
         row.delete(:a)
@@ -53,30 +53,30 @@ describe Chicago::ETL::Transformation do
     subject.flush.should == []
   end
 
-  it "can specify which fields are added" do
-    add_and_remove.new.added_fields.should == [:b, :c]
+  it "can specify which columns are added" do
+    add_and_remove.new.added_columns.should == [:b, :c]
   end
 
-  it "can specify which fields are removed" do
-    add_and_remove.new.removed_fields.should == [:a]
+  it "can specify which columns are removed" do
+    add_and_remove.new.removed_columns.should == [:a]
   end
 
-  it "can calculate downstream fields" do
-    Set.new(add_and_remove.new.downstream_fields([:a, :b, :d])).
+  it "can calculate downstream columns" do
+    Set.new(add_and_remove.new.downstream_columns([:a, :b, :d])).
       should == Set.new([:b, :c, :d])
   end
 
-  it "can calculate upstream fields" do
-    Set.new(add_and_remove.new.upstream_fields([:b, :c, :d])).
+  it "can calculate upstream columns" do
+    Set.new(add_and_remove.new.upstream_columns([:b, :c, :d])).
       should == Set.new([:a, :d])
   end
 
-  it "has an empty array of added fields by default" do
-    subject.added_fields.should == []
+  it "has an empty array of added columns by default" do
+    subject.added_columns.should == []
   end
 
-  it "has an empty array of removed fields by default" do
-    subject.removed_fields.should == []
+  it "has an empty array of removed columns by default" do
+    subject.removed_columns.should == []
   end
 
   it "has an empty array of required options by default" do

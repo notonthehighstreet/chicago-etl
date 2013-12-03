@@ -15,9 +15,9 @@ module Chicago
       # Optionally you may pass an array of column names if you wish
       # to use static validation that the correct columns are written
       # through the pipeline.
-      def initialize(name, fields=[])
+      def initialize(name, columns=[])
         @name = name
-        @fields = [fields].flatten
+        @columns = [columns].flatten
         @data = []
       end
 

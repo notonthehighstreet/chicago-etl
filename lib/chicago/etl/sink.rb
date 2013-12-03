@@ -4,7 +4,7 @@ module Chicago
     #
     # @api public
     # @abstract
-    class Sink < PipelineEndpoint
+    class Sink < StageEndpoint
       # Specifies a hash of values that are assumed to apply to all
       # rows.
       #

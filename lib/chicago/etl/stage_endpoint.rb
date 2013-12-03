@@ -4,11 +4,11 @@ module Chicago
     #
     # @api public
     # abstract
-    class PipelineEndpoint
-      attr_reader :fields
+    class StageEndpoint
+      attr_reader :columns
 
-      def has_defined_fields?
-        !fields.empty?
+      def has_defined_columns?
+        !columns.empty?
       end
     end
   end

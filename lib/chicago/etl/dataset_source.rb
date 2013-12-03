@@ -4,7 +4,7 @@ require 'sequel/fast_columns'
 module Chicago
   module ETL
     # @api public
-    class DatasetSource < PipelineEndpoint
+    class DatasetSource < StageEndpoint
       attr_reader :dataset
 
       def initialize(dataset)
@@ -15,7 +15,7 @@ module Chicago
         @dataset.each {|row| yield row }
       end
 
-      def fields
+      def columns
         @dataset.columns
       end
     end

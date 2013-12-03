@@ -1,9 +1,9 @@
 module Chicago
   module ETL
     # @api public
-    class ArraySource < PipelineEndpoint
-      def initialize(array, fields=[])
-        @fields = [fields].flatten
+    class ArraySource < StageEndpoint
+      def initialize(array, columns=[])
+        @columns = [columns].flatten
         @array = array
       end
 

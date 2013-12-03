@@ -10,6 +10,6 @@ describe Chicago::ETL::DatasetSource do
 
   it "gets columns from the dataset" do
     dataset.should_receive(:columns)
-    described_class.new(dataset).fields
+    described_class.new(dataset).columns
   end
 end

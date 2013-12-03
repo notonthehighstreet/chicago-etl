@@ -42,14 +42,14 @@ module Chicago
         @required_options ||= []
       end
 
-      # Returns the fields added by this transformation.
-      def self.added_fields
-        @added_fields ||= []
+      # Returns the columns added by this transformation.
+      def self.added_columns
+        @added_columns ||= []
       end
 
-      # Returns the fields removed by this transformation.
-      def self.removed_fields
-        @removed_fields ||= []
+      # Returns the columns removed by this transformation.
+      def self.removed_columns
+        @removed_columns ||= []
       end
 
       # Specify which options are required in the constructor of
@@ -58,16 +58,16 @@ module Chicago
         required_options.concat options.flatten
       end
 
-      # Specify which fields are added to the row by this
+      # Specify which columns are added to the row by this
       # transformation.
-      def self.adds_fields(*fields)
-        added_fields.concat fields.flatten
+      def self.adds_columns(*columns)
+        added_columns.concat columns.flatten
       end
 
-      # Specify which fields are removed from the row by this
+      # Specify which columns are removed from the row by this
       # transformation.
-      def self.removes_fields(*fields)
-        removed_fields.concat fields.flatten
+      def self.removes_columns(*columns)
+        removed_columns.concat columns.flatten
       end
       
       # Returns the required initialization options for this transformation.
@@ -75,22 +75,22 @@ module Chicago
         self.class.required_options
       end
       
-      # Returns the fields added by this transformation.
-      def added_fields
-        self.class.added_fields
+      # Returns the columns added by this transformation.
+      def added_columns
+        self.class.added_columns
       end
 
-      # Returns the fields removed by this transformation.
-      def removed_fields
-        self.class.removed_fields
+      # Returns the columns removed by this transformation.
+      def removed_columns
+        self.class.removed_columns
       end
       
-      def upstream_fields(fields)
-        ((fields + removed_fields) - added_fields).uniq
+      def upstream_columns(columns)
+        ((columns + removed_columns) - added_columns).uniq
       end
 
-      def downstream_fields(fields)
-        ((fields - removed_fields) + added_fields).uniq
+      def downstream_columns(columns)
+        ((columns - removed_columns) + added_columns).uniq
       end
 
       # Processes a row if the row is on this transformation's stream.

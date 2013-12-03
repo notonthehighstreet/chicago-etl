@@ -34,9 +34,9 @@ describe Chicago::ETL::MysqlFileSink do
     sink << {:foo => 1}
   end
 
-  it "has defined fields" do
-    sink.should have_defined_fields
-    sink.fields.should == [:foo]
+  it "has defined columns" do
+    sink.should have_defined_columns
+    sink.columns.should == [:foo]
   end
 
   it "loads the csv file into the database when closed" do

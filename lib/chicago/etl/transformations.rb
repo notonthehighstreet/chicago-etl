@@ -32,7 +32,7 @@ module Chicago
       # Pass the :key_builder option to set the KeyBuilder.
       class AddKey < Transformation
         requires_options :key_builder
-        adds_fields :id
+        adds_columns :id
 
         def output_streams
           [:default, :dimension_key]
@@ -76,7 +76,7 @@ module Chicago
       class DimensionKeyMapping < Transformation
         requires_options :original_key, :key_table
 
-        def removed_fields
+        def removed_columns
           [original_key]
         end
 
@@ -111,7 +111,7 @@ module Chicago
           row.put(output_field, Digest::MD5.hexdigest(str).upcase)
         end
 
-        def added_fields
+        def added_columns
           [output_field]
         end
 
