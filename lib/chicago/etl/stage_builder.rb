@@ -52,11 +52,11 @@ module Chicago
       end
       
       def transformations(&block)
-        @transformations = TransformationBuilder.new.build(&block)
+        @transformations = transformation_builder.build(&block)
       end
 
       def sinks(&block)
-        @sinks = SinkBuilder.new.build(&block)
+        @sinks = sink_builder.build(&block)
       end
 
       # TODO: think of potentially better ways of dealing with this
@@ -73,6 +73,16 @@ module Chicago
 
       # @api private
       def parse_options(name, options)
+      end
+
+      # @api private
+      def transformation_builder
+        TransformationBuilder.new
+      end
+
+      # @api private
+      def sink_builder
+        SinkBuilder.new
       end
 
       class TransformationBuilder

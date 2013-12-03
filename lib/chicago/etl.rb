@@ -31,6 +31,7 @@ require 'chicago/etl/basic_stage'
 require 'chicago/etl/stage'
 require 'chicago/etl/direct_update_stage'
 require 'chicago/etl/stage_builder'
+require 'chicago/etl/schema_table_sink_builder'
 require 'chicago/etl/schema_sinks_and_transformations_builder'
 require 'chicago/etl/pipeline'
 

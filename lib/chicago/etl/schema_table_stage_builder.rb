@@ -7,28 +7,24 @@ module Chicago
     # Clients shouldn't need to instantiate this directly, but instead
     # call the protected methods in the context of defining a Pipeline
     class SchemaTableStageBuilder < StageBuilder
+      # @api private
+      KeyMapping = Struct.new(:table, :field)
+
       protected
       
-      # Define elements of the pipeline. See LoadPipelineStageBuilder
-      # for details.
-      #
-      # @deprecated
-      def pipeline(&block)
-        sinks_and_transformations = @wrapped_builder.build(&block)
-        @sinks = sinks_and_transformations[:sinks]
-        @transformations = sinks_and_transformations[:transformations] || []
-      end
-
+      # This should be removed at some point - should not be
+      # necessary. Must be called before sinks & transformations are called
       def load_separately(*columns)
         @load_separately = columns
       end
 
+      def key_mapping(table, field)
+        @key_mappings << KeyMapping.new(table, field)
+      end
+
       # @api private
       def set_default_stage_values
-        unless defined? @sinks
-          pipeline do
-          end
-        end
+        super
 
         @sinks[:default].set_columns(load_columns(@load_separately))
 
@@ -45,7 +41,6 @@ module Chicago
           dataset.filter_to_etl_batch(etl_batch)
         }
       end
-
       
       def parse_options(name, options)
         if name =~ [:load, :dimensions]
@@ -56,8 +51,17 @@ module Chicago
           @schema_table = schema.fact(fact_name)
         end
 
-        @wrapped_builder = SchemaSinksAndTransformationsBuilder.
-          new(db, @schema_table)
+        @load_separately ||= []
+        @key_mappings = []
+      end
+
+      def transformation_builder
+        SchemaTableTransformationBuilder.
+          new(@db, @schema_table, @load_separately, @key_mappings)
+      end
+
+      def sink_builder
+        SchemaTableSinkBuilder.new(@db, @schema_table, @key_mappings)
       end
 
       def load_columns(exclude=nil)
