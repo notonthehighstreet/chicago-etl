@@ -37,30 +37,20 @@ module Chicago
         add_key_transforms
         add_final_transforms
 
-        concat_transformations
+        TRANSFORMATION_ORDER.map {|k| @transformations[k] }.flatten
       end
 
       protected
 
-      # Add a transformation before the specified point in the
-      # transformation chain (defined in TRANSFORMATION_ORDER)
-      def before(point_in_transformation_chain, transform)
-        key = "before_#{point_in_transformation_chain}".to_sym
-        @transformations[key] << transform
-      end
-
-      # Add a transformation after the specified point in the
-      # transformation chain (defined in TRANSFORMATION_ORDER)
-      def after(point_in_transformation_chain, transform)
-        key = "after_#{point_in_transformation_chain}".to_sym
+      # Add a transformation at a specific point in the transformation
+      # chain (defined in TRANSFORMATION_ORDER)
+      def add(transform, position)
+        location, point = position.to_a.first
+        key = "#{location}_#{point}".to_sym
         @transformations[key] << transform
       end
 
       private
-
-      def concat_transformations
-        TRANSFORMATION_ORDER.map {|k| @transformations[k] }.flatten
-      end
 
       def add_screens
         columns_to_screen = @schema_table.columns.reject do |column| 
