@@ -16,10 +16,29 @@ describe Chicago::ETL::Transformation do
       removes_fields :a
       
       def process_row(row)
-        row.delete(:a)
         row[:b] = 1
         row[:c] = 2
         row
+      end
+    }
+  }
+
+  let(:store) {
+    Class.new(described_class) {
+      removes_fields :a
+      
+      def initialize(*args)
+        super
+        @store = []
+      end
+
+      def process_row(row)
+        @store << row
+        nil
+      end
+
+      def flush_rows
+        @store
       end
     }
   }
@@ -36,17 +55,17 @@ describe Chicago::ETL::Transformation do
   end
 
   it "processes a row via #process_row" do
-    add_1_to_a.new.process({:a => 1}).should == {:a => 2}
+    add_1_to_a.new.process({:a => 1}).should == [{:a => 2}]
   end
 
   it "passes through rows not on its stream" do
-    add_1_to_a.new(:other).process({:a => 1}).should == {:a => 1}
+    add_1_to_a.new(:other).process({:a => 1}).should == [{:a => 1}]
   end
 
   it "can apply to all streams using :all" do
-    add_1_to_a.new(:all).process({:a => 1}).should == {:a => 2}
+    add_1_to_a.new(:all).process({:a => 1}).should == [{:a => 2}]
     add_1_to_a.new(:all).process({:a => 1, Chicago::ETL::STREAM => :other}).
-      should == {:a => 2, Chicago::ETL::STREAM => :other}
+      should == [{:a => 2, Chicago::ETL::STREAM => :other}]
   end
 
   it "can be flushed" do
@@ -87,5 +106,12 @@ describe Chicago::ETL::Transformation do
     klass = Class.new(described_class) { requires_options :foo }
     expect { klass.new }.to raise_error(ArgumentError)
     expect { klass.new(:foo => :bar) }.to_not raise_error(ArgumentError)
+  end
+
+  it "can store and flush rows" do
+    transform = store.new
+    transform.process(:a => 1, :b => 2).should == []
+    transform.process(:a => 1, :b => 3).should == []
+    transform.flush.should == [{:b => 2}, {:b => 3}]
   end
 end

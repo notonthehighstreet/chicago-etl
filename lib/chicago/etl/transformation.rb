@@ -66,6 +66,9 @@ module Chicago
 
       # Specify which fields are removed from the row by this
       # transformation.
+      #
+      # Fields will be removed automatically; subclasses don't need to
+      # remove them.
       def self.removes_fields(*fields)
         removed_fields.concat fields.flatten
       end
@@ -98,25 +101,27 @@ module Chicago
       # This should not be overridden by subclasses, override
       # process_row instead.
       #
-      # @return Hash if a single row is returned
+      # @return [Hash]
       # @return Array<Hash> if multiple rows need to be returned
       def process(row)
-        applies_to_stream?(row[STREAM]) ? process_row(row) : row
+        if applies_to_stream?(row[STREAM]) 
+          ensure_fields_removed process_row(row)
+        else 
+          [row]
+        end
       end
 
       # Returns all remaining rows yet to make their way through the
       # pipeline.
       #
-      # This should be overridden by subclasses if the transformation
-      # holds back rows as it does processing (to find the maximum
-      # value in a set of rows for example), to ensure that all rows
-      # are written through the pipeline.
+      # This should *not* be overridden by subclasses - override
+      # flush_rows instead.
       #
       # @return Array<Hash> by default an empty array.
       def flush
-        []
+        ensure_fields_removed flush_rows
       end
-      
+
       # Returns the streams to which this transformation may write
       # rows.
       #
@@ -144,6 +149,16 @@ module Chicago
       def process_row(row)
         row
       end
+
+      # Returns all remaining rows yet to make their way through the
+      # pipeline.
+      #
+      # This should be overridden by subclasses if the transformation
+      # holds back rows as it does processing (to find the maximum
+      # value in a set of rows for example), to ensure that all rows
+      # are written through the pipeline.
+      def flush_rows
+      end
       
       # Assigns the row to a stream.
       #
@@ -163,6 +178,16 @@ module Chicago
         unless missing_keys.empty?
           raise ArgumentError.new("The following options are not supplied: " + missing_keys.join(","))
         end
+      end
+
+      def ensure_fields_removed(rows)
+        [rows].flatten.compact.each do |row|
+          remove_fields(row) if applies_to_stream?(row[STREAM])
+        end
+      end
+
+      def remove_fields(row)
+        removed_fields.each {|field| row.delete(field) }
       end
     end
   end

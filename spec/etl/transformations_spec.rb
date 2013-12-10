@@ -24,9 +24,9 @@ end
 describe Chicago::ETL::Transformations::WrittenRowFilter do
   it "only lets the first row through" do
     filter = described_class.new(:key => :id)
-    filter.process(:id => 1).should == {:id => 1}
-    filter.process(:id => 2).should == {:id => 2}
-    filter.process(:id => 1).should be_nil
+    filter.process(:id => 1).should == [{:id => 1}]
+    filter.process(:id => 2).should == [{:id => 2}]
+    filter.process(:id => 1).should == []
   end
 
   it "requires a key option" do
@@ -43,12 +43,12 @@ describe Chicago::ETL::Transformations::AddKey do
   end
 
   it "adds the key to the row" do
-    transform.process({}).should == {:id => 42}
+    transform.process({}).should == [{:id => 42}]
   end
 
   it "adds the key to any rows in an embedded :_errors key" do
     transform.process({:_errors => [{}]}).
-      should == {:id => 42, :_errors => [{:row_id => 42}]}
+      should == [{:id => 42, :_errors => [{:row_id => 42}]}]
   end
 
   it "should declare that it adds the :id field" do
@@ -96,7 +96,7 @@ describe Chicago::ETL::Transformations::HashColumns do
 
     transform = described_class.new(:columns => [:a, :b])
     transform.added_fields.should == [:hash]
-    transform.process(:a => 'a', :b => 'b')[:hash].should == "A"
+    transform.process(:a => 'a', :b => 'b').first[:hash].should == "A"
   end
 
   it "can add the hash to an arbitrary output field" do
@@ -104,6 +104,6 @@ describe Chicago::ETL::Transformations::HashColumns do
     transform = described_class.new(:columns => [:a, :b], 
                                     :output_field => :foo)
     transform.added_fields.should == [:foo]
-    transform.process(:a => 'a', :b => 'b')[:foo].should == "A"
+    transform.process(:a => 'a', :b => 'b').first[:foo].should == "A"
   end
 end

@@ -16,8 +16,8 @@ describe Chicago::ETL::DeduplicateRows do
 
     transform.process({:id => 1, :foo => :bar}).should be_blank
     transform.process({:id => 1, :bar => :baz}).should be_blank
-    transform.process({:id => 2, :foo => :quux}).should == {:id => 1, :foo => :bar, :bar => :baz}
-    transform.process({:id => 3, :foo => :quux}).should == {:id => 2, :foo => :quux}
+    transform.process({:id => 2, :foo => :quux}).should == [{:id => 1, :foo => :bar, :bar => :baz}]
+    transform.process({:id => 3, :foo => :quux}).should == [{:id => 2, :foo => :quux}]
 
     transform.flush.should == [{:id => 3, :foo => :quux}]
   end

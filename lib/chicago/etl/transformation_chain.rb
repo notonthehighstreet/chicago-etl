@@ -33,7 +33,7 @@ module Chicago
       private
 
       def process_rows(rows, transform)
-        rows.map {|row| transform.process(row) }.flatten.compact
+        rows.inject([]) {|all, row| all.concat(transform.process(row)) }
       end
     end
   end
