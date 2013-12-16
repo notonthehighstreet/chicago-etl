@@ -64,7 +64,7 @@ describe "Mysql -> Mysql through transformation chain" do
                                       :other => sink_2
                                     })
 
-    stage.execute(stub(:etl_batch), true)
+    stage.execute(double(:etl_batch), true)
 
     expected = [{:id => 1, :foo => nil, :bin => "1F"},
                 {:id => 2, :foo => "Hello", :bin => "1F"}]

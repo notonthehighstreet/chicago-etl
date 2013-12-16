@@ -82,6 +82,6 @@ describe Chicago::ETL::Batch do
 
   it "should not complain when given a symbol as the stage name" do
     batch = ETL::Batch.instance.start
-    lambda { batch.perform_task(:transform, "Test") {} }.should_not raise_error(Sequel::DatabaseError)
+    lambda { batch.perform_task(:transform, "Test") {} }.should_not raise_error
   end
 end

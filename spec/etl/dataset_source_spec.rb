@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Chicago::ETL::DatasetSource do
-  let(:dataset) { stub(:dataset) }
+  let(:dataset) { double(:dataset) }
 
   it "should delegtate each to the dataset" do
     dataset.should_receive(:each)

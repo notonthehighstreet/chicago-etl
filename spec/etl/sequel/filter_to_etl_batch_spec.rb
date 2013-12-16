@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Chicago::ETL::SequelExtensions::FilterToEtlBatch do
-  let(:batch) { stub(:batch, :id => 42) }
+  let(:batch) { double(:batch, :id => 42) }
 
   it "should do nothing to a table without an etl_batch_id column" do
     TEST_DB.should_receive(:schema).with(:foo).and_return([])

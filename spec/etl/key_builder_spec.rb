@@ -37,11 +37,11 @@ describe Chicago::ETL::KeyBuilder do
   end
   
   before :each do
-    @db = stub(:staging_database).as_null_object
-    @db.stub(:[]).and_return(stub(:max => nil, :select_hash => {}))
-    @sink = stub(:sink).as_null_object
+    @db = double(:staging_database).as_null_object
+    @db.stub(:[]).and_return(double(:max => nil, :select_hash => {}))
+    @sink = double(:sink).as_null_object
     Chicago::ETL::SchemaTableSinkFactory.stub(:new).
-      and_return(stub(:factory, :key_sink => @sink))
+      and_return(double(:factory, :key_sink => @sink))
   end
 
   describe "for identifiable dimensions" do
@@ -62,13 +62,13 @@ describe Chicago::ETL::KeyBuilder do
     end
 
     it "takes into account the current maximum key in the database" do
-      @db.stub(:[]).with(:keys_dimension_user).and_return(stub(:max => 2, :select_hash => {}))
+      @db.stub(:[]).with(:keys_dimension_user).and_return(double(:max => 2, :select_hash => {}))
       builder = described_class.for_table(@dimension, @db)
       builder.key(:original_id => 1).first.should == 3
     end
 
     it "returns previously created keys" do
-      dataset = stub(:dataset, :max => 1, :select_hash => {40 => 1})
+      dataset = double(:dataset, :max => 1, :select_hash => {40 => 1})
       @db.stub(:[]).with(:keys_dimension_user).and_return(dataset)
 
       builder = described_class.for_table(@dimension, @db)
@@ -133,7 +133,7 @@ describe Chicago::ETL::KeyBuilder do
     end
 
     it "selects the Hex version of the binary column for the cache" do
-      dataset = stub(:dataset, :max => 1).as_null_object
+      dataset = double(:dataset, :max => 1).as_null_object
       @db.stub(:[]).with(:keys_dimension_address).and_return(dataset)
       @builder = described_class.for_table(@schema.dimension(:address), @db)
 
@@ -161,7 +161,7 @@ describe Chicago::ETL::KeyBuilder do
     end
 
     it "increments from the last id stored id in the fact table" do
-      @db.stub(:[]).with(:facts_addresses).and_return(stub(:max => 100, :select_hash => {}))
+      @db.stub(:[]).with(:facts_addresses).and_return(double(:max => 100, :select_hash => {}))
       @builder = described_class.for_table(@schema.fact(:addresses), @db)
       @builder.key({}).first.should == 101
     end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Chicago::ETL::LoadDatasetBuilder do
-  let(:db) { stub(:database).as_null_object }
+  let(:db) { double(:database).as_null_object }
 
   before :each do
     db.stub(:[]).with(:original_users).

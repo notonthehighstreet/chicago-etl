@@ -17,6 +17,6 @@ describe Chicago::ETL::TableBuilder do
 
   it "should do nothing and not raise an error if run more times than necessary" do
     ETL::TableBuilder.build(TEST_DB)
-    lambda { ETL::TableBuilder.build(TEST_DB) }.should_not raise_error(Sequel::DatabaseError)
+    lambda { ETL::TableBuilder.build(TEST_DB) }.should_not raise_error
   end
 end

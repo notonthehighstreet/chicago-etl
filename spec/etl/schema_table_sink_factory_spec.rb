@@ -1,10 +1,10 @@
 require 'spec_helper'
 
 describe Chicago::ETL::SchemaTableSinkFactory do
-  let(:db) { stub(:db) }
+  let(:db) { double(:db) }
 
   let(:dimension) {
-    Chicago::Schema::Builders::DimensionBuilder.new(stub(:schema)).build(:foo) do
+    Chicago::Schema::Builders::DimensionBuilder.new(double(:schema)).build(:foo) do
       columns do
         string :bar
         integer :baz
@@ -43,7 +43,7 @@ describe Chicago::ETL::SchemaTableSinkFactory do
   end
 
   it "builds the key table sink" do
-    sink = stub(:sink).as_null_object
+    sink = double(:sink).as_null_object
     sink_class.should_receive(:new).
       with(db, :keys_dimension_foo, [:original_id, :dimension_id], {}).
       and_return(sink)
@@ -52,7 +52,7 @@ describe Chicago::ETL::SchemaTableSinkFactory do
   end
 
   it "builds other explicit key table sinks" do
-    sink = stub(:sink).as_null_object
+    sink = double(:sink).as_null_object
     sink_class.should_receive(:new).
       with(db, :keys_foo, [:original_id, :dimension_id], {}).
       and_return(sink)
@@ -62,7 +62,7 @@ describe Chicago::ETL::SchemaTableSinkFactory do
 
   it "builds an error sink" do
     sink_class.should_receive(:new).
-      with(db, :etl_error_log, [:column, :row_id, :error, :severity, :error_detail], {}).and_return(stub.as_null_object)
+      with(db, :etl_error_log, [:column, :row_id, :error, :severity, :error_detail], {}).and_return(double.as_null_object)
 
     described_class.new(db, dimension).error_sink
   end

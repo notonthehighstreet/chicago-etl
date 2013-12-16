@@ -35,7 +35,7 @@ describe Chicago::ETL::Transformations::WrittenRowFilter do
 end
 
 describe Chicago::ETL::Transformations::AddKey do
-  let(:key_builder) { stub(:key_builder, :key => 42) }
+  let(:key_builder) { double(:key_builder, :key => 42) }
   let(:transform) { described_class.new(:key_builder => key_builder) }
 
   it "requires a key builder" do

@@ -86,6 +86,6 @@ describe Chicago::ETL::Transformation do
   it "can enforce options" do
     klass = Class.new(described_class) { requires_options :foo }
     expect { klass.new }.to raise_error(ArgumentError)
-    expect { klass.new(:foo => :bar) }.to_not raise_error(ArgumentError)
+    expect { klass.new(:foo => :bar) }.to_not raise_error
   end
 end

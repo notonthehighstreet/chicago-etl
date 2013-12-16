@@ -5,29 +5,29 @@ describe Chicago::ETL::Stage do
     expect {
       described_class.new(:test,
                           :source => nil,
-                          :sinks => {:default => stub(:sink)})
+                          :sinks => {:default => double(:sink)})
     }.to raise_error(ArgumentError)
   end
 
   it "requires sinks" do
     expect {
       described_class.new(:test,
-                          :source => stub(:source),
+                          :source => double(:source),
                           :sinks => nil)
     }.to raise_error(ArgumentError)
   end
 
   it "does not filter the dataset if re-extracting" do
     stage = described_class.new(:test,
-                                :source => stub(:source),
-                                :sinks => {:default => stub(:sink)},
+                                :source => double(:source),
+                                :sinks => {:default => double(:sink)},
                                 :filter_strategy => lambda { fail })
 
-    stage.filtered_source(stub(:etl_batch), true)
+    stage.filtered_source(double(:etl_batch), true)
   end
 
   it "opens sinks before writing and closes them afterwards" do
-    sink = mock(:sink)
+    sink = double(:sink)
     sink.should_receive(:open)
     sink.should_receive(:close)
 
@@ -35,6 +35,6 @@ describe Chicago::ETL::Stage do
                                 :source => [],
                                 :sinks => {:default => sink})
 
-    stage.execute(stub(:etl_batch), true)
+    stage.execute(double(:etl_batch), true)
   end
 end

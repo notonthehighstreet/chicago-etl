@@ -2,9 +2,9 @@ require 'spec_helper'
 require 'sequel'
 
 describe Chicago::ETL::MysqlFileSink do
-  let(:dataset) { mock(:dataset).as_null_object }
-  let(:db) { mock(:db, :[] => dataset, :schema => []) }
-  let(:csv) { mock(:csv) }
+  let(:dataset) { double(:dataset).as_null_object }
+  let(:db) { double(:db, :[] => dataset, :schema => []) }
+  let(:csv) { double(:csv) }
 
   let(:sink) {
     described_class.new(db, :table, [:foo], :filepath => "test_file")

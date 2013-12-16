@@ -1,9 +1,9 @@
 require 'spec_helper'
 
 describe Chicago::ETL::SchemaSinksAndTransformationsBuilder do
-  let(:dimension) { stub(:dimension).as_null_object }
-  let(:db) { stub(:db).as_null_object }
-  let(:sink_factory) { stub(:sink_factory).as_null_object }
+  let(:dimension) { double(:dimension).as_null_object }
+  let(:db) { double(:db).as_null_object }
+  let(:sink_factory) { double(:sink_factory).as_null_object }
 
   before(:each) {
     Chicago::ETL::SchemaTableSinkFactory.stub(:new).and_return(sink_factory)
@@ -12,7 +12,7 @@ describe Chicago::ETL::SchemaSinksAndTransformationsBuilder do
   it "should exclude columns from the sink" do
     sink_factory.should_receive(:sink).
       with(:ignore => false, :exclude => [:foo]).
-      and_return(stub(:sink).as_null_object)
+      and_return(double(:sink).as_null_object)
 
     described_class.new(db, dimension).build do
       load_separately :foo
@@ -22,7 +22,7 @@ describe Chicago::ETL::SchemaSinksAndTransformationsBuilder do
   it "can specify rows are not going to be replaced" do
     sink_factory.should_receive(:sink).
       with(:ignore => true, :exclude => []).
-      and_return(stub(:sink).as_null_object)
+      and_return(double(:sink).as_null_object)
 
     described_class.new(db, dimension).build do
       ignore_present_rows
