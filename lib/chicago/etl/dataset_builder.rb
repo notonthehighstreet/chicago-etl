@@ -17,7 +17,7 @@ module Chicago
       protected
       
       def key_field(field, name)
-        :if[{field => nil}, 1, field].as(name)
+        :if.sql_function({field => nil}, 1, field).as(name)
       end
       
       # Returns a column for use in a Sequel::Dataset#select method to
