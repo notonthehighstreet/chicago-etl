@@ -2,12 +2,16 @@ module Chicago
   module ETL
     module SequelExtensions
       module FilterToEtlBatch
+        # Filters this Dataset to select records only applicable to
+        # the current batch, based on the batch id.
+        #
+        # Applies filters on all tables selected & joined if they have
+        # an etl_batch_id column.
         def filter_to_etl_batch(etl_batch)
-          conditions = (opts[:from] + (opts[:join] || [])).
-            select {|e| has_etl_batch_column?(e) }.
+          conditions = tables_with_etl_batch_column.
             map {|e| make_etl_batch_filter(e, etl_batch) }
 
-          ds = conditions.any? ? filter(conditions.inject {|a,b| a | b}) : dup
+          ds = apply_etl_batch_filters(conditions)
 
           if ds.opts[:compounds]
             ds.opts[:compounds].each do |compound|
@@ -20,6 +24,14 @@ module Chicago
 
         private
 
+        def tables_with_etl_batch_column
+          (opts[:from] + (opts[:join] || [])).select {|e| has_etl_batch_column?(e) }
+        end
+
+        def apply_etl_batch_filters(conditions)
+          conditions.any? ? filter(conditions.inject {|a,b| a | b}) : dup
+        end
+        
         def make_etl_batch_filter(expression, etl_batch)
           table = case expression
                   when Sequel::SQL::AliasedExpression
