@@ -21,24 +21,31 @@ module Chicago
           @table = table
           @staging_db = staging_db
         end
-        
+
+        # Creates the appropriate key builder for a schema table,
+        # depending on the table type and whether rows are identified
+        # by original keys or need to be hashed.
         def make
           if dimension?
-            key_table = staging_db[table.key_table_name]
-            
-            if table.identifiable?
-              IdentifiableDimensionKeyBuilder.new(key_table)
-            elsif existing_hash_column?(table)
-              ExistingHashColumnKeyBuilder.new(key_table)
-            else
-              HashingKeyBuilder.new(key_table, columns_to_hash)
-            end
+            dimension_key_builder
           elsif fact?
             FactKeyBuilder.new(staging_db[table.table_name])
           end
         end
 
         private
+
+        def dimension_key_builder
+          key_table = staging_db[table.key_table_name]
+          
+          if table.identifiable?
+            IdentifiableDimensionKeyBuilder.new(key_table)
+          elsif existing_hash_column?(table)
+            ExistingHashColumnKeyBuilder.new(key_table)
+          else
+            HashingKeyBuilder.new(key_table, columns_to_hash)
+          end
+        end
 
         def existing_hash_column?(table)
           table.columns.any? {|c| c.binary? && c.name == :hash && c.unique? }
