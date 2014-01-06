@@ -1,8 +1,7 @@
  source "http://rubygems.org"
 
-gem "chicagowarehouse", "~> 0.4"
+gem "chicagowarehouse", "~> 0.4", ">= 0.4.6"
 gem "fastercsv", :platform => :ruby_18
-gem "sequel"
 gem "sequel_load_data_infile", ">= 0.0.2", :require => "sequel/load_data_infile"
 gem "sequel_fast_columns", :require => "sequel/fast_columns"
 
