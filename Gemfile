@@ -1,4 +1,4 @@
-source "http://rubygems.org"
+ source "http://rubygems.org"
 
 gem "chicagowarehouse", "~> 0.4"
 gem "fastercsv", :platform => :ruby_18
@@ -15,7 +15,7 @@ group :development do
   gem "flog"
   gem "simplecov", :platforms => :mri_19, :require => false
   gem "ZenTest"
-  gem "mysql", "2.8.1"  
+  gem "mysql2"
   gem "bundler", "~> 1"
   gem "jeweler"
 end
