@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "chicago-etl"
-  s.version = "0.2.2"
+  s.version = "0.2.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Roland Swingler"]
-  s.date = "2013-11-26"
+  s.date = "2014-01-06"
   s.description = "ETL tools for Chicago"
   s.email = "roland.swingler@gmail.com"
   s.extra_rdoc_files = [
@@ -113,9 +113,8 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<chicagowarehouse>, ["~> 0.4"])
+      s.add_runtime_dependency(%q<chicagowarehouse>, [">= 0.4.6", "~> 0.4"])
       s.add_runtime_dependency(%q<fastercsv>, [">= 0"])
-      s.add_runtime_dependency(%q<sequel>, [">= 0"])
       s.add_runtime_dependency(%q<sequel_load_data_infile>, [">= 0.0.2"])
       s.add_runtime_dependency(%q<sequel_fast_columns>, [">= 0"])
       s.add_development_dependency(%q<rspec>, ["~> 2"])
@@ -124,13 +123,12 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<flog>, [">= 0"])
       s.add_development_dependency(%q<simplecov>, [">= 0"])
       s.add_development_dependency(%q<ZenTest>, [">= 0"])
-      s.add_development_dependency(%q<mysql>, ["= 2.8.1"])
+      s.add_development_dependency(%q<mysql2>, [">= 0"])
       s.add_development_dependency(%q<bundler>, ["~> 1"])
       s.add_development_dependency(%q<jeweler>, [">= 0"])
     else
-      s.add_dependency(%q<chicagowarehouse>, ["~> 0.4"])
+      s.add_dependency(%q<chicagowarehouse>, [">= 0.4.6", "~> 0.4"])
       s.add_dependency(%q<fastercsv>, [">= 0"])
-      s.add_dependency(%q<sequel>, [">= 0"])
       s.add_dependency(%q<sequel_load_data_infile>, [">= 0.0.2"])
       s.add_dependency(%q<sequel_fast_columns>, [">= 0"])
       s.add_dependency(%q<rspec>, ["~> 2"])
@@ -139,14 +137,13 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<flog>, [">= 0"])
       s.add_dependency(%q<simplecov>, [">= 0"])
       s.add_dependency(%q<ZenTest>, [">= 0"])
-      s.add_dependency(%q<mysql>, ["= 2.8.1"])
+      s.add_dependency(%q<mysql2>, [">= 0"])
       s.add_dependency(%q<bundler>, ["~> 1"])
       s.add_dependency(%q<jeweler>, [">= 0"])
     end
   else
-    s.add_dependency(%q<chicagowarehouse>, ["~> 0.4"])
+    s.add_dependency(%q<chicagowarehouse>, [">= 0.4.6", "~> 0.4"])
     s.add_dependency(%q<fastercsv>, [">= 0"])
-    s.add_dependency(%q<sequel>, [">= 0"])
     s.add_dependency(%q<sequel_load_data_infile>, [">= 0.0.2"])
     s.add_dependency(%q<sequel_fast_columns>, [">= 0"])
     s.add_dependency(%q<rspec>, ["~> 2"])
@@ -155,7 +152,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<flog>, [">= 0"])
     s.add_dependency(%q<simplecov>, [">= 0"])
     s.add_dependency(%q<ZenTest>, [">= 0"])
-    s.add_dependency(%q<mysql>, ["= 2.8.1"])
+    s.add_dependency(%q<mysql2>, [">= 0"])
     s.add_dependency(%q<bundler>, ["~> 1"])
     s.add_dependency(%q<jeweler>, [">= 0"])
   end
