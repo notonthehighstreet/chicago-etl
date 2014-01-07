@@ -7,11 +7,11 @@ module Chicago
     # Clients shouldn't need to instantiate this directly, but instead
     # call the protected methods in the context of defining a Pipeline
     class SchemaTableStageBuilder < StageBuilder
-      # @api private
-      def initialize(db, schema_table)
-        super(db)
+      def build(name, options, &block)
         @wrapped_builder = SchemaSinksAndTransformationsBuilder.
-          new(@db, schema_table)
+          new(@db, schema_table(name, options))
+
+        super
       end
 
       protected
@@ -45,6 +45,20 @@ module Chicago
         @filter_strategy ||= lambda {|dataset, etl_batch| 
           dataset.filter_to_etl_batch(etl_batch)
         }
+      end
+    end
+
+    class LoadDimensionStageBuilder < SchemaTableStageBuilder
+      def schema_table(name, options)
+        dimension_name = options[:dimension] || name.name
+        @schema.dimension(dimension_name)
+      end
+    end
+
+    class LoadFactStageBuilder < SchemaTableStageBuilder
+      def schema_table(name, options)
+        fact_name = options[:dimension] || name.name
+        @schema.fact(fact_name)
       end
     end
   end

@@ -9,7 +9,7 @@ module Chicago
       attr_reader :source
       
       def initialize(name, options={})
-        super(name, options)
+        super
         @source = options[:source]
         @sinks = options[:sinks]
         @transformations = options[:transformations] || []

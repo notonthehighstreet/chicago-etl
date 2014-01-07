@@ -1,11 +1,12 @@
 module Chicago
   module ETL
     class StageBuilder
-      def initialize(db)
+      def initialize(db, schema)
         @db = db
+        @schema = schema
       end
 
-      def build(name, &block)
+      def build(name, options, &block)
         @pre_execution_strategies = []
         @executable = true
 
