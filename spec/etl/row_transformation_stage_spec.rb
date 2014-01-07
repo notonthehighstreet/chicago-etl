@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chicago::ETL::Stage do
+describe Chicago::ETL::RowTransformationStage do
   let(:etl_batch) { double(:etl_batch, :reextracting? => true) }
 
   it "requires a source" do

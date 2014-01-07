@@ -12,13 +12,14 @@ module Chicago
         instance_eval &block
         set_default_stage_values
 
-        Stage.new(name,
-                  :source => @dataset, 
-                  :sinks => @sinks, 
-                  :transformations => @transformations, 
-                  :filter_strategy => @filter_strategy,
-                  :pre_execution_strategies => @pre_execution_strategies,
-                  :executable => @executable)
+        RowTransformationStage.
+          new(name,
+              :source => @dataset, 
+              :sinks => @sinks, 
+              :transformations => @transformations, 
+              :filter_strategy => @filter_strategy,
+              :pre_execution_strategies => @pre_execution_strategies,
+              :executable => @executable)
       end
 
       protected

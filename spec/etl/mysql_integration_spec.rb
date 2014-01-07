@@ -56,13 +56,14 @@ describe "Mysql -> Mysql through transformation chain" do
       new(TEST_DB, :destination, [:id, :foo, :bin])
     sink_2 = Chicago::ETL::ArraySink.new([:id, :foo, :bin])
 
-    stage = Chicago::ETL::Stage.new(:test, 
-                                    :source => source, 
-                                    :transformations => transformations, 
-                                    :sinks => {
-                                      :default => sink_1, 
-                                      :other => sink_2
-                                    })
+    stage = Chicago::ETL::RowTransformationStage.
+      new(:test, 
+          :source => source, 
+          :transformations => transformations, 
+          :sinks => {
+            :default => sink_1, 
+            :other => sink_2
+          })
 
     stage.execute(double(:etl_batch, :reextracting? => true))
 
