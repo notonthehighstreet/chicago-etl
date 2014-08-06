@@ -13,7 +13,6 @@ group :development do
   gem "yard"
   gem "flog"
   gem "simplecov", :platforms => :mri_19, :require => false
-  gem "ZenTest"
   gem "mysql2"
   gem "bundler", "~> 1"
   gem "jeweler"
