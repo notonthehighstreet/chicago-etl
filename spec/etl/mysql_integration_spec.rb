@@ -57,8 +57,7 @@ describe "Mysql -> Mysql through transformation chain" do
     sink_2 = Chicago::ETL::ArraySink.new([:id, :foo, :bin])
 
     stage = Chicago::ETL::RowTransformationStage.
-      new(:test, 
-          :source => source, 
+      new(:source => source, 
           :transformations => transformations, 
           :sinks => {
             :default => sink_1, 

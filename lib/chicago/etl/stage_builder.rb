@@ -14,8 +14,7 @@ module Chicago
         set_default_stage_values
 
         RowTransformationStage.
-          new(name,
-              :source => @dataset, 
+          new(:source => @dataset, 
               :sinks => @sinks, 
               :transformations => @transformations, 
               :filter_strategy => @filter_strategy,

@@ -8,7 +8,7 @@ module Chicago
       # Returns the source for this stage.
       attr_reader :source
       
-      def initialize(name, options={})
+      def initialize(options={})
         super
         @source = options[:source]
         @sinks = options[:sinks]

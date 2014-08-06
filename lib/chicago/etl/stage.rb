@@ -8,17 +8,17 @@ module Chicago
     #
     # @abstract
     class Stage
-      # Returns the name of this stage.
-      attr_reader :name
+      # The name of this stage.
+      attr_accessor :name
 
-      def initialize(name, options={})
-        @name = name
+      def initialize(options={})
         @executable = options.has_key?(:executable) ? options[:executable] : true
         @pre_execution_strategies = options[:pre_execution_strategies] || []
       end
 
       # Returns the unqualified name of this stage.
       def task_name
+        raise "This Stage has not been bound to a name" if @name.nil?
         name.name
       end
       

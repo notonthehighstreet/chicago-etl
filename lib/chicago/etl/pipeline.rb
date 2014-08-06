@@ -14,12 +14,22 @@ module Chicago
 
       # Defines a generic stage in the pipeline.
       def define_stage(*args, &block)
-        @stages << build_stage(*args, &block)
+        options = args.last.kind_of?(Hash) ? args.pop : {}
+
+        if args.last.kind_of?(Stage)
+          stage = args.pop
+          name = StageName.new(args)
+        else
+          name = StageName.new(args)
+          stage = build_stage(name, options, &block)
+        end
+
+        stage.name = StageName.new(args)
+
+        @stages << stage
       end
 
-      def build_stage(*args, &block)
-        options = args.last.kind_of?(Hash) ? args.pop : {}
-        name = StageName.new(args)
+      def build_stage(name, options, &block)
         builder(name, options).build(name, options, &block)
       end
 
