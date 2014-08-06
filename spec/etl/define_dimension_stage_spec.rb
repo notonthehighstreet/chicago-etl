@@ -15,8 +15,12 @@ describe "creating and running a dimension stage" do
     schema
   }
 
-  let(:pipeline) { Chicago::ETL::Pipeline.new(db, schema)}
-
+  let(:pipeline) { 
+    Chicago::ETL::Pipeline.new(db, schema) do |name, options|
+      Chicago::ETL::LoadDimensionStageBuilder
+    end
+  }
+  
   it "glues the source, transformations, and sink correctly" do
     pipeline.define_stage(:load, :dimensions, :test) do
       source do

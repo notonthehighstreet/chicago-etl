@@ -6,34 +6,27 @@ module Chicago
       attr_reader :stages
 
       # Creates a pipeline for a Schema.
-      def initialize(db, schema)
+      def initialize(db, schema, &block)
         @schema, @db = schema, db
         @stages = Chicago::Schema::NamedElementCollection.new
+        @builder_class_factory = block || lambda {|name, options| StageBuilder }
       end
 
       # Defines a generic stage in the pipeline.
       def define_stage(*args, &block)
+        @stages << build_stage(*args, &block)
+      end
+
+      def build_stage(*args, &block)
         options = args.last.kind_of?(Hash) ? args.pop : {}
         name = StageName.new(args)
-        @stages << builder(name, options).build(name, options, &block)
+        builder(name, options).build(name, options, &block)
       end
 
       private
-
+      
       def builder(name, options)
-        builder_class(name, options).new(@db, @schema)
-      end
-
-      # TODO: factor out - we shouldn't be hardcoding what to do with
-      # specific names - too project specific.
-      def builder_class(name, options)
-        if name =~ [:load, :dimensions]
-          LoadDimensionStageBuilder
-        elsif name =~ [:load, :facts]
-          LoadFactStageBuilder
-        else
-          StageBuilder
-        end
+        @builder_class_factory.call(name, options).new(@db, @schema)
       end
     end
   end
