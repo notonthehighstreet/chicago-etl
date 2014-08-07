@@ -40,9 +40,11 @@ module Chicago
 
       # Does the actual work involved in executing this stage.
       #
-      # By default, does nothing. This should be overridden by
-      # subclasses.
+      # This should be overridden by subclasses.
+      #
+      # @abstract
       def perform_execution(etl_batch)
+        raise "perform_execution method has not been overridden."
       end
 
       private
