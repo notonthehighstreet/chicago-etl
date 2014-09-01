@@ -6,7 +6,7 @@ module Chicago
     #
     # To use, simply include:
     #
-    #     Chicago::ETL::RakeTasks.new(db, schema)
+    #     Chicago::ETL::RakeTasks.new(schema, :staging_db => db)
     #
     # in your project's Rakefile.
     #
@@ -15,9 +15,10 @@ module Chicago
     # +db:create_etl_tables+:: defines the tables used for ETL batches
     #                          and the like
     class RakeTasks < Rake::TaskLib
-      def initialize(db, schema)
-        @db = db
+      def initialize(schema, options)
         @schema = schema
+        @db = options[:staging_db]
+
         define
       end
 
