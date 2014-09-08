@@ -22,7 +22,11 @@ module Chicago
         #
         # This should be used in preference to new or create.
         def instance
-          (last_batch.nil? || last_batch.finished?) ? new : last_batch
+          if last_batch.nil? || last_batch.finished? || last_batch.started_at.to_date < Date.today
+            new
+          else 
+            last_batch
+          end
         end
       
         # Returns the last batch run, or nil if this is the first batch.
@@ -55,6 +59,21 @@ module Chicago
       # records without regard to creation/update times.
       def reextracting?
         !!@reextract
+      end
+
+      def extract_from
+        return if reextracting?
+        value = self.class.dataset.
+          where(:state => "Finished").
+          where {|r| r.id < id }.
+          select(:max.sql_function(:extracted_to).as(:extracted_to)).
+          single_value
+
+        if value && value.to_date == Date.today
+          (value.to_date - 1).to_time
+        else
+          value
+        end
       end
 
       # Deprecated.

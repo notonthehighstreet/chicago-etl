@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'date'
 
 describe Chicago::ETL::Batch do
   before :each do
@@ -55,15 +56,86 @@ describe Chicago::ETL::Batch do
     batch.should be_in_error
   end
 
-  it "should not return a new batch if the last batch was not finished" do
-    batch = ETL::Batch.instance.start
-    ETL::Batch.instance == batch
+  it "returns nil from extract_from when re-extracting" do
+    batch = ETL::Batch.instance
+    batch.reextract
+    batch.start
+    expect(batch.extract_from).to be_nil
   end
 
-  it "should not return a new batch if the last batch ended in error" do
-    batch = ETL::Batch.instance.start
-    batch.error
-    ETL::Batch.instance.should == batch
+  it "returns nil from extract_from when the first batch" do
+    batch = ETL::Batch.instance
+    batch.start
+    expect(batch.extract_from).to be_nil
+  end
+
+  it "returns the previous finised batch's extracted_to as extract_from" do
+    Timecop.freeze(2014, 01, 6, 0, 0, 0) {
+      ETL::Batch.new.start.finish
+    }
+
+    Timecop.freeze(2014, 01, 10, 0, 0, 0) {
+      ETL::Batch.new.start.finish
+    }
+
+    ETL::Batch.new.start.error
+    
+    batch = ETL::Batch.new.start
+    expect(batch.extract_from).to eql(Time.local(2014,1,10,0,0,0))
+  end
+
+  it "returns the previous finised batch's extracted_to as extract_from" do
+    Timecop.freeze(2014, 01, 6, 0, 0, 0) {
+      ETL::Batch.new.start.finish
+    }
+
+    Timecop.freeze(2014, 01, 8, 0, 0, 0) {
+      ETL::Batch.new.start.error
+    }
+
+    Timecop.freeze(2014, 01, 10, 0, 0, 0) {
+      ETL::Batch.new.start.finish
+    }
+    
+    batch = ETL::Batch.new.start
+    expect(batch.extract_from).to eql(Time.local(2014,1,10,0,0,0))
+  end
+
+  it "returns yesterday, rather than extract_from if extract_from is today" do
+    Timecop.freeze(2014, 01, 6, 0, 0, 0)
+
+    ETL::Batch.new.start.finish
+    
+    batch = ETL::Batch.new.start
+    expect(batch.extract_from).to eql(Time.local(2014,1,5,0,0,0))
+  end
+
+  context "when rerun in the same day" do
+    it "should not return a new batch if the last batch was not finished" do
+      batch = ETL::Batch.instance.start
+      expect(ETL::Batch.instance).to eql(batch)
+    end
+
+    it "should not return a new batch if the last batch ended in error" do
+      batch = ETL::Batch.instance.start
+      batch.error
+      ETL::Batch.instance.should == batch
+    end
+  end
+
+  context "when rerun a day later" do
+    it "returns a new batch when the previous batch was unfinished" do
+      batch = ETL::Batch.instance.start
+      Timecop.freeze(Date.today + 1)
+      expect(ETL::Batch.instance).to_not eql(batch)
+    end
+
+    it "returns a new batch when the previous batch was in error" do
+      batch = ETL::Batch.instance.start
+      batch.error
+      Timecop.freeze(Date.today + 1)
+      expect(ETL::Batch.instance).to_not eql(batch)
+    end
   end
 
   it "should create a log in tmp/batches/1/log" do
