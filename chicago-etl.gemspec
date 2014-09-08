@@ -27,7 +27,6 @@ Gem::Specification.new do |s|
     "Rakefile",
     "VERSION",
     "chicago-etl.gemspec",
-    "chicago-flow.gemspec",
     "lib/chicago-etl.rb",
     "lib/chicago/etl.rb",
     "lib/chicago/etl/array_sink.rb",
