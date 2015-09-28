@@ -18,6 +18,7 @@ module Chicago
         @db = db
         @table_name = table_name
         @insert_ignore = !!options[:ignore]
+        @insert_replace = !!options[:replace]
       end
 
       def name
@@ -53,7 +54,9 @@ module Chicago
       private
 
       def dataset
-        @insert_ignore ? @db[@table_name].insert_ignore : @db[@table_name]
+        @insert_ignore ? @db[@table_name].insert_ignore : (
+          @insert_replace ? @db[@table_name].insert_replace : @db[@table_name]
+        )
       end
 
       def csv
