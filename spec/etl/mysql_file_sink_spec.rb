@@ -41,14 +41,14 @@ describe Chicago::ETL::MysqlFileSink do
 
   it "loads the csv file into the database when closed" do
     dataset.should_receive(:load_csv_infile).
-      with("test_file", [:foo], :set => {})
+      with("test_file", [:foo], :set => {}, :local => true)
     sink.close
   end
 
   it "uses the :set hash to load constant values" do
     sink.set_constant_values(:bar => 1).should == sink
     dataset.should_receive(:load_csv_infile).
-      with("test_file", [:foo], :set => {:bar => 1})
+      with("test_file", [:foo], :set => {:bar => 1}, :local => true)
     sink.close
   end
 

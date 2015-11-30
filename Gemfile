@@ -2,7 +2,7 @@
 
 gem "chicagowarehouse", "~> 0.4", ">= 0.4.6"
 gem "fastercsv", :platform => :ruby_18
-gem "sequel_load_data_infile", ">= 0.0.2", :require => "sequel/load_data_infile"
+gem "sequel_load_data_infile", :git => "git://github.com/notonthehighstreet/sequel_load_data_infile.git", :ref => "d7449efe5b775332279f91024a028f7fa3de4713"
 gem "sequel_fast_columns", :require => "sequel/fast_columns"
 
 # Add dependencies to develop your gem here.

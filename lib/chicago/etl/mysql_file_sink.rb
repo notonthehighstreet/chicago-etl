@@ -40,7 +40,8 @@ module Chicago
       # INFILE, if the file exists and has content.
       def load_from_file(file)
         return unless File.size?(file)
-        dataset.load_csv_infile(file, @fields, :set => constant_values)
+        dataset.load_csv_infile(file, @fields,
+                                :set => constant_values, :local => true)
       end
 
       def truncate
