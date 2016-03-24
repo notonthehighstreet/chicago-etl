@@ -109,7 +109,7 @@ module Chicago
 
       # Finishes this batch, and sets the finished_at timestamp.
       def finish
-        update(:state => "Finished", :finished_at => Time.now)
+        update(:state => "Finished", :finished_at => Time.now.utc)
       end
 
       # Sets this batch to the Error state.

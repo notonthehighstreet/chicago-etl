@@ -18,7 +18,7 @@ module Chicago
           batch.error if batch
           raise e
         end
-        update(:state => "Finished", :finished_at => Time.now)
+        update(:state => "Finished", :finished_at => Time.now.utc)
       end
 
       # Returns true if this task has finished running successfully.

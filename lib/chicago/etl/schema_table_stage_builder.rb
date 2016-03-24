@@ -39,7 +39,7 @@ module Chicago
           end
 
           stage.sink(:default).
-            set_constant_values(:_inserted_at => Time.now)
+            set_constant_values(:_inserted_at => Time.now.utc)
         }
 
         @filter_strategy ||= lambda {|dataset, etl_batch| 
