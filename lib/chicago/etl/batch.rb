@@ -22,7 +22,7 @@ module Chicago
         #
         # This should be used in preference to new or create.
         def instance
-          if last_batch.nil? || last_batch.finished? || last_batch.started_at.to_date < Date.today
+          if last_batch.nil? || last_batch.finished?
             new
           else 
             last_batch
