@@ -99,6 +99,10 @@ module Chicago
       def start(extract_to=nil)
         self.extracted_to = extract_to || Date.today
         save
+        if !File.exists?(dir)
+            FileUtils.mkdir_p(dir, :mode => 0777)
+        end
+
         if state == "Started"
           log.info "Started ETL batch #{id}."
         else
