@@ -132,16 +132,12 @@ module Chicago
         @log ||= Logger.new(File.join(dir, "log"))
       end
 
-      # @api private
-      def after_create
-        FileUtils.mkdir_p(dir, :mode => 0777)
-      end
-
       private
 
       def find_or_create_task_invocation(stage, name)
         attrs = {:stage => stage.to_s.downcase, :name => name.to_s}
-        task_invocations_dataset.filter(attrs).first || add_task_invocation(attrs)
+        default_attrs = {:stage => stage.to_s.downcase, :name => name.to_s, :attempts => 0.to_s}
+        task_invocations_dataset.filter(attrs).first || add_task_invocation(default_attrs)
       end
     end
   end
